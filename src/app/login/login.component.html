@@ -1,0 +1,10 @@
+<div *ngIf="auth.user$ | async as user; else showLogin">
+  <h1>Hello {{ user | json }}!</h1>
+  <button (click)="auth.logout()">Logout</button>
+</div>
+<ng-template #showLogin>
+  <p>Please login.</p>
+  <button class="icon-button" (click)="auth.loginYahoo()">
+    <img class="icon" src="assets/login_yahoo.png" alt="sign in with Yahoo" />
+  </button>
+</ng-template>

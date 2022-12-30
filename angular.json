@@ -97,6 +97,16 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "auto-gm:build:production",
+            "firebaseProject": "auto-gm-372620",
+            "firebaseHostingSite": "auto-gm-372620"
+          }
         }
       }
     }
