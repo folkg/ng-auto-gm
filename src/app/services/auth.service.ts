@@ -23,8 +23,6 @@ export class AuthService {
   }
 
   loginYahoo(): void {
-    signInWithPopup(this.auth, new OAuthProvider('yahoo.com')).then((temp) =>
-      console.log(temp)
-    );
+    signInWithPopup(this.auth, new OAuthProvider('yahoo.com'));
   }
 }
