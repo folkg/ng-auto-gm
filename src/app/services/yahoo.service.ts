@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -12,6 +11,7 @@ export class YahooService {
   readonly API_URL: string =
     this.CORS_BASE_URL + 'https://fantasysports.yahooapis.com/fantasy/v2/';
 
+  //TODO: This is only loading the token at the start. Need to subscribe to something here for when it is refreshed.
   headers: HttpHeaders = new HttpHeaders({
     Authorization: 'Bearer ' + localStorage.getItem('yahooAccessToken'),
   });

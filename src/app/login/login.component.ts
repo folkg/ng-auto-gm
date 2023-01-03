@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -7,5 +9,16 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  constructor(public auth: AuthService) {}
+  user$: Observable<any> = this.auth.user$;
+
+  constructor(private auth: AuthService, private route: Router) {}
+
+  login() {
+    this.auth.loginYahoo();
+    this.route.navigate(['/profile']);
+  }
+
+  logout() {
+    this.auth.logout();
+  }
 }
