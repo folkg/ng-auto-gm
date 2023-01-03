@@ -1,10 +1,12 @@
-.icon-button{
-    background: none;
-    padding: 0;
-    border: 0;
-    cursor: pointer;
-  }
-  
-  .icon-button .icon {
-    height: 2.5rem;
-  }
+.icon-button {
+  background: none;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.icon-button .icon {
+  height: 2.5rem;
+}
+
+// TODO: Add a diagonal line across the background (like angular website) in the same colour as title bar.

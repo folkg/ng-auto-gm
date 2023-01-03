@@ -40,4 +40,6 @@ export class AuthService {
       localStorage.setItem('yahooAccessToken', credential?.accessToken!);
     });
   }
+
+  //TODO: On page load, get the latest token and expiry date (if expired) from firestore, and check if it is still valid. If not, refresh it.
 }
