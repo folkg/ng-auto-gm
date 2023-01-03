@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<any>;
+  user$: Observable<any> = user(this.auth);
 
   constructor(private auth: Auth) {
     this.user$ = user(this.auth);
@@ -20,9 +20,16 @@ export class AuthService {
 
   logout(): void {
     signOut(this.auth);
+    localStorage.setItem('yahooAccessToken', '');
   }
 
   loginYahoo(): void {
-    signInWithPopup(this.auth, new OAuthProvider('yahoo.com'));
+    signInWithPopup(this.auth, new OAuthProvider('yahoo.com')).then(
+      (result) => {
+        const credential = OAuthProvider.credentialFromResult(result);
+        console.log(credential);
+        localStorage.setItem('yahooAccessToken', credential?.accessToken!);
+      }
+    );
   }
 }

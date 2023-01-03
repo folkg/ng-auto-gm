@@ -1,2 +1,17 @@
 <p>dashboard works!</p>
+
+<div *ngIf="yahoo.getTeams$ | async as teams; else showLoading">
+  <!-- TODO: Loop over all the teams. Maybe we do this in the ts file -->
+  <!-- <ul>
+    <li *ngFor="let team of teams.users">
+      <a [routerLink]="['/teams', team.id]">{{ team.name }}</a>
+    </li>
+  </ul> -->
+  {{ teams | json }}
+</div>
+
+<ng-template #showLoading>
+  <p>Loading...</p>
+</ng-template>
+
 <button [routerLink]="['/teams', 1]">Go to team 1</button>

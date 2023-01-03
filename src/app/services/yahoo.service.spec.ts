@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { YahooTeamsService } from './yahoo-teams.service';
+import { YahooService } from './yahoo.service';
 
-describe('YahooTeamsService', () => {
-  let service: YahooTeamsService;
+describe('YahooService', () => {
+  let service: YahooService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(YahooTeamsService);
+    service = TestBed.inject(YahooService);
   });
 
   it('should be created', () => {
