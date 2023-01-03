@@ -20,6 +20,7 @@ export class AuthService {
 
   logout(): void {
     signOut(this.auth);
+    //TODO: Is this enough to be logged out? I think firebase auth takes care of the rest?
     localStorage.setItem('yahooAccessToken', '');
   }
 
@@ -39,6 +40,10 @@ export class AuthService {
       // add a rule so that we can only read if query belong to our own id?
       localStorage.setItem('yahooAccessToken', credential?.accessToken!);
     });
+  }
+
+  isLoggedIn(): boolean {
+    return localStorage.getItem('yahooAccessToken') !== '';
   }
 
   //TODO: On page load, get the latest token and expiry date (if expired) from firestore, and check if it is still valid. If not, refresh it.

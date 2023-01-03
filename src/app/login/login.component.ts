@@ -15,7 +15,10 @@ export class LoginComponent {
 
   login() {
     this.auth.loginYahoo();
-    this.route.navigate(['/profile']);
+    //TODO: How do we wait until the login is successful before redirecting?
+    if (this.auth.isLoggedIn()) {
+      this.route.navigate(['/profile']);
+    }
   }
 
   logout() {
