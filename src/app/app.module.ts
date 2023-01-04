@@ -8,7 +8,11 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideFunctions, getFunctions } from '@angular/fire/functions';
+import {
+  connectFunctionsEmulator,
+  provideFunctions,
+  getFunctions,
+} from '@angular/fire/functions';
 
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -38,7 +42,13 @@ import { ProfileModule } from './profile/profile.module';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideFunctions(() => getFunctions()),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    }),
     BrowserAnimationsModule,
     LayoutModule,
     MatToolbarModule,

@@ -1,6 +1,4 @@
-<p>dashboard works!</p>
-
-<div *ngIf="yahoo.getTeams$ | async as teams; else showLoading">
+<div *ngIf="this.teams.length !== 0; else showLoading">
   <!-- TODO: Loop over all the teams. Maybe we do this in the ts file -->
   <!-- <ul>
     <li *ngFor="let team of teams.users">

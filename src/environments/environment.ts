@@ -8,4 +8,5 @@ export const environment = {
     authDomain: 'auto-gm-372620.firebaseapp.com',
     messagingSenderId: '877183802',
   },
+  useEmulators: false,
 };
