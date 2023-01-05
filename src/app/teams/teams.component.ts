@@ -21,7 +21,6 @@ export class TeamsComponent implements OnInit {
   }
 
   async fetchTeams(): Promise<void> {
-    //TODO: Can we refactor this to make it more readable?
     this.teams = [];
     const leagues$ = await this.yahoo.getAllStandings();
     leagues$.subscribe((data: any) => {
@@ -36,16 +35,7 @@ export class TeamsComponent implements OnInit {
           for (const key in leagues) {
             if (key !== 'count' && leagues.hasOwnProperty(key)) {
               const allTeams = leagues[key].league[1].standings[0].teams;
-              let usersTeam: any;
-              // Find the team managed by the current login
-              for (const key in allTeams) {
-                if (key !== 'count' && allTeams.hasOwnProperty(key)) {
-                  if (allTeams[key].team[0][3].is_owned_by_current_login) {
-                    usersTeam = allTeams[key];
-                    break;
-                  }
-                }
-              }
+              let usersTeam = this.getUsersTeam(allTeams);
               const data: Team = {
                 game_name: game.name,
                 game_code: game.code,
@@ -72,9 +62,20 @@ export class TeamsComponent implements OnInit {
           }
         }
       }
+      console.log('Fetched teams from Yahoo API:');
       console.log(this.teams);
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
     });
   }
-  //TODO: Cache teams in sessionStorage. Load from sessionStorage if available instead of API call.
+
+  private getUsersTeam(allTeams: any) {
+    // Find the team managed by the current login
+    for (const key in allTeams) {
+      if (key !== 'count' && allTeams.hasOwnProperty(key)) {
+        if (allTeams[key].team[0][3].is_owned_by_current_login) {
+          return allTeams[key];
+        }
+      }
+    }
+  }
 }

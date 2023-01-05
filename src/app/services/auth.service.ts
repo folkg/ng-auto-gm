@@ -39,10 +39,9 @@ export class AuthService {
     signInWithPopup(this.auth, provider).then(async (result) => {
       if (result) {
         console.log(result);
-        this.yahooService.fetchYahooAccessToken();
+        // load the yahoo access token in anticipation of using it
+        this.yahooService.loadYahooAccessToken();
       }
     });
   }
-
-  //TODO: On page load, get the latest token and expiry date (if expired) from firestore, and check if it is still valid. If not, refresh it.
 }
