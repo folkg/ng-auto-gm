@@ -7,4 +7,20 @@ export interface Team {
   team_name: string;
   team_url: string;
   team_logo: string;
+  league_name: string;
+  num_teams: number;
+  rank: string | number;
+  points_for: string;
+  outcome_totals: {
+    wins: string | number;
+    losses: string | number;
+    ties: string | number;
+    percentage: string | number;
+  };
+  scoring_type: string;
+  current_week: string;
+  end_week: string;
+  start_date: string;
+  end_date: string;
+  edit_key: string;
 }

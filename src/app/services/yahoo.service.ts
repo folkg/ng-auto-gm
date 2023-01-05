@@ -47,18 +47,19 @@ export class YahooService {
     return this.http.get(this.API_URL + url, { headers: headers });
   }
 
-  async getTeams(): Promise<Observable<Object>> {
+  async getAllTeams(): Promise<Observable<Object>> {
     return await this.get(
       'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/teams/?format=json'
     );
   }
 
-  async getPlayers(teamKey: string): Promise<Observable<Object>> {
-    return await this.get('team/' + teamKey + '/players?format=json');
+  async getAllStandings(): Promise<Observable<Object>> {
+    return await this.get(
+      'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
+    );
   }
 
-  async getStandings(teamKey: string): Promise<Observable<Object>> {
-    const leagueKey: string = teamKey.split('.t.', 1)[0];
-    return await this.get('league/' + leagueKey + '/standings?format=json');
+  async getPlayers(teamKey: string): Promise<Observable<Object>> {
+    return await this.get('team/' + teamKey + '/players?format=json');
   }
 }
