@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { YahooService } from '../services/yahoo.service';
 import { Team } from './team';
 
@@ -16,11 +17,13 @@ export class TeamsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     if (this.teams.length === 0) {
       // If teams doesn't exist in sessionStorage, retrieve from API
-      await this.fetchTeams();
+      await this.fetchTeamsFromYahoo();
     }
   }
 
-  async fetchTeams(): Promise<void> {
+  //TODO: Implement cloud function to update teams in firebase when called by frontend. It will be similar to this one.
+  //TODO: Pull teams from firebase. Any reason we need a function to pre-process this? Or can we pull direct from DB?
+  async fetchTeamsFromYahoo(): Promise<void> {
     this.teams = [];
     const leagues$ = await this.yahoo.getAllStandings();
     leagues$.subscribe((data: any) => {
@@ -56,6 +59,8 @@ export class TeamsComponent implements OnInit {
                 start_date: leagues[key].league[0].start_date,
                 end_date: leagues[key].league[0].end_date,
                 edit_key: leagues[key].league[0].edit_key,
+                is_approved: true,
+                is_setting_lineups: false,
               };
               this.teams.push(data);
             }
@@ -77,5 +82,16 @@ export class TeamsComponent implements OnInit {
         }
       }
     }
+  }
+
+  async onToggle($event: MatSlideToggleChange, team: Team): Promise<void> {
+    //TODO: update the server with the new setting, and reflect it back to the toggle with a dialog (if it fails)
+    //TODO: Write a cloud function to handle the update on the server, and return the final value. It will need to check for approved payment.
+    //TODO: Also return the next lineup setting time
+    //TODO: Add failure dialog with error message (server comm error, team not paid for, etc)
+    // currently simulating an error
+    console.log(team.team_key, $event.checked);
+    await new Promise((f) => setTimeout(f, 2000));
+    team.is_setting_lineups = !$event.checked;
   }
 }

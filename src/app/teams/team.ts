@@ -23,4 +23,6 @@ export interface Team {
   start_date: string;
   end_date: string;
   edit_key: string;
+  is_approved: boolean;
+  is_setting_lineups: boolean;
 }
