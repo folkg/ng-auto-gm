@@ -1,56 +1,75 @@
-<div *ngIf="this.teams.length !== 0; else showLoading">
-  {{ this.teams | json }}
+<div class="center" *ngIf="this.teams.length !== 0; else showLoading">
+  <!-- {{ this.teams | json }} -->
+  <h1>Your Teams</h1>
+  <div class="all-cards">
+    <mat-card *ngFor="let team of this.teams; index as i" class="team-card">
+      <mat-card-header>
+        <img
+          mat-card-avatar
+          src="{{ team.team_logo }}"
+          alt="{{ team.team_name }}"
+        />
+        <mat-card-title>{{ team.team_name }}</mat-card-title>
+        <mat-card-subtitle
+          >{{ team.league_name }} ({{ team.game_name }}, {{ team.game_season }})
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div>
+          <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
+
+          <ng-container *ngIf="team.outcome_totals"
+            ><br />{{ team.outcome_totals.wins }}-{{
+              team.outcome_totals.losses
+            }}-{{ team.outcome_totals.ties }} ({{
+              team.outcome_totals.percentage
+            }})
+          </ng-container>
+          <ng-container *ngIf="team.points_for">
+            <br />
+            {{ team.points_for }} points
+            <ng-container *ngIf="team.points_against">
+              for, {{ team.points_against }} points against</ng-container
+            >
+            <ng-container *ngIf="team.points_back">
+              ({{ team.points_back }} points behind leader)</ng-container
+            >
+          </ng-container>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="flex-sb">
+          <div>
+            Next lineup update: {{ team.is_setting_lineups ? "soon" : "N/A" }}
+          </div>
+          <div>
+            Last lineup update:
+            {{
+              team.last_updated > 0
+                ? (team.last_updated | date : "MMM d, h:mm a")
+                : "N/A"
+            }}
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+      </mat-card-content>
+      <mat-card-actions class="flex-sb">
+        <mat-slide-toggle
+          [disabled]="!team.is_approved"
+          [(ngModel)]="team.is_setting_lineups"
+          (change)="onToggle($event, team)"
+          >Automatically Manage Lineups
+        </mat-slide-toggle>
+        <div>
+          <button mat-button [routerLink]="['/teams', team.team_key]">
+            OPEN HERE
+          </button>
+          <button mat-button>OPEN IN YAHOO</button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>
 
 <ng-template #showLoading>
   <p>Loading...</p>
 </ng-template>
-<!-- Improve the aesthetics on the card content. It doesn't look quite right.
-More padding, and different update times.
-Do we want to more prominently highlight the standings? -->
-<div>
-  <mat-card *ngFor="let team of this.teams; index as i" class="team-card">
-    <mat-card-header>
-      <img
-        mat-card-avatar
-        src="{{ team.team_logo }}"
-        alt="{{ team.team_name }}"
-      />
-      <mat-card-title>{{ team.team_name }}</mat-card-title>
-      <mat-card-subtitle
-        >{{ team.league_name }} ({{ team.game_name }}, {{ team.game_season }})
-        <div>
-          {{ team.rank | nth }} of {{ team.num_teams }}
-          <ng-container *ngIf="team.outcome_totals">
-            | {{ team.outcome_totals.wins }}-{{ team.outcome_totals.losses }}-{{
-              team.outcome_totals.ties
-            }}
-            ({{ team.outcome_totals.percentage }})
-          </ng-container>
-          <ng-container *ngIf="team.points_for">
-            | {{ team.points_for }} points
-          </ng-container>
-        </div>
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-slide-toggle
-        [disabled]="team.is_approved"
-        [(ngModel)]="team.is_setting_lineups"
-        (change)="onToggle($event, team)"
-        >Automatically Manage Lineups
-      </mat-slide-toggle>
-      <div>Last lineup update: ?</div>
-      <div>
-        Next lineup update: {{ team.is_setting_lineups ? "soon" : "N/A" }}
-      </div>
-      <mat-divider></mat-divider>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button [routerLink]="['/teams', team.team_key]">
-        OPEN HERE
-      </button>
-      <button mat-button>OPEN IN YAHOO</button>
-    </mat-card-actions>
-  </mat-card>
-</div>

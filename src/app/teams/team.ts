@@ -10,7 +10,9 @@ export interface Team {
   league_name: string;
   num_teams: number;
   rank: string | number;
-  points_for: string;
+  points_for: string | number;
+  points_against: string | number;
+  points_back: string | number;
   outcome_totals: {
     wins: string | number;
     losses: string | number;
@@ -25,4 +27,5 @@ export interface Team {
   edit_key: string;
   is_approved: boolean;
   is_setting_lineups: boolean;
+  last_updated: number;
 }

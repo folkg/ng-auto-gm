@@ -39,6 +39,11 @@ export class AuthService {
     signInWithPopup(this.auth, provider).then(async (result) => {
       if (result) {
         console.log(result);
+        // check if the user's email is verified and get them to confirm it if not
+        if (!result.user.emailVerified) {
+          // TODO: create a material dialog form to ask the user to enter their email address
+          // firebase should hopefully send a verification email to the user automatically
+        }
         // load the yahoo access token in anticipation of using it
         this.yahooService.loadYahooAccessToken();
       }

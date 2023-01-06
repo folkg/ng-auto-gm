@@ -34,7 +34,7 @@ export class YahooService {
     localStorage.setItem('yahooCredential', '');
   }
 
-  async get(url: string): Promise<Observable<Object>> {
+  async httpGet(url: string): Promise<Observable<Object>> {
     await this.loadYahooAccessToken();
 
     const headers = new HttpHeaders({
@@ -45,18 +45,18 @@ export class YahooService {
   }
 
   async getAllTeams(): Promise<Observable<Object>> {
-    return await this.get(
+    return await this.httpGet(
       'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/teams/?format=json'
     );
   }
 
   async getAllStandings(): Promise<Observable<Object>> {
-    return await this.get(
+    return await this.httpGet(
       'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
     );
   }
 
   async getPlayers(teamKey: string): Promise<Observable<Object>> {
-    return await this.get('team/' + teamKey + '/players?format=json');
+    return await this.httpGet('team/' + teamKey + '/players?format=json');
   }
 }
