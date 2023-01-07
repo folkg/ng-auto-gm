@@ -8,7 +8,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TeamsRoutingModule } from './teams-routing.module';
 import { TeamsComponent } from './teams.component';
 import { TeamComponent } from './team/team.component';
-import { NthPipe } from './nth.pipe';
+import { NthPipe } from './pipes/nth.pipe';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
