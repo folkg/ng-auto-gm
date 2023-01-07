@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
@@ -11,7 +10,7 @@ import { AuthService } from '../services/auth.service';
 export class LoginComponent {
   user$: Observable<any> = this.auth.user$;
 
-  constructor(private auth: AuthService, private route: Router) {}
+  constructor(private auth: AuthService) {}
 
   login() {
     this.auth.loginYahoo();

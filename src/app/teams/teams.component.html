@@ -2,7 +2,11 @@
   <!-- {{ this.teams | json }} -->
   <h1>Your Teams</h1>
   <div class="all-cards">
-    <mat-card *ngFor="let team of this.teams; index as i" class="team-card">
+    <mat-card
+      *ngFor="let team of this.teams; index as i"
+      class="team-card"
+      [class.mat-elevation-z0]="team.end_date > date"
+    >
       <mat-card-header>
         <img
           mat-card-avatar
@@ -15,7 +19,7 @@
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div>
+        <div class="card-content-section">
           <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
 
           <ng-container *ngIf="team.outcome_totals"
@@ -37,7 +41,10 @@
           </ng-container>
         </div>
         <mat-divider></mat-divider>
-        <div class="flex-sb">
+        <div
+          class="flex-sb card-content-section"
+          *ngIf="team.end_date > date; else seasonOver"
+        >
           <div>
             Next lineup update: {{ team.is_setting_lineups ? "soon" : "N/A" }}
           </div>
@@ -46,24 +53,31 @@
             {{
               team.last_updated > 0
                 ? (team.last_updated | date : "MMM d, h:mm a")
-                : "N/A"
+                : "Never"
             }}
           </div>
         </div>
+        <ng-template #seasonOver
+          ><div class="card-content-section">
+            The season is over.
+          </div></ng-template
+        >
         <mat-divider></mat-divider>
       </mat-card-content>
       <mat-card-actions class="flex-sb">
         <mat-slide-toggle
-          [disabled]="!team.is_approved"
+          [disabled]="!team.is_approved || team.end_date < date"
           [(ngModel)]="team.is_setting_lineups"
           (change)="onToggle($event, team)"
           >Automatically Manage Lineups
         </mat-slide-toggle>
         <div>
-          <button mat-button [routerLink]="['/teams', team.team_key]">
+          <!-- <button mat-button [routerLink]="['/teams', team.team_key]">
             OPEN HERE
+          </button> -->
+          <button mat-button (click)="gotoExternalDomain(team.team_url)">
+            OPEN IN YAHOO
           </button>
-          <button mat-button>OPEN IN YAHOO</button>
         </div>
       </mat-card-actions>
     </mat-card>

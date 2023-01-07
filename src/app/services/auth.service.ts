@@ -21,10 +21,7 @@ import { YahooService } from './yahoo.service';
 export class AuthService {
   public user$: Observable<any> = EMPTY;
 
-  constructor(
-    private auth: Auth,
-    private yahooService: YahooService // private firestore: Firestore,
-  ) {
+  constructor(private auth: Auth, private yahooService: YahooService) {
     // set up the user$ observable for the logged in user
     this.user$ = user(this.auth);
   }

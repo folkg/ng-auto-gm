@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { Functions, httpsCallable } from '@angular/fire/functions';
 
@@ -23,10 +23,17 @@ export class YahooService {
     if (!this.credential || this.credential.tokenExpirationTime <= Date.now()) {
       // call the cloud function 'getAccessToken'
       console.log('Getting new Yahoo access token');
-      const getAccessToken = httpsCallable(this.fns, 'getAccessToken');
-      const data = await getAccessToken({});
-      this.credential = data.data;
-      localStorage.setItem('yahooCredential', JSON.stringify(this.credential));
+      try {
+        const getAccessToken = httpsCallable(this.fns, 'getAccessToken');
+        const data = await getAccessToken({});
+        this.credential = data.data;
+        localStorage.setItem(
+          'yahooCredential',
+          JSON.stringify(this.credential)
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 
