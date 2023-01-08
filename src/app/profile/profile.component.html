@@ -1,1 +1,47 @@
 <p>profile works!</p>
+<div *ngIf="this.user | async as user; else showLogin">
+  <p>{{ user | json }}</p>
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <img mat-card-avatar src="{{ user.photoURL }}" alt="User Photo" />
+      <mat-card-title>{{ user.displayName }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-profile-line-item
+        [itemLabel]="'Email'"
+        [itemValue]="email"
+        [inputType]="'email'"
+      ></app-profile-line-item>
+      <mat-divider></mat-divider>
+      <app-profile-line-item
+        [itemLabel]="'Email'"
+        [itemValue]="email"
+        [inputType]="'text'"
+      ></app-profile-line-item>
+      <mat-divider></mat-divider>
+      <app-profile-line-item
+        [itemLabel]="'Email'"
+        [itemValue]="email"
+      ></app-profile-line-item>
+      <mat-divider></mat-divider>
+    </mat-card-content>
+  </mat-card>
+</div>
+<ng-template #showLogin>
+  <p>Please login.</p>
+</ng-template>
+
+<!-- <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title> Email </mat-panel-title>
+        <mat-panel-description>
+          {{ user.email }}
+        </mat-panel-description></mat-expansion-panel-header
+      >
+      <mat-form-field appearance="outline">
+        <mat-label>Enter Email</mat-label>
+        <input matInput id="email" type="email" [formControl]="email" />
+      </mat-form-field>
+    </mat-expansion-panel>
+  </mat-accordion> -->
