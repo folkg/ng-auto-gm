@@ -1,2 +1,68 @@
-<p>team works!</p>
-<p>Team ID: {{ teamid }}</p>
+<mat-card class="team-card" [class.mat-elevation-z0]="team.end_date > date">
+  <mat-card-header>
+    <img
+      mat-card-avatar
+      src="{{ team.team_logo }}"
+      alt="{{ team.team_name }}"
+    />
+    <mat-card-title>{{ team.team_name }}</mat-card-title>
+    <mat-card-subtitle
+      >{{ team.league_name }} ({{ team.game_name }}, {{ team.game_season }})
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="card-content-section">
+      <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
+
+      <ng-container *ngIf="team.outcome_totals"
+        ><br />{{ team.outcome_totals.wins }}-{{
+          team.outcome_totals.losses
+        }}-{{ team.outcome_totals.ties }} ({{ team.outcome_totals.percentage }})
+      </ng-container>
+      <ng-container *ngIf="team.points_for">
+        <br />
+        {{ team.points_for }} points
+        <ng-container *ngIf="team.points_against">
+          for, {{ team.points_against }} points against</ng-container
+        >
+        <ng-container *ngIf="team.points_back">
+          ({{ team.points_back }} points behind leader)</ng-container
+        >
+      </ng-container>
+    </div>
+    <mat-divider></mat-divider>
+    <div
+      class="flex-sb card-content-section"
+      *ngIf="team.end_date > date; else seasonOver"
+    >
+      <div>
+        Next lineup update: {{ team.is_setting_lineups ? "soon" : "N/A" }}
+      </div>
+      <div>
+        Last lineup update:
+        {{
+          team.last_updated > 0
+            ? (team.last_updated | date : "MMM d, h:mm a")
+            : "Never"
+        }}
+      </div>
+    </div>
+    <ng-template #seasonOver
+      ><div class="card-content-section">The season is over.</div></ng-template
+    >
+    <mat-divider></mat-divider>
+  </mat-card-content>
+  <mat-card-actions class="flex-sb">
+    <mat-slide-toggle
+      [disabled]="!team.is_approved || team.end_date < date"
+      [(ngModel)]="team.is_setting_lineups"
+      (change)="onToggle($event)"
+      >Automatically Manage Lineups
+    </mat-slide-toggle>
+    <div>
+      <button mat-button (click)="gotoExternalDomain(team.team_url)">
+        OPEN IN YAHOO
+      </button>
+    </div>
+  </mat-card-actions>
+</mat-card>
