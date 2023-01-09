@@ -24,16 +24,9 @@ $angular-dark-theme: mat.define-dark-theme((color: (primary: $angular-primary,
 // apply light theme by default
 @include mat.all-component-themes($angular-light-theme);
 
+// TODO: Make a toggle for the dark theme in the toolbar
+// https://pkief.medium.com/automatic-dark-mode-detection-in-angular-material-8342917885a0
 //apply dark theme when user prefers
 @media (prefers-color-scheme: dark) {
     @include mat.all-component-colors($angular-dark-theme);
-}
-
-// TODO: Make a toggle for the dark theme in the toolbar
-.dark-theme {
-    @include mat.all-component-colors($angular-dark-theme);
-}
-
-mat-card {
-    @include mat.elevation(8);
 }
