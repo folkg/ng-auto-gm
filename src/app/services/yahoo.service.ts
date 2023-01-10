@@ -12,12 +12,19 @@ export class YahooService {
   readonly API_URL: string =
     this.CORS_BASE_URL + 'https://fantasysports.yahooapis.com/fantasy/v2/';
 
-  private credential: any =
-    JSON.parse(localStorage.getItem('yahooCredential')!) || null;
+  private credential: any;
 
   teams: any = [];
 
-  constructor(private http: HttpClient, private fns: Functions) {}
+  constructor(private http: HttpClient, private fns: Functions) {
+    try {
+      this.credential = JSON.parse(
+        localStorage.getItem('yahooCredential') || ''
+      );
+    } catch {
+      this.credential = null;
+    }
+  }
 
   async loadYahooAccessToken(): Promise<void> {
     if (!this.credential || this.credential.tokenExpirationTime <= Date.now()) {

@@ -6,16 +6,18 @@ import {
   query,
   where,
   getDocs,
+  doc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
-import { take } from 'rxjs';
+import { ReplaySubject, take } from 'rxjs';
 
 @Injectable({
   providedIn: null,
 })
-export class FetchTeamsService {
+export class SyncTeamsService {
   constructor(
     private yahoo: YahooService,
     private firestore: Firestore,
@@ -45,7 +47,8 @@ export class FetchTeamsService {
     for (const yTeam of yahooTeams) {
       if (yTeam.end_date > Date.now()) {
         const refreshTeamsOnServer = httpsCallable(this.fns, 'refreshTeams');
-        await refreshTeamsOnServer({});
+        // no need to await this call, it will run in the background
+        refreshTeamsOnServer({});
         break;
       }
     }
@@ -57,7 +60,24 @@ export class FetchTeamsService {
     return teams;
   }
 
-  async fetchTeamsFromFirebase(): Promise<any> {
+  async setLineupsBooleanFirebase(team: Team, value: boolean): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
+        const db = this.firestore;
+        const teamsRef = collection(db, 'users', user.uid, 'teams');
+        const docRef = doc(teamsRef, team.team_key);
+        try {
+          await updateDoc(docRef, { is_setting_lineups: value });
+          resolve();
+        } catch (e) {
+          console.log('Error updating is_setting_lineups in Firebase');
+          reject();
+        }
+      });
+    });
+  }
+
+  private async fetchTeamsFromFirebase(): Promise<any> {
     return new Promise((resolve) => {
       this.auth.user$.pipe(take(1)).subscribe(async (user) => {
         const db = this.firestore;
@@ -76,14 +96,14 @@ export class FetchTeamsService {
     });
   }
 
-  async fetchTeamsFromYahoo(): Promise<Team[]> {
+  private async fetchTeamsFromYahoo(): Promise<Team[]> {
     //TODO: Introduce error checking. If yahoo doesn't respond, don't wipe out the teams in the DB.
     const standings$ = await this.yahoo.getAllStandings();
     return new Promise((resolve) => {
       standings$.pipe(take(1)).subscribe((data: any) => {
         const teams: Team[] = [];
         const games = data.fantasy_content.users[0].user[1].games;
-        // console.log(games); //use this to debug the JSON object and see all the data
+        console.log(games); //use this to debug the JSON object and see all the data
         // Loop through each "game" (nfl, nhl, nba, mlb)
         for (const key in games) {
           if (key !== 'count') {
@@ -117,6 +137,7 @@ export class FetchTeamsService {
                   end_week: leagues[key].league[0].end_week,
                   start_date: Date.parse(leagues[key].league[0].start_date),
                   end_date: Date.parse(leagues[key].league[0].end_date),
+                  weekly_deadline: leagues[key].league[0].weekly_deadline,
                   edit_key: leagues[key].league[0].edit_key,
                   is_approved: true,
                   is_setting_lineups: false,

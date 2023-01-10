@@ -3,16 +3,14 @@ import {
   Auth,
   signOut,
   signInWithPopup,
+  reauthenticateWithPopup,
   user,
   OAuthProvider,
+  updateEmail,
+  getAuth,
+  User,
+  sendEmailVerification,
 } from '@angular/fire/auth';
-// import {
-//   Firestore,
-//   collection,
-//   query,
-//   where,
-//   collectionData,
-// } from '@angular/fire/firestore';
 import { EMPTY, Observable } from 'rxjs';
 import { YahooService } from './yahoo.service';
 @Injectable({
@@ -45,5 +43,41 @@ export class AuthService {
         this.yahooService.loadYahooAccessToken();
       }
     });
+  }
+
+  async reauthenticateYahoo(): Promise<void> {
+    const provider = new OAuthProvider('yahoo.com');
+    await reauthenticateWithPopup(this.auth.currentUser!, provider);
+  }
+
+  async sendVerificationEmail(): Promise<void> {
+    try {
+      await sendEmailVerification(this.auth.currentUser as User);
+      console.log('Email verification sent');
+      //TODO: Dialog to tell user to check email
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async updateEmail(email: string): Promise<void> {
+    console.log(email);
+    try {
+      await updateEmail(this.auth.currentUser as User, email);
+      console.log('Email updated');
+      this.sendVerificationEmail();
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === 'Firebase: Error (auth/requires-recent-login).') {
+          try {
+            await this.reauthenticateYahoo();
+            this.updateEmail(email);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+      console.log(err);
+    }
   }
 }

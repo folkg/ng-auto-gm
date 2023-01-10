@@ -1,47 +1,75 @@
-<p>profile works!</p>
-<div *ngIf="this.user | async as user; else showLogin">
-  <p>{{ user | json }}</p>
+<div class="profile-container">
   <mat-card class="profile-card">
     <mat-card-header>
-      <img mat-card-avatar src="{{ user.photoURL }}" alt="User Photo" />
-      <mat-card-title>{{ user.displayName }}</mat-card-title>
+      <img mat-card-avatar src="{{ user?.photoURL }}" alt="User Photo" />
+      <mat-card-title>{{ user?.displayName }}</mat-card-title>
     </mat-card-header>
+    <!-- TODO: Flag somewhere if the email is not validated -->
     <mat-card-content>
-      <app-profile-line-item
-        [itemLabel]="'Email'"
-        [itemValue]="email"
-        [inputType]="'email'"
-      ></app-profile-line-item>
-      <mat-divider></mat-divider>
-      <app-profile-line-item
-        [itemLabel]="'Email'"
-        [itemValue]="email"
-        [inputType]="'text'"
-      ></app-profile-line-item>
-      <mat-divider></mat-divider>
-      <app-profile-line-item
-        [itemLabel]="'Email'"
-        [itemValue]="email"
-      ></app-profile-line-item>
-      <mat-divider></mat-divider>
-    </mat-card-content>
-  </mat-card>
-</div>
-<ng-template #showLogin>
-  <p>Please login.</p>
-</ng-template>
-
-<!-- <mat-accordion>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title> Email </mat-panel-title>
-        <mat-panel-description>
-          {{ user.email }}
-        </mat-panel-description></mat-expansion-panel-header
+      <mat-error *ngIf="user?.emailVerified === false"
+        >Email address has not been verified. Please check your email for the
+        verification link.</mat-error
       >
-      <mat-form-field appearance="outline">
-        <mat-label>Enter Email</mat-label>
-        <input matInput id="email" type="email" [formControl]="email" />
-      </mat-form-field>
-    </mat-expansion-panel>
-  </mat-accordion> -->
+      <div class="line-item">
+        <div
+          *ngIf="this.isEditing; else showStatic"
+          [formGroup]="profileForm"
+          class="left-text"
+        >
+          <mat-form-field class="form-field">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              [email]="true"
+            />
+            <mat-error *ngIf="emailFormControl.invalid"
+              >Invalid Email Address</mat-error
+            >
+          </mat-form-field>
+        </div>
+        <ng-template #showStatic>
+          <mat-label class="static-label">Email</mat-label>
+          <mat-label class="static-label">{{
+            profileForm.get("email")?.value
+          }}</mat-label>
+        </ng-template>
+        <button
+          mat-button
+          disabled="{{ this.isEditing }}"
+          (click)="this.isEditing = !this.isEditing"
+          class="right-button"
+        >
+          Edit
+        </button>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        *ngIf="user?.emailVerified === false"
+        mat-button
+        (click)="sendVerificationEmail()"
+      >
+        Re-send Verification Email
+      </button>
+      <button
+        mat-button
+        disabled="{{ profileForm.pristine || emailFormControl.invalid }}"
+        (click)="saveChanges()"
+      >
+        Save Changes
+      </button>
+      <button
+        mat-button
+        disabled="{{ !this.isEditing }}"
+        (click)="cancelChanges()"
+      >
+        Cancel
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <button mat-button (click)="logout()">Logout</button>
+</div>
