@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '@angular/fire/auth';
+import { ComponentCanDeactivate } from '../guards/dirty-form.guard';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -53,5 +55,9 @@ export class ProfileComponent {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  public canDeactivate(): Observable<boolean> | boolean {
+    return this.profileForm.pristine;
   }
 }

@@ -27,6 +27,7 @@ import { MatListModule } from '@angular/material/list';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { TeamsModule } from './teams/teams.module';
 import { ProfileModule } from './profile/profile.module';
+import { DirtyFormGuard } from './guards/dirty-form.guard';
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,7 +60,7 @@ import { ProfileModule } from './profile/profile.module';
     ProfileModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [DirtyFormGuard],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
