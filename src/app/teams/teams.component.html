@@ -1,9 +1,12 @@
-<div class="center" *ngIf="this.teams.length !== 0; else showLoading">
+<div *ngIf="this.teams.length !== 0; else showLoading">
   <!-- {{ this.teams | json }} -->
   <h1>Your Teams</h1>
-  <div *ngFor="let team of this.teams; index as i" class="all-cards">
-    <app-team [team]="team" (toggleEvent)="setLineupBoolean($event)"></app-team>
-  </div>
+  <app-team
+    class="card-container"
+    *ngFor="let team of this.teams"
+    [team]="team"
+    (toggleEvent)="setLineupBoolean($event)"
+  ></app-team>
 </div>
 
 <ng-template #showLoading>
