@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MatDialogModule } from '@angular/material/dialog';
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
@@ -24,16 +23,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { TeamsModule } from './teams/teams.module';
 import { ProfileModule } from './profile/profile.module';
 import { DirtyFormGuard } from './guards/dirty-form.guard';
+
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     AppNavComponent,
     NotfoundComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
