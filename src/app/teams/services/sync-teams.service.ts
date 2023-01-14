@@ -8,11 +8,13 @@ import {
   getDocs,
   doc,
   updateDoc,
+  arrayUnion,
+  runTransaction,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
-import { ReplaySubject, take } from 'rxjs';
+import { take } from 'rxjs';
 
 @Injectable({
   providedIn: null,
@@ -60,20 +62,51 @@ export class SyncTeamsService {
     return teams;
   }
 
-  async setLineupsBooleanFirebase(team: Team, value: boolean): Promise<void> {
+  async setLineupsBooleanTransaction(
+    team: Team,
+    value: boolean
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
-        const db = this.firestore;
-        const teamsRef = collection(db, 'users', user.uid, 'teams');
-        const docRef = doc(teamsRef, team.team_key);
-        try {
-          await updateDoc(docRef, { is_setting_lineups: value });
-          resolve();
-        } catch (e) {
-          console.log('Error updating is_setting_lineups in Firebase');
-          reject();
-        }
-      });
+      try {
+        //TODO: Test this out!
+        this.auth.user$.pipe(take(1)).subscribe(async (user) => {
+          const db = this.firestore;
+          const userDoc = doc(db, 'users', user.uid);
+          const teamsDoc = doc(db, 'users', user.uid, 'teams', team.team_key);
+          await runTransaction(this.firestore, async (transaction) => {
+            const [userSnapshot, teamsSnapshot] = await Promise.all([
+              transaction.get(userDoc),
+              transaction.get(teamsDoc),
+            ]);
+            if (userSnapshot.exists() && teamsSnapshot.exists()) {
+              // if value is true, add the league to the user's activeLeagues
+              // we will do nothing if false, it will be pruned by the backend
+              if (value) {
+                transaction.update(userDoc, {
+                  activeLeagues: arrayUnion(team.game_code),
+                });
+              }
+              // update the is_setting_lineups field
+              transaction.update(teamsDoc, { is_setting_lineups: value });
+              resolve();
+            } else {
+              // throw an error and refresh the teams on the server
+              const refreshTeamsOnServer = httpsCallable(
+                this.fns,
+                'refreshTeams'
+              );
+              refreshTeamsOnServer({});
+              reject(
+                'Your teams are out of sync with the server. Please wait while we refresh them, and try again in a few seconds.'
+              );
+            }
+          });
+        });
+      } catch (error) {
+        reject(
+          'Error communicating with the server. Please try again later.' + error
+        );
+      }
     });
   }
 
