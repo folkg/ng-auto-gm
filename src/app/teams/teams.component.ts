@@ -31,9 +31,10 @@ export class TeamsComponent implements OnInit {
     //TODO: Add failure dialog with error message (server comm error, team not paid for, etc)
     console.log($event.team.team_key, $event.state);
     try {
-      await this.sts.setLineupsBooleanFirebase($event.team, $event.state);
+      await this.sts.setLineupsBooleanTransaction($event.team, $event.state);
     } catch (e) {
       // revert the change if the database write failed
+      // TODO: add a dialog to show the error message
       $event.team.is_setting_lineups = !$event.state;
     }
   }

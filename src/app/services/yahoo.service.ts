@@ -18,9 +18,11 @@ export class YahooService {
 
   constructor(private http: HttpClient, private fns: Functions) {
     try {
+      console.log('Getting Yahoo access token from local storage');
       this.credential = JSON.parse(
         localStorage.getItem('yahooCredential') || ''
       );
+      console.log('Loaded Yahoo access token from local storage');
     } catch {
       this.credential = null;
     }
