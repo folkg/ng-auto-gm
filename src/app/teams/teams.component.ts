@@ -37,15 +37,13 @@ export class TeamsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    console.log(this.teams);
-
     if (this.teams.length === 0) {
       // If teams doesn't exist in sessionStorage, retrieve from APIs
       try {
         this.teams = await this.sts.buildTeams();
-      } catch (e: any) {
+      } catch (err: Error | any) {
         this.errorDialog(
-          e.message +
+          err.message +
             ' Please ensure you are connected to the internet and try again later.',
           'ERROR Fetching Teams'
         );
@@ -55,9 +53,9 @@ export class TeamsComponent implements OnInit {
       // If schedules doesn't exist in sessionStorage, retrieve from APIs
       try {
         this.schedule = await this.sts.fetchSchedulesFromFirebase();
-      } catch (e: any) {
+      } catch (err: Error | any) {
         this.errorDialog(
-          e.message +
+          err.message +
             ' Please ensure you are connected to the internet and try again later.',
           'ERROR Fetching Schedules'
         );

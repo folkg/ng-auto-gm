@@ -47,7 +47,7 @@ export class TeamComponent {
   @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
   public date: number;
 
-  constructor() {
+  constructor(public os: OnlineStatusService) {
     this.date = Date.now();
   }
 

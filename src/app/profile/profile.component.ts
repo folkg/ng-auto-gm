@@ -44,7 +44,7 @@ export class ProfileComponent {
       await this.auth.updateEmail(this.profileForm.value.email);
       this.isEditing = !this.isEditing;
       this.profileForm.markAsPristine();
-    } catch (err) {
+    } catch (err: Error | any) {
       console.log(err);
     }
   }

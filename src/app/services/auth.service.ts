@@ -28,8 +28,8 @@ export class AuthService {
     try {
       signOut(this.auth);
       this.yahooService.clearYahooAccessToken();
-    } catch (e: any) {
-      throw new Error("Couldn't sign out: " + e.message);
+    } catch (err: Error | any) {
+      throw new Error("Couldn't sign out: " + err.message);
     }
   }
 
@@ -47,8 +47,8 @@ export class AuthService {
           this.yahooService.credential = credential;
         }
       });
-    } catch (e: any) {
-      throw new Error("Couldn't sign in with Yahoo: " + e.message);
+    } catch (err: Error | any) {
+      throw new Error("Couldn't sign in with Yahoo: " + err.message);
     }
   }
 
@@ -62,8 +62,8 @@ export class AuthService {
       await sendEmailVerification(this.auth.currentUser as User);
       console.log('Email verification sent');
       //TODO: Dialog to tell user to check email
-    } catch (e: any) {
-      throw new Error("Couldn't send verification email: " + e.message);
+    } catch (err: Error | any) {
+      throw new Error("Couldn't send verification email: " + err.message);
     }
   }
 
@@ -79,8 +79,8 @@ export class AuthService {
           try {
             await this.reauthenticateYahoo();
             this.updateEmail(email);
-          } catch (e: any) {
-            throw new Error("Couldn't reauthenticate: " + e.message);
+          } catch (err: Error | any) {
+            throw new Error("Couldn't reauthenticate: " + err.message);
           }
         }
       }

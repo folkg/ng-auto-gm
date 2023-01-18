@@ -13,7 +13,7 @@ import {
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
-import { catchError, throwError, take, EMPTY } from 'rxjs';
+import { catchError, take, throwError, EMPTY, of } from 'rxjs';
 
 @Injectable({
   providedIn: null,
@@ -34,9 +34,11 @@ export class SyncTeamsService {
       [yahooTeams, firebaseTeams] = await Promise.all([
         this.fetchTeamsFromYahoo(),
         this.fetchTeamsFromFirebase(),
-      ]);
-    } catch (err) {
-      throw new Error(err as string);
+      ]).catch((err: Error | any) => {
+        throw new Error(err);
+      });
+    } catch (err: Error | any) {
+      throw new Error(err.message);
     }
 
     const teams: Team[] = [];
@@ -76,8 +78,10 @@ export class SyncTeamsService {
           const docRef = doc(teamsRef, team.team_key);
           await updateDoc(docRef, { is_setting_lineups: value });
           resolve();
-        } catch (err) {
-          reject('Error updating is_setting_lineups in Firebase: ' + err);
+        } catch (err: Error | any) {
+          reject(
+            'Error updating is_setting_lineups in Firebase: ' + err.message
+          );
         }
       });
     });
@@ -101,8 +105,8 @@ export class SyncTeamsService {
         sessionStorage.setItem('schedules', JSON.stringify(schedule));
         return schedule;
       }
-    } catch (err) {
-      throw new Error('Error fetching schedules from Firebase\n' + err);
+    } catch (err: Error | any) {
+      throw new Error('Error fetching schedules from Firebase' + err.message);
     }
     return null;
   }
@@ -110,29 +114,30 @@ export class SyncTeamsService {
   private async fetchTeamsFromFirebase(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.auth.user$.pipe(take(1)).subscribe(async (user) => {
-        try {
-          const db = this.firestore;
-          const teams: any = [];
-          // fetch teams for the current user and now < end_date
-          const teamsRef = collection(db, 'users', user.uid, 'teams');
-          const q = query(teamsRef, where('end_date', '>', Date.now()));
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            teams.push({ team_key: doc.id, ...doc.data() });
-          });
-          console.log('Fetched teams from Firebase:');
-          console.log(teams);
-          resolve(teams);
-        } catch (err) {
-          console.log('Error fetching teams from Firebase');
-          reject('Error fetching teams from Firebase\n' + err);
+        if (user) {
+          try {
+            const db = this.firestore;
+            const teams: any = [];
+            // fetch teams for the current user and now < end_date
+            const teamsRef = collection(db, 'users', user.uid, 'teams');
+            const q = query(teamsRef, where('end_date', '>', Date.now()));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+              teams.push({ team_key: doc.id, ...doc.data() });
+            });
+            console.log('Fetched teams from Firebase:');
+            console.log(teams);
+            resolve(teams);
+          } catch (err: Error | any) {
+            console.log('Error fetching teams from Firebase');
+            reject('Error fetching teams from Firebase. ' + err.message);
+          }
         }
       });
     });
   }
 
   private async fetchTeamsFromYahoo(): Promise<Team[]> {
-    //TODO: Introduce error checking. If yahoo doesn't respond, don't wipe out the teams in the DB.
     const standings$ = await this.yahoo.getAllStandings();
     return new Promise((resolve, reject) => {
       standings$
@@ -145,7 +150,8 @@ export class SyncTeamsService {
         )
         .subscribe((data: any) => {
           const teams: Team[] = [];
-          const games = data.fantasy_content.users[0].user[1].games;
+          let games;
+          games = data.fantasy_content.users[0].user[1].games;
           console.log(games); //use this to debug the JSON object and see all the data
           // Loop through each "game" (nfl, nhl, nba, mlb)
           for (const key in games) {

@@ -57,7 +57,9 @@
   </mat-card-content>
   <mat-card-actions class="flex-sb">
     <mat-slide-toggle
-      [disabled]="!team.is_approved || team.end_date < date"
+      [disabled]="
+        !team.is_approved || team.end_date < date || !(os.online$ | async)
+      "
       [(ngModel)]="team.is_setting_lineups"
       (change)="onToggle($event)"
       >Automatically Manage Lineups

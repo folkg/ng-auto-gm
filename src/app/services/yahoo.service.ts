@@ -38,8 +38,8 @@ export class YahooService {
         const getAccessToken = httpsCallable(this.fns, 'getaccesstoken');
         const data = await getAccessToken({});
         this.credential = data.data as YahooCredential;
-      } catch (err) {
-        throw new Error('Could not get Yahoo access token from server.');
+      } catch (err: Error | any) {
+        throw new Error('Could not get Yahoo access token from the Server.');
       }
     }
   }
@@ -51,8 +51,8 @@ export class YahooService {
   async httpGet(url: string): Promise<Observable<Object>> {
     try {
       await this.loadYahooAccessToken();
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (err: Error | any) {
+      throw new Error(err.message);
     }
 
     try {
@@ -60,8 +60,8 @@ export class YahooService {
         Authorization: 'Bearer ' + this.credential?.accessToken,
       });
       return this.http.get(this.API_URL + url, { headers: headers });
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (err: Error | any) {
+      throw new Error(err.message);
     }
   }
 
@@ -70,8 +70,8 @@ export class YahooService {
       return await this.httpGet(
         'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
       );
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (err: Error | any) {
+      throw new Error(err.message);
     }
   }
 }

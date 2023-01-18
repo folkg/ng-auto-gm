@@ -20,16 +20,16 @@ export class LoginComponent {
   login() {
     try {
       this.auth.loginYahoo();
-    } catch (e: any) {
-      this.errorDialog(e.message);
+    } catch (err: Error | any) {
+      this.errorDialog(err.message);
     }
   }
 
   logout() {
     try {
       this.auth.logout();
-    } catch (e: any) {
-      this.errorDialog(e.message);
+    } catch (err: Error | any) {
+      this.errorDialog(err.message);
     }
   }
 
