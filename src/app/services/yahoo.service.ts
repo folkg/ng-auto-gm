@@ -44,10 +44,6 @@ export class YahooService {
     }
   }
 
-  clearYahooAccessToken(): void {
-    localStorage.setItem('yahooCredential', '');
-  }
-
   async httpGet(url: string): Promise<Observable<Object>> {
     try {
       await this.loadYahooAccessToken();

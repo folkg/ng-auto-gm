@@ -27,7 +27,8 @@ export class AuthService {
   logout(): void {
     try {
       signOut(this.auth);
-      this.yahooService.clearYahooAccessToken();
+      localStorage.clear();
+      sessionStorage.clear();
     } catch (err: Error | any) {
       throw new Error("Couldn't sign out: " + err.message);
     }
