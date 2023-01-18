@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { OnlineStatusService } from 'src/app/services/online-status.service';
+import { Schedule } from '../interfaces/schedules';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
 import { Team } from '../interfaces/team';
 
@@ -41,8 +43,13 @@ export class TeamComponent {
     is_setting_lineups: false,
     last_updated: 0,
   };
+  @Input() schedule: Schedule | null = null;
   @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
-  public date = Date.now();
+  public date: number;
+
+  constructor() {
+    this.date = Date.now();
+  }
 
   onToggle($event: MatSlideToggleChange) {
     this.toggleEvent.emit({ team: this.team, state: $event.checked });
@@ -50,5 +57,48 @@ export class TeamComponent {
 
   gotoExternalDomain(url: string) {
     (window as any).open(url, '_blank');
+  }
+
+  getNextLineupUpdate() {
+    // look at the schedule and find the next game that matches game_code
+    if (this.schedule) {
+      const gameTimestamps = this.schedule.games.find(
+        (game: any) => game.league === this.team.game_code
+      )?.gameTimestamps;
+      if (gameTimestamps) {
+        // find the first game that hasn't happened yet
+        const now = Date.now();
+        const nextGame = gameTimestamps.find(
+          (timestamp: number) => timestamp > now
+        );
+        if (nextGame) {
+          // get the timestamp of the scheduled update before the next game
+          // 55 minutes after the hour cron job on server
+          const SERVER_UPDATE_MINUTES = 55;
+          const nextGameHour = new Date(nextGame).getHours();
+          const nextGameMinutes = new Date(nextGame).getMinutes();
+          if (nextGameMinutes < SERVER_UPDATE_MINUTES) {
+            return new Date(
+              new Date(nextGame).setHours(
+                nextGameHour - 1,
+                SERVER_UPDATE_MINUTES,
+                0,
+                0
+              )
+            ).getTime();
+          } else {
+            return new Date(
+              new Date(nextGame).setHours(
+                nextGameHour,
+                SERVER_UPDATE_MINUTES,
+                0,
+                0
+              )
+            ).getTime();
+          }
+        }
+      }
+    }
+    return null;
   }
 }

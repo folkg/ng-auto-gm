@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Functions, httpsCallable } from '@angular/fire/functions';
+import { YahooCredential } from './interfaces/credential';
 
 @Injectable({
   providedIn: 'root',
@@ -12,20 +13,21 @@ export class YahooService {
   readonly API_URL: string =
     this.CORS_BASE_URL + 'https://fantasysports.yahooapis.com/fantasy/v2/';
 
-  private credential: any;
+  private _credential: YahooCredential | null = null;
+  public set credential(credential: YahooCredential | null) {
+    this._credential = credential;
+    localStorage.setItem('yahooCredential', JSON.stringify(this._credential));
+  }
+  public get credential(): YahooCredential | null {
+    return this._credential;
+  }
 
   teams: any = [];
 
   constructor(private http: HttpClient, private fns: Functions) {
-    try {
-      console.log('Getting Yahoo access token from local storage');
-      this.credential = JSON.parse(
-        localStorage.getItem('yahooCredential') || ''
-      );
-      console.log('Loaded Yahoo access token from local storage');
-    } catch {
-      this.credential = null;
-    }
+    this.credential = JSON.parse(
+      localStorage.getItem('yahooCredential') || 'null'
+    );
   }
 
   async loadYahooAccessToken(): Promise<void> {
@@ -33,15 +35,11 @@ export class YahooService {
       // call the cloud function 'getAccessToken'
       console.log('Getting new Yahoo access token');
       try {
-        const getAccessToken = httpsCallable(this.fns, 'getAccessToken');
+        const getAccessToken = httpsCallable(this.fns, 'getaccesstoken');
         const data = await getAccessToken({});
-        this.credential = data.data;
-        localStorage.setItem(
-          'yahooCredential',
-          JSON.stringify(this.credential)
-        );
+        this.credential = data.data as YahooCredential;
       } catch (err) {
-        console.log(err);
+        throw new Error('Could not get Yahoo access token from server.');
       }
     }
   }
@@ -51,28 +49,29 @@ export class YahooService {
   }
 
   async httpGet(url: string): Promise<Observable<Object>> {
-    await this.loadYahooAccessToken();
+    try {
+      await this.loadYahooAccessToken();
+    } catch (err: any) {
+      throw new Error(err);
+    }
 
-    const headers = new HttpHeaders({
-      Authorization: 'Bearer ' + this.credential.accessToken,
-    });
-
-    return this.http.get(this.API_URL + url, { headers: headers });
-  }
-
-  async getAllTeams(): Promise<Observable<Object>> {
-    return await this.httpGet(
-      'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/teams/?format=json'
-    );
+    try {
+      const headers = new HttpHeaders({
+        Authorization: 'Bearer ' + this.credential?.accessToken,
+      });
+      return this.http.get(this.API_URL + url, { headers: headers });
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   async getAllStandings(): Promise<Observable<Object>> {
-    return await this.httpGet(
-      'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
-    );
-  }
-
-  async getPlayers(teamKey: string): Promise<Observable<Object>> {
-    return await this.httpGet('team/' + teamKey + '/players?format=json');
+    try {
+      return await this.httpGet(
+        'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
+      );
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 }

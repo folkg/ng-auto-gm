@@ -11,6 +11,7 @@ import {
   sendEmailVerification,
 } from '@angular/fire/auth';
 import { EMPTY, Observable } from 'rxjs';
+import { YahooCredential } from './interfaces/credential';
 import { YahooService } from './yahoo.service';
 @Injectable({
   providedIn: 'root',
@@ -24,25 +25,31 @@ export class AuthService {
   }
 
   logout(): void {
-    signOut(this.auth);
-    this.yahooService.clearYahooAccessToken();
+    try {
+      signOut(this.auth);
+      this.yahooService.clearYahooAccessToken();
+    } catch (e: any) {
+      throw new Error("Couldn't sign out: " + e.message);
+    }
   }
 
   loginYahoo(): void {
-    const provider = new OAuthProvider('yahoo.com');
-    signInWithPopup(this.auth, provider).then(async (result) => {
-      if (result) {
-        const oauthCredential = OAuthProvider.credentialFromResult(result);
-        const accessToken = oauthCredential?.accessToken;
-        const credential = {
-          accessToken: accessToken,
-          tokenExpirationTime: Date.now() + 3600000,
-        };
-        localStorage.setItem('yahooCredential', JSON.stringify(credential));
-        // load the yahoo access token in anticipation of using it
-        // this.yahooService.loadYahooAccessToken();
-      }
-    });
+    try {
+      const provider = new OAuthProvider('yahoo.com');
+      signInWithPopup(this.auth, provider).then(async (result) => {
+        if (result) {
+          const oauthCredential = OAuthProvider.credentialFromResult(result);
+          const accessToken = oauthCredential?.accessToken || '';
+          const credential: YahooCredential = {
+            accessToken: accessToken,
+            tokenExpirationTime: Date.now() + 3600000,
+          };
+          this.yahooService.credential = credential;
+        }
+      });
+    } catch (e: any) {
+      throw new Error("Couldn't sign in with Yahoo: " + e.message);
+    }
   }
 
   async reauthenticateYahoo(): Promise<void> {
@@ -55,8 +62,8 @@ export class AuthService {
       await sendEmailVerification(this.auth.currentUser as User);
       console.log('Email verification sent');
       //TODO: Dialog to tell user to check email
-    } catch (err) {
-      console.log(err);
+    } catch (e: any) {
+      throw new Error("Couldn't send verification email: " + e.message);
     }
   }
 
@@ -72,12 +79,11 @@ export class AuthService {
           try {
             await this.reauthenticateYahoo();
             this.updateEmail(email);
-          } catch (err) {
-            console.log(err);
+          } catch (e: any) {
+            throw new Error("Couldn't reauthenticate: " + e.message);
           }
         }
       }
-      console.log(err);
     }
   }
 }

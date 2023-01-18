@@ -1,14 +1,40 @@
-<div *ngIf="this.teams.length !== 0; else showLoading">
-  <!-- {{ this.teams | json }} -->
-  <h1>Your Teams</h1>
-  <app-team
-    class="card-container"
-    *ngFor="let team of this.teams"
-    [team]="team"
-    (toggleEvent)="setLineupBoolean($event)"
-  ></app-team>
+<div class="container">
+  <h1>My Fantasy Teams</h1>
+  <div class="instructions">
+    <h3>
+      All teams are listed below. Enable the "Automatically Set Lineups" setting
+      for any team you would like to get started with Fantasy Autopilot.
+    </h3>
+    <h3>Sit back, relax, and let Fantasy Autopilot do the work for you!</h3>
+  </div>
+  <mat-card *ngIf="!(os.online$ | async)" class="card">
+    <mat-card-header>
+      <mat-card-title class="error">Internet Not Connected</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Please connect to the internet to use Fantasy Autopilot. If you are
+        connected to the internet, please refresh the page.
+      </p>
+    </mat-card-content>
+  </mat-card>
+  <ng-container *ngIf="teams.length !== 0; else showLoading" class="container">
+    <app-team
+      class="container"
+      *ngFor="let team of this.teams"
+      [team]="team"
+      [schedule]="this.schedule"
+      (toggleEvent)="setLineupBoolean($event)"
+    ></app-team>
+  </ng-container>
+  <ng-template #showLoading>
+    <mat-card class="card">
+      <mat-card-header>
+        <mat-card-title>Loading Teams...</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Please wait</p>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
 </div>
-
-<ng-template #showLoading>
-  <p>Loading...</p>
-</ng-template>

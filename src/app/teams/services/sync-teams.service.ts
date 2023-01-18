@@ -8,13 +8,12 @@ import {
   getDocs,
   doc,
   updateDoc,
-  arrayUnion,
-  runTransaction,
+  getDoc,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
-import { take } from 'rxjs';
+import { catchError, throwError, take, EMPTY } from 'rxjs';
 
 @Injectable({
   providedIn: null,
@@ -29,10 +28,16 @@ export class SyncTeamsService {
 
   async buildTeams(): Promise<Team[]> {
     // fetch teams from yahoo and firebase in parallel
-    const [yahooTeams, firebaseTeams] = await Promise.all([
-      this.fetchTeamsFromYahoo(),
-      this.fetchTeamsFromFirebase(),
-    ]);
+    let yahooTeams: Team[];
+    let firebaseTeams: any;
+    try {
+      [yahooTeams, firebaseTeams] = await Promise.all([
+        this.fetchTeamsFromYahoo(),
+        this.fetchTeamsFromFirebase(),
+      ]);
+    } catch (err) {
+      throw new Error(err as string);
+    }
 
     const teams: Team[] = [];
     firebaseTeams.forEach((team: any) => {
@@ -48,7 +53,7 @@ export class SyncTeamsService {
     // and if so, refresh the teams on the server
     for (const yTeam of yahooTeams) {
       if (yTeam.end_date > Date.now()) {
-        const refreshTeamsOnServer = httpsCallable(this.fns, 'refreshTeams');
+        const refreshTeamsOnServer = httpsCallable(this.fns, 'refreshteams');
         // no need to await this call, it will run in the background
         refreshTeamsOnServer({});
         break;
@@ -62,69 +67,66 @@ export class SyncTeamsService {
     return teams;
   }
 
-  async setLineupsBooleanTransaction(
-    team: Team,
-    value: boolean
-  ): Promise<void> {
+  async setLineupsBooleanFirebase(team: Team, value: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      try {
-        //TODO: Test this out!
-        this.auth.user$.pipe(take(1)).subscribe(async (user) => {
+      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
+        try {
           const db = this.firestore;
-          const userDoc = doc(db, 'users', user.uid);
-          const teamsDoc = doc(db, 'users', user.uid, 'teams', team.team_key);
-          await runTransaction(this.firestore, async (transaction) => {
-            const [userSnapshot, teamsSnapshot] = await Promise.all([
-              transaction.get(userDoc),
-              transaction.get(teamsDoc),
-            ]);
-            if (userSnapshot.exists() && teamsSnapshot.exists()) {
-              // if value is true, add the league to the user's activeLeagues
-              // we will do nothing if false, it will be pruned by the backend
-              if (value) {
-                transaction.update(userDoc, {
-                  activeLeagues: arrayUnion(team.game_code),
-                });
-              }
-              // update the is_setting_lineups field
-              transaction.update(teamsDoc, { is_setting_lineups: value });
-              resolve();
-            } else {
-              // throw an error and refresh the teams on the server
-              const refreshTeamsOnServer = httpsCallable(
-                this.fns,
-                'refreshTeams'
-              );
-              refreshTeamsOnServer({});
-              reject(
-                'Your teams are out of sync with the server. Please wait while we refresh them, and try again in a few seconds.'
-              );
-            }
-          });
-        });
-      } catch (error) {
-        reject(
-          'Error communicating with the server. Please try again later.' + error
-        );
-      }
+          const teamsRef = collection(db, 'users', user.uid, 'teams');
+          const docRef = doc(teamsRef, team.team_key);
+          await updateDoc(docRef, { is_setting_lineups: value });
+          resolve();
+        } catch (err) {
+          reject('Error updating is_setting_lineups in Firebase: ' + err);
+        }
+      });
     });
   }
 
+  async fetchSchedulesFromFirebase(): Promise<any> {
+    // first check if schedules are already in sessionStorage
+    if (sessionStorage.getItem('schedules') !== null) {
+      return JSON.parse(sessionStorage.getItem('schedules')!);
+    }
+    try {
+      // fetch the schedules for all leagues from firebase and save them to sessionStorage
+      const db = this.firestore;
+      const schedulesRef = doc(db, 'schedule', 'today');
+      const scheduleSnap = await getDoc(schedulesRef);
+      const schedule = scheduleSnap.data();
+      if (schedule) {
+        console.log('Fetched schedules from Firebase:');
+        console.log(schedule);
+        // save schedules to sessionStorage
+        sessionStorage.setItem('schedules', JSON.stringify(schedule));
+        return schedule;
+      }
+    } catch (err) {
+      throw new Error('Error fetching schedules from Firebase\n' + err);
+    }
+    return null;
+  }
+
   private async fetchTeamsFromFirebase(): Promise<any> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.auth.user$.pipe(take(1)).subscribe(async (user) => {
-        const db = this.firestore;
-        const teams: any = [];
-        // fetch teams for the current user and now < end_date
-        const teamsRef = collection(db, 'users', user.uid, 'teams');
-        const q = query(teamsRef, where('end_date', '>', Date.now()));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          teams.push({ team_key: doc.id, ...doc.data() });
-        });
-        console.log('Fetched teams from Firebase:');
-        console.log(teams);
-        resolve(teams);
+        try {
+          const db = this.firestore;
+          const teams: any = [];
+          // fetch teams for the current user and now < end_date
+          const teamsRef = collection(db, 'users', user.uid, 'teams');
+          const q = query(teamsRef, where('end_date', '>', Date.now()));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            teams.push({ team_key: doc.id, ...doc.data() });
+          });
+          console.log('Fetched teams from Firebase:');
+          console.log(teams);
+          resolve(teams);
+        } catch (err) {
+          console.log('Error fetching teams from Firebase');
+          reject('Error fetching teams from Firebase\n' + err);
+        }
       });
     });
   }
@@ -132,59 +134,67 @@ export class SyncTeamsService {
   private async fetchTeamsFromYahoo(): Promise<Team[]> {
     //TODO: Introduce error checking. If yahoo doesn't respond, don't wipe out the teams in the DB.
     const standings$ = await this.yahoo.getAllStandings();
-    return new Promise((resolve) => {
-      standings$.pipe(take(1)).subscribe((data: any) => {
-        const teams: Team[] = [];
-        const games = data.fantasy_content.users[0].user[1].games;
-        console.log(games); //use this to debug the JSON object and see all the data
-        // Loop through each "game" (nfl, nhl, nba, mlb)
-        for (const key in games) {
-          if (key !== 'count') {
-            const game = games[key].game[0];
-            const leagues = games[key].game[1].leagues;
-            // Loop through each league within the game
-            for (const key in leagues) {
-              if (key !== 'count') {
-                const allTeams = leagues[key].league[1].standings[0].teams;
-                let usersTeam = this.getUsersTeam(allTeams);
-                const data: Team = {
-                  game_name: game.name,
-                  game_code: game.code,
-                  game_season: game.season,
-                  game_is_over: game.is_game_over,
-                  team_key: usersTeam.team[0][0].team_key,
-                  team_name: usersTeam.team[0][2].name,
-                  team_url: usersTeam.team[0][4].url,
-                  team_logo: usersTeam.team[0][5].team_logos[0].team_logo.url,
-                  league_name: leagues[key].league[0].name,
-                  num_teams: leagues[key].league[0].num_teams,
-                  rank: usersTeam.team[2].team_standings.rank,
-                  points_for: usersTeam.team[2].team_standings.points_for,
-                  points_against:
-                    usersTeam.team[2].team_standings.points_against,
-                  points_back: usersTeam.team[2].team_standings.points_back,
-                  outcome_totals:
-                    usersTeam.team[2].team_standings.outcome_totals,
-                  scoring_type: leagues[key].league[0].scoring_type,
-                  current_week: leagues[key].league[0].current_week,
-                  end_week: leagues[key].league[0].end_week,
-                  start_date: Date.parse(leagues[key].league[0].start_date),
-                  end_date: Date.parse(leagues[key].league[0].end_date),
-                  weekly_deadline: leagues[key].league[0].weekly_deadline,
-                  edit_key: leagues[key].league[0].edit_key,
-                  is_approved: true,
-                  is_setting_lineups: false,
-                  last_updated: -1,
-                };
-                teams.push(data);
+    return new Promise((resolve, reject) => {
+      standings$
+        .pipe(
+          take(1),
+          catchError((err) => {
+            reject('Error fetching teams from Yahoo.');
+            return EMPTY;
+          })
+        )
+        .subscribe((data: any) => {
+          const teams: Team[] = [];
+          const games = data.fantasy_content.users[0].user[1].games;
+          console.log(games); //use this to debug the JSON object and see all the data
+          // Loop through each "game" (nfl, nhl, nba, mlb)
+          for (const key in games) {
+            if (key !== 'count') {
+              const game = games[key].game[0];
+              const leagues = games[key].game[1].leagues;
+              // Loop through each league within the game
+              for (const key in leagues) {
+                if (key !== 'count') {
+                  const allTeams = leagues[key].league[1].standings[0].teams;
+                  let usersTeam = this.getUsersTeam(allTeams);
+                  const data: Team = {
+                    game_name: game.name,
+                    game_code: game.code,
+                    game_season: game.season,
+                    game_is_over: game.is_game_over,
+                    team_key: usersTeam.team[0][0].team_key,
+                    team_name: usersTeam.team[0][2].name,
+                    team_url: usersTeam.team[0][4].url,
+                    team_logo: usersTeam.team[0][5].team_logos[0].team_logo.url,
+                    league_name: leagues[key].league[0].name,
+                    num_teams: leagues[key].league[0].num_teams,
+                    rank: usersTeam.team[2].team_standings.rank,
+                    points_for: usersTeam.team[2].team_standings.points_for,
+                    points_against:
+                      usersTeam.team[2].team_standings.points_against,
+                    points_back: usersTeam.team[2].team_standings.points_back,
+                    outcome_totals:
+                      usersTeam.team[2].team_standings.outcome_totals,
+                    scoring_type: leagues[key].league[0].scoring_type,
+                    current_week: leagues[key].league[0].current_week,
+                    end_week: leagues[key].league[0].end_week,
+                    start_date: Date.parse(leagues[key].league[0].start_date),
+                    end_date: Date.parse(leagues[key].league[0].end_date),
+                    weekly_deadline: leagues[key].league[0].weekly_deadline,
+                    edit_key: leagues[key].league[0].edit_key,
+                    is_approved: true,
+                    is_setting_lineups: false,
+                    last_updated: -1,
+                  };
+                  teams.push(data);
+                }
               }
             }
           }
-        }
-        console.log('Fetched teams from Yahoo API:');
-        console.log(teams);
-        resolve(teams);
-      });
+          console.log('Fetched teams from Yahoo API:');
+          console.log(teams);
+          resolve(teams);
+        });
     });
   }
 

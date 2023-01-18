@@ -36,14 +36,17 @@
       *ngIf="team.end_date > date; else seasonOver"
     >
       <div>
-        Next lineup update: {{ team.is_setting_lineups ? "soon" : "N/A" }}
+        Next lineup update:
+        {{
+          team.is_setting_lineups
+            ? (getNextLineupUpdate() | relativeDate) || "Next game day"
+            : "N/A"
+        }}
       </div>
       <div>
         Last lineup update:
         {{
-          team.last_updated > 0
-            ? (team.last_updated | date : "MMM d, h:mm a")
-            : "Never"
+          team.last_updated > 0 ? (team.last_updated | relativeDate) : "Never"
         }}
       </div>
     </div>

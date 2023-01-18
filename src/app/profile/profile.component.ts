@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '@angular/fire/auth';
-import { ComponentCanDeactivate } from '../guards/dirty-form.guard';
 import { Observable } from 'rxjs';
+import { OnlineStatusService } from '../services/online-status.service';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +23,7 @@ export class ProfileComponent {
   user: User | null = null;
   isEditing: boolean = false;
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, public os: OnlineStatusService) {
     this.auth.user$.subscribe((user) => {
       if (user) {
         this.user = user;

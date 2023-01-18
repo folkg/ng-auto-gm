@@ -28,8 +28,8 @@ import { NotfoundComponent } from './notfound/notfound.component';
 import { TeamsModule } from './teams/teams.module';
 import { ProfileModule } from './profile/profile.module';
 import { DirtyFormGuard } from './guards/dirty-form.guard';
-
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+
 @NgModule({
   declarations: [
     AppComponent,

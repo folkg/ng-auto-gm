@@ -1,7 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { Schedule } from './interfaces/schedules';
 import { SetLineupEvent } from './interfaces/set-lineup-event';
 import { Team } from './interfaces/team';
 import { SyncTeamsService } from './services/sync-teams.service';
+import {
+  DialogData,
+  ConfirmDialogComponent,
+} from '../confirm-dialog/confirm-dialog.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { OnlineStatusService } from '../services/online-status.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,31 +18,79 @@ import { SyncTeamsService } from './services/sync-teams.service';
 })
 export class TeamsComponent implements OnInit {
   public teams: Team[];
+  public schedule: Schedule | null;
 
-  constructor(private sts: SyncTeamsService) {
+  constructor(
+    private sts: SyncTeamsService,
+    public dialog: MatDialog,
+    public os: OnlineStatusService
+  ) {
+    // load teams from sessionStorage if it exists
+    this.teams = JSON.parse(sessionStorage.getItem('yahooTeams') || '[]');
+
+    // load schedules from sessionStorage if it exists
     try {
-      this.teams = JSON.parse(sessionStorage.getItem('yahooTeams') || '');
+      this.schedule = JSON.parse(sessionStorage.getItem('schedules') || 'null');
     } catch {
-      this.teams = [];
+      this.schedule = null;
     }
   }
 
   async ngOnInit(): Promise<void> {
+    console.log(this.teams);
+
     if (this.teams.length === 0) {
       // If teams doesn't exist in sessionStorage, retrieve from APIs
-      this.teams = await this.sts.buildTeams();
+      try {
+        this.teams = await this.sts.buildTeams();
+      } catch (e: any) {
+        this.errorDialog(
+          e.message +
+            ' Please ensure you are connected to the internet and try again later.',
+          'ERROR Fetching Teams'
+        );
+      }
+    }
+    if (!this.schedule) {
+      // If schedules doesn't exist in sessionStorage, retrieve from APIs
+      try {
+        this.schedule = await this.sts.fetchSchedulesFromFirebase();
+      } catch (e: any) {
+        this.errorDialog(
+          e.message +
+            ' Please ensure you are connected to the internet and try again later.',
+          'ERROR Fetching Schedules'
+        );
+      }
     }
   }
 
   async setLineupBoolean($event: SetLineupEvent): Promise<void> {
-    //TODO: Add failure dialog with error message (server comm error, team not paid for, etc)
     console.log($event.team.team_key, $event.state);
     try {
-      await this.sts.setLineupsBooleanTransaction($event.team, $event.state);
-    } catch (e) {
+      await this.sts.setLineupsBooleanFirebase($event.team, $event.state);
+      // make the change in sessionStorage as well
+      sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
+    } catch (err) {
       // revert the change if the database write failed
-      // TODO: add a dialog to show the error message
       $event.team.is_setting_lineups = !$event.state;
+      this.errorDialog(
+        "Could not update team's status on the server. Please ensure try again later."
+      );
     }
+  }
+
+  errorDialog(message: string, title: string = 'ERROR'): void {
+    const dialogData: DialogData = {
+      title,
+      message,
+      trueButton: 'OK',
+    };
+    this.dialog.open(ConfirmDialogComponent, {
+      minWidth: '350px',
+      width: '90%',
+      maxWidth: '500px',
+      data: dialogData,
+    });
   }
 }

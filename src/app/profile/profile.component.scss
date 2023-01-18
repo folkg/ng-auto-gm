@@ -6,11 +6,15 @@
     align-items: center;
 }
 
-.profile-card {
+.card {
     min-width: 350px;
     width: 90%;
     max-width: 600px;
     margin-bottom: 1rem;
+}
+
+.error {
+    color: red;
 }
 
 .line-item {

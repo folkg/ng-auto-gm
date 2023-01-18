@@ -10,9 +10,10 @@ import { TeamsComponent } from './teams.component';
 import { TeamComponent } from './team/team.component';
 import { NthPipe } from './pipes/nth.pipe';
 import { FormsModule } from '@angular/forms';
+import { RelativeDatePipe } from './pipes/relative-date.pipe';
 
 @NgModule({
-  declarations: [TeamsComponent, TeamComponent, NthPipe],
+  declarations: [TeamsComponent, TeamComponent, NthPipe, RelativeDatePipe],
   imports: [
     CommonModule,
     TeamsRoutingModule,
