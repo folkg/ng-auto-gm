@@ -12,6 +12,8 @@
       <a mat-list-item routerLink="login" *ngIf="!isLoggedIn">Login</a>
       <a mat-list-item routerLink="teams" *ngIf="isLoggedIn">My Teams</a>
       <a mat-list-item routerLink="profile" *ngIf="isLoggedIn">Profile</a>
+      <a mat-list-item routerLink="about">How It Works</a>
+      <a mat-list-item routerLink="feedback">Feedback</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -26,7 +28,7 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span class="toolbar-logo">
-        <img src="assets/FAPLogo-grey.svg" alt="logo" class="logo" />
+        <img src="assets/FAPLogo-grey-nohandles.svg" alt="logo" class="logo" />
         Fantasy Autopilot
       </span>
     </mat-toolbar>

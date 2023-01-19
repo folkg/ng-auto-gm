@@ -7,6 +7,8 @@ import {
   redirectLoggedInTo,
   redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
+import { AboutComponent } from './about/about.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/login']);
 const redirectLoggedInToTeams = () => redirectLoggedInTo(['/teams']);
@@ -17,6 +19,8 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent,
   },
+  { path: 'about', component: AboutComponent },
+  { path: 'feedback', component: FeedbackComponent },
   {
     path: 'cart',
     loadChildren: () => import('./cart/cart.module').then((m) => m.CartModule),

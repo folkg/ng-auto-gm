@@ -29,6 +29,8 @@ import { TeamsModule } from './teams/teams.module';
 import { ProfileModule } from './profile/profile.module';
 import { DirtyFormGuard } from './guards/dirty-form.guard';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { AboutComponent } from './about/about.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     AppNavComponent,
     NotfoundComponent,
     ConfirmDialogComponent,
+    AboutComponent,
+    FeedbackComponent,
   ],
   imports: [
     BrowserModule,
