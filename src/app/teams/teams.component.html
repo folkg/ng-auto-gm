@@ -1,5 +1,5 @@
-<div class="container">
-  <h1>My Fantasy Teams</h1>
+<div class="content">
+  <h1>My Teams</h1>
   <div class="instructions">
     <h3>
       Enable the <b>Automatically Manage Lineups</b> setting to get started with
@@ -18,12 +18,12 @@
       </p>
     </mat-card-content>
   </mat-card>
-  <ng-container *ngIf="teams.length !== 0; else showLoading" class="container">
+  <ng-container *ngIf="teams.length !== 0; else showLoading">
     <app-team
-      class="container"
-      *ngFor="let team of this.teams"
+      class="card-container"
+      *ngFor="let team of teams"
       [team]="team"
-      [schedule]="this.schedule"
+      [gameTimeStamps]="schedule ? schedule.games[team.game_code] : null"
       (toggleEvent)="setLineupBoolean($event)"
     ></app-team>
   </ng-container>

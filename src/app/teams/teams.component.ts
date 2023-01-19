@@ -7,7 +7,7 @@ import {
   DialogData,
   ConfirmDialogComponent,
 } from '../confirm-dialog/confirm-dialog.component';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { OnlineStatusService } from '../services/online-status.service';
 
 @Component({
