@@ -3,7 +3,19 @@ header {
 }
 
 li {
+    font-size: medium;
     padding-bottom: 0.5rem;
+}
+
+p {
+    font-size: medium;
+}
+
+.header {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+    text-align: center;
+    font-size: 30px;
 }
 
 .content {

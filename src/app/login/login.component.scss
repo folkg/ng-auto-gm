@@ -8,3 +8,52 @@
 .icon-button .icon {
   height: 2.5rem;
 }
+
+.header {
+  padding: 0.5rem;
+  padding-top: 8rem;
+  padding-bottom: 4rem;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 30px;
+}
+
+.button {
+  margin: 1rem;
+}
+
+.buttons {
+  margin: 1rem;
+}
+
+.roby-container {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  // align-items: center;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 770px) {
+  .roby-container {
+    flex-direction: column;
+  }
+}
+
+.roby {
+  margin: 0.5rem;
+  min-width: 100px;
+  width: 50%;
+  max-width: 300px;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-style: solid;
+  border-width: 2px;
+}
+
+.roby-pair {
+  display: flex;
+}

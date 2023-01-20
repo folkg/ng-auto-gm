@@ -1,10 +1,40 @@
-<div *ngIf="user$ | async as user; else showLogin">
-  <h1>Hello {{ user | json }}!</h1>
-  <button (click)="logout()">Logout</button>
+<div class="header primaryColorBG">
+  <h1>Automatically optimize your lineups</h1>
+  <h3>Works with all major sports on the Yahoo Fantasy Sports platform</h3>
+  <div class="buttons">
+    <button
+      mat-raised-button
+      color="accent"
+      class="button"
+      [routerLink]="'/about'"
+    >
+      Learn More
+    </button>
+    <button mat-raised-button color="accent" class="button" (click)="login()">
+      Sign in with Yahoo
+    </button>
+  </div>
 </div>
-<ng-template #showLogin>
-  <p>Please login.</p>
-  <button class="icon-button" (click)="login()">
-    <img class="icon" src="assets/login_yahoo.svg" alt="sign in with Yahoo" />
-  </button>
-</ng-template>
+<div class="roby-container" layout="row" layout-xs="column">
+  <div class="roby-pair">
+    <img
+      class="roby"
+      src="assets/roby-football.png"
+      alt="Robot playing football"
+    />
+    <img class="roby" src="assets/roby-hockey.png" alt="Robot playing hockey" />
+  </div>
+  <div class="roby-pair">
+    <img
+      class="roby"
+      src="assets/roby-basketball.png"
+      alt="Robot playing basketball"
+    />
+
+    <img
+      class="roby"
+      src="assets/roby-baseball.png"
+      alt="Robot playing baseball"
+    />
+  </div>
+</div>

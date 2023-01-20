@@ -11,6 +11,7 @@ import { AboutComponent } from './about/about.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/login']);
+//TODO: Add this guard where appropriate
 const redirectLoggedInToTeams = () => redirectLoggedInTo(['/teams']);
 
 const routes: Routes = [

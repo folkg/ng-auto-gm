@@ -1,11 +1,13 @@
-<div class="content">
+<div class="header primaryColorBG">
   <h1>My Teams</h1>
+</div>
+<div class="content">
   <div class="instructions">
     <h3>
       Enable the <b>Automatically Manage Lineups</b> setting to get started with
       any of your teams below.
     </h3>
-    <h3>Sit back, relax, and let Fantasy Autopilot do the work for you!</h3>
+    <h3>Sit back, relax, and let Fantasy Fixer do the work for you!</h3>
   </div>
   <mat-card *ngIf="!(os.online$ | async)" class="card">
     <mat-card-header>
@@ -13,7 +15,7 @@
     </mat-card-header>
     <mat-card-content>
       <p>
-        Please connect to the internet to use Fantasy Autopilot. If you are
+        Please connect to the internet to use Fantasy Fixer. If you are
         connected to the internet, please refresh the page.
       </p>
     </mat-card-content>
