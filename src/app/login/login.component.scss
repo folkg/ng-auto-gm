@@ -12,16 +12,18 @@
 .header {
   padding: 0.5rem;
   padding-top: 8rem;
-  padding-bottom: 4rem;
+  padding-bottom: 3rem;
   text-align: center;
+  color: white;
 }
 
 .header h1 {
-  font-size: 30px;
+  font-size: 2rem;
 }
 
 .button {
   margin: 1rem;
+  // transform: translateY(6rem);
 }
 
 .buttons {
@@ -30,6 +32,7 @@
 
 .roby-container {
   padding: 2rem;
+  padding-top: 3rem;
   display: flex;
   justify-content: center;
   // align-items: center;

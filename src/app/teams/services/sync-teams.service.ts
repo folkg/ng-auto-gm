@@ -13,7 +13,7 @@ import {
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
-import { catchError, take, throwError, EMPTY, of } from 'rxjs';
+import { catchError, take, EMPTY, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: null,

@@ -30,7 +30,7 @@ import { ProfileModule } from './profile/profile.module';
 import { DirtyFormGuard } from './guards/dirty-form.guard';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { AboutComponent } from './about/about.component';
-import { FeedbackComponent } from './feedback/feedback.component';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @NgModule({
   declarations: [
@@ -40,7 +40,6 @@ import { FeedbackComponent } from './feedback/feedback.component';
     NotfoundComponent,
     ConfirmDialogComponent,
     AboutComponent,
-    FeedbackComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,6 +64,7 @@ import { FeedbackComponent } from './feedback/feedback.component';
     MatDialogModule,
     TeamsModule,
     ProfileModule,
+    FeedbackModule,
     AppRoutingModule,
   ],
   providers: [DirtyFormGuard],

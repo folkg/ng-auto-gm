@@ -27,6 +27,7 @@ export class TeamsComponent implements OnInit {
   ) {
     // load teams from sessionStorage if it exists
     this.teams = JSON.parse(sessionStorage.getItem('yahooTeams') || '[]');
+    // this.teams = [];
 
     // load schedules from sessionStorage if it exists
     try {

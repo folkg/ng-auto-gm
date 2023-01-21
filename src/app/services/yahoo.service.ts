@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { YahooCredential } from './interfaces/credential';
@@ -51,14 +51,15 @@ export class YahooService {
       throw new Error(err.message);
     }
 
-    try {
-      const headers = new HttpHeaders({
-        Authorization: 'Bearer ' + this.credential?.accessToken,
-      });
-      return this.http.get(this.API_URL + url, { headers: headers });
-    } catch (err: Error | any) {
-      throw new Error(err.message);
-    }
+    const headers = new HttpHeaders({
+      Authorization: 'Bearer ' + this.credential?.accessToken,
+    });
+    //
+    return this.http.get(this.API_URL + url, { headers: headers }).pipe(
+      catchError((err: Error | any) => {
+        throw new Error(err.message);
+      })
+    );
   }
 
   async getAllStandings(): Promise<Observable<Object>> {
