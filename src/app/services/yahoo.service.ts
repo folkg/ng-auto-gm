@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable } from 'rxjs';
+import { isDevMode } from '@angular/core';
 
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { YahooCredential } from './interfaces/credential';
@@ -9,9 +10,7 @@ import { YahooCredential } from './interfaces/credential';
   providedIn: 'root',
 })
 export class YahooService {
-  readonly CORS_BASE_URL: string = 'https://cors-anywhere.herokuapp.com/'; //for development only
-  readonly API_URL: string =
-    this.CORS_BASE_URL + 'https://fantasysports.yahooapis.com/fantasy/v2/';
+  API_URL: string = 'https://fantasysports.yahooapis.com/fantasy/v2/';
 
   private _credential: YahooCredential | null = null;
   public set credential(credential: YahooCredential | null) {
@@ -25,6 +24,11 @@ export class YahooService {
   teams: any = [];
 
   constructor(private http: HttpClient, private fns: Functions) {
+    if (isDevMode()) {
+      // use CORS proxy to avoid CORS error in dev mode
+      const CORS_BASE_URL: string = 'https://cors-anywhere.herokuapp.com/';
+      this.API_URL = CORS_BASE_URL + this.API_URL;
+    }
     this.credential = JSON.parse(
       localStorage.getItem('yahooCredential') || 'null'
     );
@@ -32,8 +36,6 @@ export class YahooService {
 
   async loadYahooAccessToken(): Promise<void> {
     if (!this.credential || this.credential.tokenExpirationTime <= Date.now()) {
-      // call the cloud function 'getAccessToken'
-      console.log('Getting new Yahoo access token');
       try {
         const getAccessToken = httpsCallable(this.fns, 'getaccesstoken');
         const data = await getAccessToken({});
@@ -64,7 +66,6 @@ export class YahooService {
 
   async getAllStandings(): Promise<Observable<Object>> {
     try {
-      console.log('start getAllStandings');
       return await this.httpGet(
         'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
       );
