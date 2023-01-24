@@ -10,6 +10,7 @@ import {
   User,
   sendEmailVerification,
 } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { YahooCredential } from './interfaces/credential';
 import { YahooService } from './yahoo.service';
@@ -19,14 +20,19 @@ import { YahooService } from './yahoo.service';
 export class AuthService {
   public user$: Observable<any> = EMPTY;
 
-  constructor(private auth: Auth, private yahooService: YahooService) {
+  constructor(
+    private auth: Auth,
+    private router: Router,
+    private yahooService: YahooService
+  ) {
     // set up the user$ observable for the logged in user
     this.user$ = user(this.auth);
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
     try {
-      signOut(this.auth);
+      await signOut(this.auth);
+      this.router.navigate(['/login']);
       localStorage.clear();
       sessionStorage.clear();
     } catch (err: Error | any) {
@@ -34,20 +40,20 @@ export class AuthService {
     }
   }
 
-  loginYahoo(): void {
+  async loginYahoo(): Promise<void> {
     try {
       const provider = new OAuthProvider('yahoo.com');
-      signInWithPopup(this.auth, provider).then(async (result) => {
-        if (result) {
-          const oauthCredential = OAuthProvider.credentialFromResult(result);
-          const accessToken = oauthCredential?.accessToken || '';
-          const credential: YahooCredential = {
-            accessToken: accessToken,
-            tokenExpirationTime: Date.now() + 3600000,
-          };
-          this.yahooService.credential = credential;
-        }
-      });
+      const result = await signInWithPopup(this.auth, provider);
+      if (result) {
+        this.router.navigate(['/teams']);
+        const oauthCredential = OAuthProvider.credentialFromResult(result);
+        const accessToken = oauthCredential?.accessToken || '';
+        const credential: YahooCredential = {
+          accessToken: accessToken,
+          tokenExpirationTime: Date.now() + 3600000,
+        };
+        this.yahooService.credential = credential;
+      }
     } catch (err: Error | any) {
       throw new Error("Couldn't sign in with Yahoo: " + err.message);
     }

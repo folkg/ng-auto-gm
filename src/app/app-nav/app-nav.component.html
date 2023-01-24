@@ -5,16 +5,15 @@
     fixedInViewport
     [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="isLoggedIn && (isHandset$ | async) === false"
+    [opened]="(isHandset$ | async) === false"
   >
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <!-- TODO: Add *ngIf="!isLoggedIn" to login -->
-      <a mat-list-item routerLink="login">Login</a>
+      <a mat-list-item routerLink="login" *ngIf="!isLoggedIn">Login</a>
       <a mat-list-item routerLink="teams" *ngIf="isLoggedIn">My Teams</a>
       <a mat-list-item routerLink="profile" *ngIf="isLoggedIn">Profile</a>
       <a mat-list-item routerLink="about">How It Works</a>
-      <a mat-list-item routerLink="feedback">Contact Us</a>
+      <a mat-list-item routerLink="feedback" *ngIf="isLoggedIn">Contact Us</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -35,7 +34,7 @@
           class="logo"
           [routerLink]="''"
         />
-        Fantasy Fixer
+        Fantasy AutoCoach
       </span>
     </mat-toolbar>
     <!-- Add Content Here -->
