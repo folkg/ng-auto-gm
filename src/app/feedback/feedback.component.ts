@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { map, Observable, take } from 'rxjs';
+import { Component, ViewChild } from '@angular/core';
+import { Functions, httpsCallableData } from '@angular/fire/functions';
+import { NgForm } from '@angular/forms';
+import { catchError, EMPTY, take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { OnlineStatusService } from '../services/online-status.service';
 
 @Component({
   selector: 'app-feedback',
@@ -15,54 +17,51 @@ export class FeedbackComponent {
   feedbackType: string = 'General';
   feedbackTypes: string[] = ['General', 'Bug Report', 'Feature Request'];
   submitted: boolean = false;
+  success: boolean | null = null;
   private mailApiUrl = 'http://localhost:3000/send-email';
 
-  constructor(private auth: AuthService, private http: HttpClient) {}
+  @ViewChild('feedbackForm') feedbackForm!: NgForm;
 
-  onSubmit() {
-    this.auth.user$.pipe(take(1)).subscribe((user) => {
-      const emailBody: string =
-        'UID: ' +
-        user.uid +
-        '\n' +
-        user.email +
-        '\n' +
-        user.displayName +
-        '\n' +
-        (this.feedbackType || 'General') +
-        '\n' +
-        this.feedback;
-      console.log(emailBody);
+  constructor(
+    private auth: AuthService,
+    private fns: Functions,
+    public os: OnlineStatusService
+  ) {}
 
-      this.PostEmail(emailBody).subscribe({
-        next: (response) => {
-          console.log(response);
-        },
-        error: (error) => {
-          console.log(error);
-        },
+  onSubmitCloudFunction() {
+    if (this.honeypot === '') {
+      this.auth.user$.pipe(take(1)).subscribe((user) => {
+        const emailBody: string =
+          user.displayName + '\n' + user.uid + '\n\n' + this.feedback;
+        const data = {
+          userEmail: user.email,
+          feedbackType: this.feedbackType || 'General',
+          title: this.title,
+          message: emailBody,
+        };
+        console.log(data);
+
+        const sendFeedbackEmail = httpsCallableData(
+          this.fns,
+          'sendfeedbackemail'
+        );
+        this.submitted = true;
+        sendFeedbackEmail(data)
+          .pipe(
+            take(1),
+            catchError((error) => {
+              this.success = false;
+              return EMPTY;
+            })
+          )
+          .subscribe((result) => {
+            this.success = result as boolean;
+          });
       });
-    });
-    this.submitted = true;
+    }
   }
 
-  PostEmail(email: string): Observable<unknown> {
-    return this.http
-      .post(
-        this.mailApiUrl,
-        { _subject: this.title, message: email, _honeypot: this.honeypot },
-        { responseType: 'text' }
-      )
-      .pipe(
-        map((response) => {
-          if (response) {
-            return response;
-          }
-          return null;
-        }),
-        (error: any) => {
-          return error;
-        }
-      );
+  public canDeactivate(): boolean {
+    return this.feedbackForm?.pristine || this.submitted;
   }
 }
