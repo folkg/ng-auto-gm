@@ -31,6 +31,7 @@ import { DirtyFormGuard } from './guards/dirty-form.guard';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { AboutComponent } from './about/about.component';
 import { FeedbackModule } from './feedback/feedback.module';
+import { RobotsComponent } from './robots/robots.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { FeedbackModule } from './feedback/feedback.module';
     NotfoundComponent,
     ConfirmDialogComponent,
     AboutComponent,
+    RobotsComponent,
   ],
   imports: [
     BrowserModule,

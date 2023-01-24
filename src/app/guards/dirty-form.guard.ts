@@ -21,11 +21,11 @@ export class DirtyFormGuard implements CanDeactivate<unknown> {
   async confirmDialog(): Promise<boolean> {
     const title = 'WARNING: You have unsaved changes.';
     const message =
-      'Press Cancel to go back and save these changes, or OK to proceed and lose these changes.';
+      'Press Cancel to stay and save these changes, or Proeed to leave this page and lose these changes.';
     const dialogData: DialogData = {
       title,
       message,
-      trueButton: 'OK',
+      trueButton: 'Proceed',
       falseButton: 'Cancel',
     };
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

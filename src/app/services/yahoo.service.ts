@@ -64,6 +64,7 @@ export class YahooService {
 
   async getAllStandings(): Promise<Observable<Object>> {
     try {
+      console.log('start getAllStandings');
       return await this.httpGet(
         'users;use_login=1/games;game_keys=nfl,nhl,nba,mlb/leagues/standings?format=json'
       );

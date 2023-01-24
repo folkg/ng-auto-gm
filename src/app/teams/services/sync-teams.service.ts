@@ -13,7 +13,7 @@ import {
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
-import { catchError, take, EMPTY, Observable } from 'rxjs';
+import { catchError, take, EMPTY } from 'rxjs';
 
 @Injectable({
   providedIn: null,
@@ -182,12 +182,12 @@ export class SyncTeamsService {
                     outcome_totals:
                       usersTeam.team[2].team_standings.outcome_totals,
                     scoring_type: leagues[key].league[0].scoring_type,
-                    current_week: leagues[key].league[0].current_week,
-                    end_week: leagues[key].league[0].end_week,
+                    // current_week: leagues[key].league[0].current_week,
+                    // end_week: leagues[key].league[0].end_week,
                     start_date: Date.parse(leagues[key].league[0].start_date),
                     end_date: Date.parse(leagues[key].league[0].end_date),
-                    weekly_deadline: leagues[key].league[0].weekly_deadline,
-                    edit_key: leagues[key].league[0].edit_key,
+                    // weekly_deadline: leagues[key].league[0].weekly_deadline,
+                    // edit_key: leagues[key].league[0].edit_key,
                     is_approved: true,
                     is_setting_lineups: false,
                     last_updated: -1,
@@ -203,7 +203,6 @@ export class SyncTeamsService {
         });
     });
   }
-
   private getUsersTeam(allTeams: any) {
     // Find the team managed by the current login
     for (const key in allTeams) {
