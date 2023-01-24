@@ -23,15 +23,12 @@ $angular-dark-theme: mat.define-dark-theme((color: (primary: $angular-primary,
             ),
         ));
 
-// apply light theme by default
-@include mat.all-component-themes($angular-light-theme);
-@include theme-color-grabber($angular-light-theme);
+.light-theme {
+    @include mat.all-component-themes($angular-light-theme);
+    @include theme-color-grabber($angular-light-theme);
+}
 
-
-// TODO: Make a toggle for the dark theme in the toolbar
-// https://pkief.medium.com/automatic-dark-mode-detection-in-angular-material-8342917885a0
-//apply dark theme when user prefers
-@media (prefers-color-scheme: dark) {
+.dark-theme {
     @include mat.all-component-colors($angular-dark-theme);
     @include theme-color-grabber($angular-dark-theme);
 }

@@ -36,6 +36,10 @@
         />
         Fantasy AutoCoach
       </span>
+      <span class="toolbar-item-spacer"></span>
+      <mat-icon class="mr-8 dark-toggle" (click)="toggleDarkMode()">{{
+        this.themingService.darkModeOn ? "brightness_5" : "brightness_2"
+      }}</mat-icon>
     </mat-toolbar>
     <!-- Add Content Here -->
     <router-outlet></router-outlet>

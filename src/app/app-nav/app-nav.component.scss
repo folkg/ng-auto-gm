@@ -23,8 +23,16 @@
   height: 100%;
 }
 
+.toolbar-item-spacer {
+  flex: 1 1 auto;
+}
+
 .logo {
   height: 65%;
   padding-right: 0.75rem;
+  cursor: pointer;
+}
+
+.dark-toggle {
   cursor: pointer;
 }

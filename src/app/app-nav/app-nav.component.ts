@@ -3,6 +3,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { ThemingService } from '../services/theming.service';
 
 @Component({
   selector: 'app-app-nav',
@@ -21,6 +22,7 @@ export class AppNavComponent implements OnInit, OnDestroy {
 
   constructor(
     private breakpointObserver: BreakpointObserver,
+    public themingService: ThemingService,
     public auth: AuthService
   ) {}
 
@@ -36,5 +38,9 @@ export class AppNavComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+  }
+
+  toggleDarkMode() {
+    this.themingService.darkModeOn = !this.themingService.darkModeOn;
   }
 }
