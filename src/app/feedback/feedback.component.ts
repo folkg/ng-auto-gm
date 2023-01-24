@@ -39,7 +39,6 @@ export class FeedbackComponent {
           title: this.title,
           message: emailBody,
         };
-        console.log(data);
 
         const sendFeedbackEmail = httpsCallableData(
           this.fns,

@@ -67,25 +67,22 @@ export class AuthService {
   async sendVerificationEmail(): Promise<void> {
     try {
       await sendEmailVerification(this.auth.currentUser as User);
-      console.log('Email verification sent');
       //TODO: Dialog to tell user to check email
     } catch (err: Error | any) {
       throw new Error("Couldn't send verification email: " + err.message);
     }
   }
 
-  async updateEmail(email: string): Promise<void> {
-    console.log(email);
+  async updateUserEmail(email: string): Promise<void> {
     try {
       await updateEmail(this.auth.currentUser as User, email);
-      console.log('Email updated');
       this.sendVerificationEmail();
     } catch (err) {
       if (err instanceof Error) {
         if (err.message === 'Firebase: Error (auth/requires-recent-login).') {
           try {
             await this.reauthenticateYahoo();
-            this.updateEmail(email);
+            this.updateUserEmail(email);
           } catch (err: Error | any) {
             throw new Error("Couldn't reauthenticate: " + err.message);
           }

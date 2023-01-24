@@ -47,7 +47,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   async saveChanges() {
     try {
-      await this.auth.updateEmail(this.profileForm.value.email);
+      await this.auth.updateUserEmail(this.profileForm.value.email);
       this.isEditing = !this.isEditing;
       this.profileForm.markAsPristine();
     } catch (err: Error | any) {

@@ -63,8 +63,6 @@ export class SyncTeamsService {
     }
     // add the remaining teams from yahoo to the teams array for display on the frontend
     teams.push(...yahooTeams);
-    console.log('Merged teams:');
-    console.log(teams);
     sessionStorage.setItem('yahooTeams', JSON.stringify(teams));
     return teams;
   }
@@ -99,8 +97,6 @@ export class SyncTeamsService {
       const scheduleSnap = await getDoc(schedulesRef);
       const schedule = scheduleSnap.data();
       if (schedule) {
-        console.log('Fetched schedules from Firebase:');
-        console.log(schedule);
         // save schedules to sessionStorage
         sessionStorage.setItem('schedules', JSON.stringify(schedule));
         return schedule;
@@ -125,11 +121,8 @@ export class SyncTeamsService {
             querySnapshot.forEach((doc) => {
               teams.push({ team_key: doc.id, ...doc.data() });
             });
-            console.log('Fetched teams from Firebase:');
-            console.log(teams);
             resolve(teams);
           } catch (err: Error | any) {
-            console.log('Error fetching teams from Firebase');
             reject('Error fetching teams from Firebase. ' + err.message);
           }
         }
@@ -152,7 +145,7 @@ export class SyncTeamsService {
           const teams: Team[] = [];
           let games;
           games = data.fantasy_content.users[0].user[1].games;
-          console.log(games); //use this to debug the JSON object and see all the data
+          // console.log(games); //use this to debug the JSON object and see all the data
           // Loop through each "game" (nfl, nhl, nba, mlb)
           for (const key in games) {
             if (key !== 'count') {
@@ -197,8 +190,6 @@ export class SyncTeamsService {
               }
             }
           }
-          console.log('Fetched teams from Yahoo API:');
-          console.log(teams);
           resolve(teams);
         });
     });
