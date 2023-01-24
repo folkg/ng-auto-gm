@@ -74,7 +74,7 @@ export class TeamsComponent implements OnInit {
       // revert the change if the database write failed
       $event.team.is_setting_lineups = !$event.state;
       this.errorDialog(
-        "Could not update team's status on the server. Please ensure try again later."
+        "Could not update team's status on the server. Please check your internet connection and try again later."
       );
     }
   }

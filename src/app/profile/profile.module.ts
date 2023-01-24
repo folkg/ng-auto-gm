@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { SharedModule } from '../shared/shared.module';
 
 import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile.component';
@@ -19,6 +20,7 @@ import { ProfileComponent } from './profile.component';
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
+    SharedModule,
   ],
 })
 export class ProfileModule {}

@@ -29,34 +29,3 @@
 .buttons {
   margin: 1rem;
 }
-
-.roby-container {
-  padding: 2rem;
-  padding-top: 3rem;
-  display: flex;
-  justify-content: center;
-  // align-items: center;
-  box-sizing: border-box;
-}
-
-@media screen and (max-width: 770px) {
-  .roby-container {
-    flex-direction: column;
-  }
-}
-
-.roby {
-  margin: 0.5rem;
-  min-width: 100px;
-  width: 50%;
-  max-width: 300px;
-  border-radius: 6px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-style: solid;
-  border-width: 2px;
-}
-
-.roby-pair {
-  display: flex;
-}

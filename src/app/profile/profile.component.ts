@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '@angular/fire/auth';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { OnlineStatusService } from '../services/online-status.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { OnlineStatusService } from '../services/online-status.service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit, OnDestroy {
   //TODO: Implement the basic profile screen where a user can edit only their email address
   //TODO: Implement a dialog form asking the user to enter their email address if it is not verified
   emailFormControl: FormControl = new FormControl('', [
@@ -22,9 +22,11 @@ export class ProfileComponent {
   });
   user: User | null = null;
   isEditing: boolean = false;
+  private subscription: Subscription | undefined;
 
-  constructor(private auth: AuthService, public os: OnlineStatusService) {
-    this.auth.user$.subscribe((user) => {
+  constructor(private auth: AuthService, public os: OnlineStatusService) {}
+  ngOnInit(): void {
+    this.subscription = this.auth.user$.subscribe((user) => {
       if (user) {
         this.user = user;
         this.profileForm.patchValue({
@@ -32,6 +34,10 @@ export class ProfileComponent {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   cancelChanges() {

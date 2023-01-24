@@ -1,16 +1,6 @@
 <div class="header primaryColorBG"><h1>Profile</h1></div>
 <div class="content">
-  <mat-card *ngIf="!(os.online$ | async)" class="card">
-    <mat-card-header>
-      <mat-card-title class="error">Internet Not Connected</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>
-        Please connect to the internet to use Fantasy Fixer. If you are
-        connected to the internet, please refresh the page.
-      </p>
-    </mat-card-content>
-  </mat-card>
+  <app-offline-warning-card></app-offline-warning-card>
   <mat-card class="card">
     <mat-card-header>
       <img mat-card-avatar src="{{ user?.photoURL }}" alt="User Photo" />

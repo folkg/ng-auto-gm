@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SharedModule } from '../shared/shared.module';
 
 import { TeamsRoutingModule } from './teams-routing.module';
 import { TeamsComponent } from './teams.component';
@@ -22,6 +23,7 @@ import { RelativeDatePipe } from './pipes/relative-date.pipe';
     MatButtonModule,
     MatSlideToggleModule,
     MatDividerModule,
+    SharedModule,
   ],
 })
 export class TeamsModule {}

@@ -20,12 +20,12 @@ export interface Team {
     percentage: string | number;
   };
   scoring_type: string;
-  current_week: string;
-  end_week: string;
+  current_week?: string;
+  end_week?: string;
   start_date: number;
   end_date: number;
-  weekly_deadline: string | number;
-  edit_key: string;
+  weekly_deadline?: string | number;
+  edit_key?: string;
   is_approved: boolean;
   is_setting_lineups: boolean;
   last_updated: number;

@@ -2,24 +2,14 @@
   <h1>My Teams</h1>
 </div>
 <div class="content">
+  <app-offline-warning-card></app-offline-warning-card>
   <div class="instructions">
     <h3>
       Enable the <b>Automatically Manage Lineups</b> setting to get started with
       any of your teams below.
     </h3>
-    <h3>Sit back, relax, and let Fantasy Fixer do the work for you!</h3>
+    <h3>Sit back, relax, and let Fantasy AutoCoach do the work for you!</h3>
   </div>
-  <mat-card *ngIf="!(os.online$ | async)" class="card">
-    <mat-card-header>
-      <mat-card-title class="error">Internet Not Connected</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>
-        Please connect to the internet to use Fantasy Fixer. If you are
-        connected to the internet, please refresh the page.
-      </p>
-    </mat-card-content>
-  </mat-card>
   <ng-container *ngIf="teams.length !== 0; else showLoading">
     <app-team
       class="card-container"
