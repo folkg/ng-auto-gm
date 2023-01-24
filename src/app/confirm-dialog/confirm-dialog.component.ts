@@ -1,16 +1,19 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.scss'],
 })
-export class ConfirmDialogComponent implements OnInit {
+export class ConfirmDialogComponent implements OnInit, OnDestroy {
   title: string;
   message: string;
   trueButton: string;
   falseButton: string;
+  private keySubscription: Subscription | undefined;
+  private clickSubscription: Subscription | undefined;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
@@ -24,15 +27,22 @@ export class ConfirmDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dialogRef.keydownEvents().subscribe((event) => {
+    this.keySubscription = this.dialogRef.keydownEvents().subscribe((event) => {
       if (event.key === 'Escape') {
         this.onDismiss();
       }
     });
 
-    this.dialogRef.backdropClick().subscribe((event) => {
-      this.onDismiss();
-    });
+    this.clickSubscription = this.dialogRef
+      .backdropClick()
+      .subscribe((event) => {
+        this.onDismiss();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.keySubscription?.unsubscribe();
+    this.clickSubscription?.unsubscribe();
   }
 
   onConfirm(): void {
