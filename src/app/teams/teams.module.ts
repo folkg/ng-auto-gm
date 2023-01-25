@@ -25,5 +25,6 @@ import { RelativeDatePipe } from './pipes/relative-date.pipe';
     MatDividerModule,
     SharedModule,
   ],
+  providers: [RelativeDatePipe],
 })
 export class TeamsModule {}

@@ -43,11 +43,7 @@
       </div>
       <div>
         Next update:
-        {{
-          team.is_setting_lineups
-            ? (getNextLineupUpdate() | relativeDate) || "Next game day"
-            : "N/A"
-        }}
+        {{ team.is_setting_lineups ? getNextLineupUpdate() : "N/A" }}
       </div>
     </div>
     <ng-template #seasonOver

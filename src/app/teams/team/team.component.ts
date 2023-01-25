@@ -1,8 +1,10 @@
+import { NodeWithI18n } from '@angular/compiler';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
 import { Team } from '../interfaces/team';
+import { RelativeDatePipe } from '../pipes/relative-date.pipe';
 
 @Component({
   selector: 'app-team[team]',
@@ -46,7 +48,10 @@ export class TeamComponent {
   @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
   public date: number;
 
-  constructor(public os: OnlineStatusService) {
+  constructor(
+    public os: OnlineStatusService,
+    private datePipe: RelativeDatePipe
+  ) {
     this.date = Date.now();
   }
 
@@ -58,9 +63,23 @@ export class TeamComponent {
     (window as any).open(url, '_blank');
   }
 
-  getNextLineupUpdate() {
-    // look at the schedule and find the next game that matches game_code
-    if (this.gameTimeStamps) {
+  getNextLineupUpdate(): string {
+    const SERVER_UPDATE_MINUTES = 55;
+
+    // set the editKey of the team to a Date object in PST timezone
+    const editKeyDate = new Date(Date.parse(this.team.edit_key! + 'GMT-0800'));
+    const today = new Date();
+
+    if (
+      this.team.weekly_deadline !== 'intraday' &&
+      this.team.weekly_deadline !== '' &&
+      editKeyDate.getDate() !== today.getDate()
+    ) {
+      // if the editKeyDate is not today in a weekly league, then the next update is next week
+      // set the minutes to 55 on editKeyDate
+      editKeyDate.setMinutes(SERVER_UPDATE_MINUTES);
+      return this.datePipe.transform(editKeyDate.getTime());
+    } else if (this.gameTimeStamps) {
       // find the first game that hasn't happened yet
       const now = Date.now();
       const nextGame = this.gameTimeStamps.find(
@@ -69,11 +88,11 @@ export class TeamComponent {
       if (nextGame) {
         // get the timestamp of the scheduled update before the next game
         // 55 minutes after the hour cron job on server
-        const SERVER_UPDATE_MINUTES = 55;
         const nextGameHour = new Date(nextGame).getHours();
         const nextGameMinutes = new Date(nextGame).getMinutes();
+        let updateTime;
         if (nextGameMinutes < SERVER_UPDATE_MINUTES) {
-          return new Date(
+          updateTime = new Date(
             new Date(nextGame).setHours(
               nextGameHour - 1,
               SERVER_UPDATE_MINUTES,
@@ -82,7 +101,7 @@ export class TeamComponent {
             )
           ).getTime();
         } else {
-          return new Date(
+          updateTime = new Date(
             new Date(nextGame).setHours(
               nextGameHour,
               SERVER_UPDATE_MINUTES,
@@ -91,8 +110,10 @@ export class TeamComponent {
             )
           ).getTime();
         }
+        return this.datePipe.transform(updateTime);
       }
     }
-    return null;
+
+    return 'Next Game Day';
   }
 }

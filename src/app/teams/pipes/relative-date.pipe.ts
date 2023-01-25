@@ -40,13 +40,13 @@ export class RelativeDatePipe implements PipeTransform {
         })}`;
       } else {
         // if the timestamp is older than yesterday or after tomorrow, return 'MMM DD' HH:MM
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString(
-          undefined,
-          {
-            hour: 'numeric',
-            minute: '2-digit',
-          }
-        )}`;
+        return `${date.toLocaleDateString(undefined, {
+          day: 'numeric',
+          month: 'short',
+        })}, ${date.toLocaleTimeString(undefined, {
+          hour: 'numeric',
+          minute: '2-digit',
+        })}`;
       }
     }
     return '';
