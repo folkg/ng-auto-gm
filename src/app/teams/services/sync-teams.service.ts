@@ -25,6 +25,7 @@ export class SyncTeamsService {
   ) {}
 
   async fetchTeamsFromYahoo(): Promise<Team[]> {
+    // fetch teams from yahoo via firebase function
     const fetchTeamsFromServer = httpsCallable(this.fns, 'fetchuserteams');
     const teams = await fetchTeamsFromServer();
     return teams.data as Team[];

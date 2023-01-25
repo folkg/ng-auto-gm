@@ -17,34 +17,23 @@ import { OnlineStatusService } from '../services/online-status.service';
   providers: [SyncTeamsService],
 })
 export class TeamsComponent implements OnInit {
-  public teams: Team[];
-  public schedule: Schedule | null;
+  public teams: Team[] = [];
+  public schedule: Schedule | null = null;
 
   constructor(
     private sts: SyncTeamsService,
     public dialog: MatDialog,
     public os: OnlineStatusService
-  ) {
-    // load teams from sessionStorage if it exists
-    this.teams = JSON.parse(sessionStorage.getItem('yahooTeams') || '[]');
-    // this.teams = [];
-
-    // load schedules from sessionStorage if it exists
-    try {
-      this.schedule = JSON.parse(sessionStorage.getItem('schedules') || 'null');
-    } catch {
-      this.schedule = null;
-    }
-  }
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    // Fetch or update teams
+    this.teams = JSON.parse(sessionStorage.getItem('yahooTeams') || '[]');
+    this.schedule = JSON.parse(sessionStorage.getItem('schedules') || 'null');
+
     try {
       if (this.teams.length === 0) {
         // If teams doesn't exist in sessionStorage, retrieve from APIs
         this.teams = await this.sts.fetchTeamsFromYahoo();
-        console.log('fetching teams from yahoo');
-        console.log(this.teams);
       } else {
         // If teams exist in sessionStorage, just refresh properties from firestore
         const firestoreTeams = await this.sts.fetchTeamsFromFirestore();
@@ -55,8 +44,6 @@ export class TeamsComponent implements OnInit {
           // patch all properties from firestoreTeam to team
           Object.assign(team, firestoreTeam);
         });
-        console.log('updating teams from firestore');
-        console.log(firestoreTeams);
       }
       // save teams to sessionStorage
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
@@ -68,9 +55,7 @@ export class TeamsComponent implements OnInit {
       );
     }
 
-    // Fetch schedules
     if (!this.schedule) {
-      // If schedules doesn't exist in sessionStorage, retrieve from APIs
       try {
         this.schedule = await this.sts.fetchSchedulesFromFirestore();
       } catch (err: Error | any) {
@@ -84,10 +69,9 @@ export class TeamsComponent implements OnInit {
   }
 
   async setLineupBoolean($event: SetLineupEvent): Promise<void> {
-    console.log($event.team.team_key, $event.state);
+    // console.log($event.team.team_key, $event.state);
     try {
       await this.sts.setLineupsBooleanFirestore($event.team, $event.state);
-      // make the change in sessionStorage as well
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
     } catch (err) {
       // revert the change if the database write failed
