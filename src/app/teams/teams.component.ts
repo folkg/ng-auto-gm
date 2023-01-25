@@ -38,22 +38,41 @@ export class TeamsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    if (this.teams.length === 0) {
-      // If teams doesn't exist in sessionStorage, retrieve from APIs
-      try {
-        this.teams = await this.sts.buildTeams();
-      } catch (err: Error | any) {
-        this.errorDialog(
-          err.message +
-            ' Please ensure you are connected to the internet and try again later.',
-          'ERROR Fetching Teams'
-        );
+    // Fetch or update teams
+    try {
+      if (this.teams.length === 0) {
+        // If teams doesn't exist in sessionStorage, retrieve from APIs
+        this.teams = await this.sts.fetchTeamsFromYahoo();
+        console.log('fetching teams from yahoo');
+        console.log(this.teams);
+      } else {
+        // If teams exist in sessionStorage, just refresh properties from firestore
+        const firestoreTeams = await this.sts.fetchTeamsFromFirestore();
+        this.teams.forEach((team) => {
+          const firestoreTeam = firestoreTeams.find(
+            (t: any) => t.team_key === team.team_key
+          );
+          // patch all properties from firestoreTeam to team
+          Object.assign(team, firestoreTeam);
+        });
+        console.log('updating teams from firestore');
+        console.log(firestoreTeams);
       }
+      // save teams to sessionStorage
+      sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
+    } catch (err: Error | any) {
+      this.errorDialog(
+        err.message +
+          ' Please ensure you are connected to the internet and try again later.',
+        'ERROR Fetching Teams'
+      );
     }
+
+    // Fetch schedules
     if (!this.schedule) {
       // If schedules doesn't exist in sessionStorage, retrieve from APIs
       try {
-        this.schedule = await this.sts.fetchSchedulesFromFirebase();
+        this.schedule = await this.sts.fetchSchedulesFromFirestore();
       } catch (err: Error | any) {
         this.errorDialog(
           err.message +
@@ -67,7 +86,7 @@ export class TeamsComponent implements OnInit {
   async setLineupBoolean($event: SetLineupEvent): Promise<void> {
     console.log($event.team.team_key, $event.state);
     try {
-      await this.sts.setLineupsBooleanFirebase($event.team, $event.state);
+      await this.sts.setLineupsBooleanFirestore($event.team, $event.state);
       // make the change in sessionStorage as well
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
     } catch (err) {
