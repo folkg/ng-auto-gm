@@ -7,7 +7,7 @@
     box-sizing: border-box;
 }
 
-@media screen and (max-width: 770px) {
+@media screen and (max-width: 720px) {
     .roby-container {
         flex-direction: column;
     }
@@ -21,7 +21,7 @@
     margin: 0.5rem;
     min-width: 100px;
     width: 50%;
-    max-width: 300px;
+    max-width: 200px;
     border-radius: 6px;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;

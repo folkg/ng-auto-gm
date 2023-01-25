@@ -5,7 +5,7 @@ import { lastValueFrom, Observable } from 'rxjs';
 import {
   DialogData,
   ConfirmDialogComponent,
-} from '../confirm-dialog/confirm-dialog.component';
+} from '../shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 export interface ComponentCanDeactivate {

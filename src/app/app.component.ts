@@ -20,14 +20,11 @@ export class AppComponent implements OnInit {
     this.themingService.theme
       .pipe(startWith(undefined), pairwise())
       .subscribe(([oldTheme, newTheme]) => {
-        console.log('oldTheme', oldTheme);
-        console.log('newTheme', newTheme);
         if (newTheme) {
           this.cssClass = newTheme;
 
           //overlayContainer is used for the mat-dialog
           this.overlayContainer.getContainerElement().classList.add(newTheme);
-
           if (oldTheme !== newTheme && oldTheme) {
             //remove the oldTheme from the overlayContainer
             this.overlayContainer

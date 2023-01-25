@@ -6,7 +6,7 @@ import { SyncTeamsService } from './services/sync-teams.service';
 import {
   DialogData,
   ConfirmDialogComponent,
-} from '../confirm-dialog/confirm-dialog.component';
+} from '../shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { OnlineStatusService } from '../services/online-status.service';
 

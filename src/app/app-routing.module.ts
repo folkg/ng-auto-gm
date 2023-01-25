@@ -16,11 +16,16 @@ const routes: Routes = [
   { path: '', redirectTo: '/teams', pathMatch: 'full' },
   {
     path: 'login',
-    component: LoginComponent,
+    loadChildren: () =>
+      import('./login/login.module').then((m) => m.LoginModule),
     canActivate: [AuthGuard],
     data: { authGuardPipe: redirectLoggedInToTeams },
   },
-  { path: 'about', component: AboutComponent },
+  {
+    path: 'about',
+    loadChildren: () =>
+      import('./about/about.module').then((m) => m.AboutModule),
+  },
   {
     path: 'cart',
     loadChildren: () => import('./cart/cart.module').then((m) => m.CartModule),

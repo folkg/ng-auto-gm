@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 import {
   DialogData,
   ConfirmDialogComponent,
-} from '../confirm-dialog/confirm-dialog.component';
+} from '../shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -17,17 +17,17 @@ export class LoginComponent {
 
   constructor(private auth: AuthService, public dialog: MatDialog) {}
 
-  login() {
+  async login() {
     try {
-      this.auth.loginYahoo();
+      await this.auth.loginYahoo();
     } catch (err: Error | any) {
       this.errorDialog(err.message);
     }
   }
 
-  logout() {
+  async logout() {
     try {
-      this.auth.logout();
+      await this.auth.logout();
     } catch (err: Error | any) {
       this.errorDialog(err.message);
     }

@@ -14,7 +14,6 @@ import {
   getFunctions,
 } from '@angular/fire/functions';
 
-import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppNavComponent } from './app-nav/app-nav.component';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -23,26 +22,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { MatDialogModule } from '@angular/material/dialog';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { TeamsModule } from './teams/teams.module';
 import { ProfileModule } from './profile/profile.module';
 import { DirtyFormGuard } from './guards/dirty-form.guard';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
-import { AboutComponent } from './about/about.component';
 import { FeedbackModule } from './feedback/feedback.module';
-import { RobotsComponent } from './robots/robots.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    AppNavComponent,
-    NotfoundComponent,
-    ConfirmDialogComponent,
-    AboutComponent,
-    RobotsComponent,
-  ],
+  declarations: [AppComponent, AppNavComponent, NotfoundComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -63,7 +50,6 @@ import { RobotsComponent } from './robots/robots.component';
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    MatDialogModule,
     TeamsModule,
     ProfileModule,
     FeedbackModule,
