@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   firebase: {
     projectId: 'auto-gm-372620',
     appId: '1:877183802:web:ad2e65c2159a3d0a82c603',
@@ -8,5 +8,5 @@ export const environment = {
     authDomain: 'auto-gm-372620.firebaseapp.com',
     messagingSenderId: '877183802',
   },
-  useEmulators: true,
+  useEmulators: false,
 };

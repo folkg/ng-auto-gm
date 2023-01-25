@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy:dev": "firebase use dev && ng build --aot && firebase deploy --only hosting",
+    "deploy:prod": "firebase use prod && ng build --prod && firebase deploy --only hosting"
   },
   "private": true,
   "dependencies": {
