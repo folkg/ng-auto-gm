@@ -5,8 +5,8 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class ThemingService {
-  themes = ['dark-theme', 'light-theme']; // <- list all themes in this array
-  theme = new BehaviorSubject('light-theme'); // <- initial theme
+  themes = ['dark-theme', 'light-theme'];
+  theme = new BehaviorSubject('light-theme'); // initial theme
   private _darkModeOn: boolean;
   public get darkModeOn(): boolean {
     return this._darkModeOn;
@@ -17,7 +17,6 @@ export class ThemingService {
     localStorage.setItem('darkModeOn', JSON.stringify(this.darkModeOn));
   }
 
-  //TODO: Add a toggle somewhere in navbar to switch between themes
   constructor(private ref: ApplicationRef) {
     const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 

@@ -1,4 +1,6 @@
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, HostBinding, OnInit } from '@angular/core';
+import { pairwise, startWith } from 'rxjs';
 import { ThemingService } from './services/theming.service';
 
 @Component({
@@ -9,11 +11,30 @@ import { ThemingService } from './services/theming.service';
 export class AppComponent implements OnInit {
   @HostBinding('class') public cssClass!: string;
 
-  constructor(private themingService: ThemingService) {}
+  constructor(
+    private themingService: ThemingService,
+    private overlayContainer: OverlayContainer
+  ) {}
 
   ngOnInit(): void {
-    this.themingService.theme.subscribe((theme: string) => {
-      this.cssClass = theme;
-    });
+    this.themingService.theme
+      .pipe(startWith(undefined), pairwise())
+      .subscribe(([oldTheme, newTheme]) => {
+        console.log('oldTheme', oldTheme);
+        console.log('newTheme', newTheme);
+        if (newTheme) {
+          this.cssClass = newTheme;
+
+          //overlayContainer is used for the mat-dialog
+          this.overlayContainer.getContainerElement().classList.add(newTheme);
+
+          if (oldTheme !== newTheme && oldTheme) {
+            //remove the oldTheme from the overlayContainer
+            this.overlayContainer
+              .getContainerElement()
+              .classList.remove(oldTheme);
+          }
+        }
+      });
   }
 }
