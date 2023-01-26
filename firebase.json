@@ -4,16 +4,6 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "/sendfeedbackemail",
-        "function": "sendfeedbackemail",
-        "region": "us-central1"
-      },
-      {
-        "source": "/fetchuserteams",
-        "function": "fetchuserteams",
-        "region": "us-central1"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

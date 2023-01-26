@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
-import { Functions, httpsCallableData } from '@angular/fire/functions';
+import { Functions, httpsCallableFromURL } from '@angular/fire/functions';
 import { NgForm } from '@angular/forms';
-import { catchError, EMPTY, take } from 'rxjs';
+import { take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { OnlineStatusService } from '../services/online-status.service';
 
@@ -29,7 +29,8 @@ export class FeedbackComponent {
 
   onSubmitCloudFunction() {
     if (this.honeypot === '') {
-      this.auth.user$.pipe(take(1)).subscribe((user) => {
+      this.submitted = true;
+      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
         const emailBody: string =
           user.displayName + '\n' + user.uid + '\n\n' + this.feedback;
         const data = {
@@ -39,22 +40,16 @@ export class FeedbackComponent {
           message: emailBody,
         };
 
-        const sendFeedbackEmail = httpsCallableData(
+        const sendFeedbackEmail = httpsCallableFromURL(
           this.fns,
-          'sendfeedbackemail'
+          'https://sendfeedbackemail-nw73xubluq-uc.a.run.app'
         );
-        this.submitted = true;
-        sendFeedbackEmail(data)
-          .pipe(
-            take(1),
-            catchError((error) => {
-              this.success = false;
-              return EMPTY;
-            })
-          )
-          .subscribe((result) => {
-            this.success = result as boolean;
-          });
+        try {
+          const result = await sendFeedbackEmail(data);
+          this.success = result.data as boolean;
+        } catch (err: Error | any) {
+          this.success = false;
+        }
       });
     }
   }

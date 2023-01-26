@@ -9,7 +9,7 @@ import {
   updateDoc,
   getDoc,
 } from '@angular/fire/firestore';
-import { Functions, httpsCallable } from '@angular/fire/functions';
+import { Functions, httpsCallableFromURL } from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
 import { take } from 'rxjs';
@@ -26,7 +26,10 @@ export class SyncTeamsService {
 
   async fetchTeamsFromYahoo(): Promise<Team[]> {
     // fetch teams from yahoo via firebase function
-    const fetchTeamsFromServer = httpsCallable(this.fns, 'fetchuserteams');
+    const fetchTeamsFromServer = httpsCallableFromURL(
+      this.fns,
+      'https://fetchuserteams-nw73xubluq-uc.a.run.app'
+    );
     const teams = await fetchTeamsFromServer();
     return teams.data as Team[];
   }
