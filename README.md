@@ -1,8 +1,14 @@
 # AutoGm
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.4.
+## Hosted Version
+
+This is the frontend client for a full stack app. The hosted version can be accessed and used at the following address:
+
+https://auto-gm-372620.web.app/teams
 
 ## Development server
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.4.
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
