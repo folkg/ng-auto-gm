@@ -9,6 +9,7 @@ import {
 } from '../shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { OnlineStatusService } from '../services/online-status.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +24,8 @@ export class TeamsComponent implements OnInit {
   constructor(
     private sts: SyncTeamsService,
     public dialog: MatDialog,
-    public os: OnlineStatusService
+    public os: OnlineStatusService,
+    private _snackBar: MatSnackBar
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -32,8 +34,13 @@ export class TeamsComponent implements OnInit {
 
     try {
       if (this.teams.length === 0) {
-        // If teams doesn't exist in sessionStorage, retrieve from APIs
+        // If teams doesn't exist in sessionStorage, show old teams from
+        // localstorage and retrieve fresh from APIs
+        const snackBarRef = this._snackBar.open('Refreshing Teams');
+        this.teams = JSON.parse(localStorage.getItem('yahooTeams') || '[]');
         this.teams = await this.sts.fetchTeamsFromYahoo();
+        snackBarRef.dismiss();
+        localStorage.setItem('yahooTeams', JSON.stringify(this.teams));
       } else {
         // If teams exist in sessionStorage, just refresh properties from firestore
         const firestoreTeams = await this.sts.fetchTeamsFromFirestore();

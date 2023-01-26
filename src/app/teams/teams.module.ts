@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SharedModule } from '../shared/shared.module';
 
 import { TeamsRoutingModule } from './teams-routing.module';
@@ -23,6 +24,7 @@ import { RelativeDatePipe } from './pipes/relative-date.pipe';
     MatButtonModule,
     MatSlideToggleModule,
     MatDividerModule,
+    MatSnackBarModule,
     SharedModule,
   ],
   providers: [RelativeDatePipe],
