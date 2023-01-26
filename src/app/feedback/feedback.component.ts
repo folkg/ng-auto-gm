@@ -18,7 +18,6 @@ export class FeedbackComponent {
   feedbackTypes: string[] = ['General', 'Bug Report', 'Feature Request'];
   submitted: boolean = false;
   success: boolean | null = null;
-  private mailApiUrl = 'http://localhost:3000/send-email';
 
   @ViewChild('feedbackForm') feedbackForm!: NgForm;
 
