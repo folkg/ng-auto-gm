@@ -30,8 +30,16 @@ export class SyncTeamsService {
       this.fns,
       'https://fetchuserteams-nw73xubluq-uc.a.run.app'
     );
-    const teams = await fetchTeamsFromServer();
-    return teams.data as Team[];
+    try {
+      const teams = await fetchTeamsFromServer();
+      return teams.data as Team[];
+    } catch (err: Error | any) {
+      if (err.code === 'data-loss') {
+        // if the error is data-loss, it means the user's access token has expired
+        this.auth.reauthenticateYahoo();
+      }
+      throw new Error('Error fetching teams from Yahoo: ' + err.message);
+    }
   }
 
   async setLineupsBooleanFirestore(team: Team, value: boolean): Promise<void> {
