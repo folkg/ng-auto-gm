@@ -73,7 +73,7 @@ export class TeamComponent {
     if (
       this.team.weekly_deadline !== 'intraday' &&
       this.team.weekly_deadline !== '' &&
-      editKeyDate.getDate() !== today.getDate()
+      editKeyDate.getDay() !== today.getDay()
     ) {
       // if the editKeyDate is not today in a weekly league, then the next update is next week
       // set the minutes to 55 on editKeyDate
