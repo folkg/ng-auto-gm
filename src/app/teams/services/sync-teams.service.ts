@@ -34,9 +34,10 @@ export class SyncTeamsService {
       const teams = await fetchTeamsFromServer();
       return teams.data as Team[];
     } catch (err: Error | any) {
-      if (err.code === 'data-loss') {
+      if (err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired
-        this.auth.reauthenticateYahoo();
+        throw new Error('Refresh Token Error');
+        // this.auth.reauthenticateYahoo();
       }
       throw new Error('Error fetching teams from Yahoo: ' + err.message);
     }
@@ -103,5 +104,9 @@ export class SyncTeamsService {
         }
       });
     });
+  }
+
+  public async reauthenticateYahoo(): Promise<void> {
+    await this.auth.reauthenticateYahoo();
   }
 }
