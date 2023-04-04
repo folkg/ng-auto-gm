@@ -67,7 +67,12 @@
       ><div class="card-content-section">The season is over.</div>
     </ng-template>
 
-    <ng-container *ngIf="team.end_date > date && team.max_games_played > 0">
+    <ng-container
+      *ngIf="
+        team.end_date > date &&
+        (team.max_games_played > 0 || team.max_innings_pitched > 0)
+      "
+    >
       <mat-divider></mat-divider>
       <div class="error card-content-section">
         <span>
@@ -86,6 +91,11 @@
         "
         [(ngModel)]="team.is_setting_lineups"
         (change)="onToggle($event)"
+        color="{{
+          team.max_games_played > 0 || team.max_innings_pitched > 0
+            ? 'warn'
+            : 'accent'
+        }}"
         >Automatically Manage Lineups
       </mat-slide-toggle>
       <!-- <button
