@@ -17,7 +17,6 @@ export class ProfileComponent {
 
   public onDirtyChange(dirty: boolean): void {
     this.isDirty = dirty;
-    console.log('dirty: ', dirty);
   }
 
   public canDeactivate(): Observable<boolean> | boolean {

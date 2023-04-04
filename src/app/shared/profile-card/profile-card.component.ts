@@ -43,10 +43,8 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
 
     this.dirtySubscription = this.profileForm.valueChanges.subscribe(() => {
       if (this.profileForm.pristine) {
-        console.log('pristine');
         this.isDirty.emit(false);
       } else {
-        console.log('dirty');
         this.isDirty.emit(true);
       }
     });

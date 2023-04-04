@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Schedule } from './interfaces/schedules';
 import { SetLineupEvent } from './interfaces/set-lineup-event';
 import { Team } from './interfaces/team';
@@ -14,7 +14,9 @@ import {
   MatSnackBarRef,
   TextOnlySnackBar,
 } from '@angular/material/snack-bar';
-import { lastValueFrom } from 'rxjs';
+import { Observable, Subscription, lastValueFrom } from 'rxjs';
+import { User } from '@angular/fire/auth';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,12 +24,16 @@ import { lastValueFrom } from 'rxjs';
   styleUrls: ['./teams.component.scss'],
   providers: [SyncTeamsService],
 })
-export class TeamsComponent implements OnInit {
+export class TeamsComponent implements OnInit, OnDestroy {
   public teams: Team[] = [];
   public schedule: Schedule | null = null;
+  private isDirty: boolean = false;
+  user: User | null = null;
+  private userSubscription: Subscription | undefined;
 
   constructor(
     private sts: SyncTeamsService,
+    private auth: AuthService,
     public dialog: MatDialog,
     public os: OnlineStatusService,
     private _snackBar: MatSnackBar
@@ -36,6 +42,12 @@ export class TeamsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.teams = JSON.parse(sessionStorage.getItem('yahooTeams') || '[]');
     this.schedule = JSON.parse(sessionStorage.getItem('schedules') || 'null');
+
+    this.userSubscription = this.auth.user$.subscribe((user) => {
+      if (user) {
+        this.user = user;
+      }
+    });
 
     let snackBarRef: MatSnackBarRef<TextOnlySnackBar> | undefined;
     try {
@@ -59,6 +71,10 @@ export class TeamsComponent implements OnInit {
     }
 
     await this.fetchLeagueSchedules();
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription?.unsubscribe();
   }
 
   private async fetchTeamPropertiesFromFirestore() {
@@ -120,6 +136,15 @@ export class TeamsComponent implements OnInit {
         "Could not update team's status on the server. Please check your internet connection and try again later."
       );
     }
+  }
+
+  public onDirtyChange(dirty: boolean): void {
+    this.isDirty = dirty;
+    console.log('dirty: ', dirty);
+  }
+
+  public canDeactivate(): Observable<boolean> | boolean {
+    return !this.isDirty;
   }
 
   private async errorDialog(
