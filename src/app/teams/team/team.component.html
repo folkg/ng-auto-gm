@@ -17,7 +17,11 @@
       >
     </mat-card-header>
     <div>
-      <button mat-icon-button (click)="gotoExternalDomain(team.team_url)">
+      <button
+        mat-icon-button
+        matTooltip="Open {{ team.team_name }} in Yahoo"
+        (click)="gotoExternalDomain(team.team_url)"
+      >
         <mat-icon>open_in_new</mat-icon>
       </button>
     </div>
@@ -73,7 +77,11 @@
       (change)="onToggle($event)"
       >Automatically Manage Lineups
     </mat-slide-toggle>
-    <!-- <button mat-icon-button [disabled]="!team.is_setting_lineups">
+    <!-- <button
+      mat-icon-button
+      matTooltip="Advanced Settings for Lineup Management"
+      [disabled]="!team.is_setting_lineups"
+    >
       <mat-icon>settings</mat-icon>
     </button> -->
   </mat-card-actions>

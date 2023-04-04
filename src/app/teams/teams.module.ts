@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SharedModule } from '../shared/shared.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { FormsModule } from '@angular/forms';
 import { NthPipe } from './pipes/nth.pipe';
@@ -27,6 +28,7 @@ import { TeamsComponent } from './teams.component';
     MatDividerModule,
     MatSnackBarModule,
     MatIconModule,
+    MatTooltipModule,
     SharedModule,
   ],
   providers: [RelativeDatePipe],

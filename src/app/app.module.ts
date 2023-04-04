@@ -22,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { TeamsModule } from './teams/teams.module';
 import { ProfileModule } from './profile/profile.module';
@@ -49,6 +50,7 @@ import { FeedbackModule } from './feedback/feedback.module';
     MatButtonModule,
     MatSidenavModule,
     MatIconModule,
+    MatTooltipModule,
     MatListModule,
     TeamsModule,
     ProfileModule,
