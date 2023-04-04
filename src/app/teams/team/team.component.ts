@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
-import { Team } from '../interfaces/team';
+import { Team, getEmptyTeamObject } from '../interfaces/team';
 import { RelativeDatePipe } from '../pipes/relative-date.pipe';
 
 @Component({
@@ -12,52 +12,15 @@ import { RelativeDatePipe } from '../pipes/relative-date.pipe';
   styleUrls: ['./team.component.scss'],
 })
 export class TeamComponent {
-  @Input() team: Team = {
-    game_name: '',
-    game_code: '',
-    game_season: '',
-    game_is_over: false,
-    team_key: '',
-    team_name: '',
-    team_url: '',
-    team_logo: '',
-    league_name: '',
-    num_teams: 0,
-    rank: '',
-    points_for: 0,
-    points_against: 0,
-    points_back: 0,
-    outcome_totals: {
-      wins: 0,
-      losses: 0,
-      ties: 0,
-      percentage: 0,
-    },
-    scoring_type: '',
-    start_date: 0,
-    end_date: 0,
-    weekly_deadline: 0,
-    edit_key: '',
-    is_subscribed: false,
-    is_setting_lineups: false,
-    last_updated: 0,
-    faab_balance: 0,
-    waiver_rule: '',
-    current_weekly_adds: 0,
-    current_season_adds: 0,
-    max_weekly_adds: 0,
-    max_season_adds: 0,
-    max_games_played: 0,
-    max_innings_pitched: 0,
-    allow_transactions: false,
-    allow_dropping: false,
-    allow_adding: false,
-    allow_add_drops: false,
-    allow_waiver_adds: false,
-  };
+  @Input() team: Team = getEmptyTeamObject();
   @Input() gameTimeStamps: number[] | null = null;
   @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
   public date: number;
+  public scoringType: { [key: string]: string } = {
+    head: 'Head to Head',
+    roto: 'Rotisserie',
+    point: 'Points',
+  };
 
   constructor(
     public os: OnlineStatusService,

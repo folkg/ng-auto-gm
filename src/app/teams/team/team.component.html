@@ -30,7 +30,6 @@
   <mat-card-content>
     <div class="card-content-section">
       <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
-
       <ng-container *ngIf="team.outcome_totals"
         ><br />{{ team.outcome_totals.wins }}-{{
           team.outcome_totals.losses
@@ -46,6 +45,7 @@
           ({{ team.points_back }} points behind leader)</ng-container
         >
       </ng-container>
+      <br />{{ scoringType[team.scoring_type] }}
     </div>
     <mat-divider></mat-divider>
     <div

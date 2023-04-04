@@ -41,3 +41,49 @@ export interface Team {
   allow_add_drops: boolean;
   allow_waiver_adds: boolean;
 }
+
+export function getEmptyTeamObject(): Team {
+  return {
+    game_name: '',
+    game_code: '',
+    game_season: '',
+    game_is_over: false,
+    team_key: '',
+    team_name: '',
+    team_url: '',
+    team_logo: '',
+    league_name: '',
+    num_teams: 0,
+    rank: '',
+    points_for: 0,
+    points_against: 0,
+    points_back: 0,
+    outcome_totals: {
+      wins: 0,
+      losses: 0,
+      ties: 0,
+      percentage: 0,
+    },
+    scoring_type: '',
+    start_date: 0,
+    end_date: 0,
+    weekly_deadline: 0,
+    edit_key: '',
+    is_subscribed: false,
+    is_setting_lineups: false,
+    last_updated: 0,
+    faab_balance: 0,
+    waiver_rule: '',
+    current_weekly_adds: 0,
+    current_season_adds: 0,
+    max_weekly_adds: 0,
+    max_season_adds: 0,
+    max_games_played: 0,
+    max_innings_pitched: 0,
+    allow_transactions: false,
+    allow_dropping: false,
+    allow_adding: false,
+    allow_add_drops: false,
+    allow_waiver_adds: false,
+  };
+}
