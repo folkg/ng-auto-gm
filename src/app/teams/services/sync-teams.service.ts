@@ -28,7 +28,8 @@ export class SyncTeamsService {
     // fetch teams from yahoo via firebase function
     const fetchTeamsFromServer = httpsCallableFromURL(
       this.fns,
-      'https://fetchuserteams-nw73xubluq-uc.a.run.app'
+      // 'https://lineup-fetchuserteams-nw73xubluq-uc.a.run.app'
+      'https://auto-gm-372620.web.app/api/fetchuserteams'
     );
     try {
       const teams = await fetchTeamsFromServer();

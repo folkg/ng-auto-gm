@@ -42,7 +42,8 @@ export class FeedbackComponent {
 
         const sendFeedbackEmail = httpsCallableFromURL(
           this.fns,
-          'https://sendfeedbackemail-nw73xubluq-uc.a.run.app'
+          // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
+          'https://auto-gm-372620.web.app/api/sendfeedbackemail'
         );
         try {
           const result = await sendFeedbackEmail(data);
