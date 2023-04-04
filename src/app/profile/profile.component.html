@@ -1,81 +1,9 @@
 <div class="header primaryColorBG"><h1>Profile</h1></div>
 <div class="content">
   <app-offline-warning-card></app-offline-warning-card>
-  <mat-card class="card">
-    <mat-card-header>
-      <img mat-card-avatar src="{{ user?.photoURL }}" alt="User Photo" />
-      <mat-card-title>{{ user?.displayName }}</mat-card-title>
-    </mat-card-header>
-    <!-- TODO: Flag somewhere if the email is not validated -->
-    <mat-card-content>
-      <mat-error *ngIf="user?.emailVerified === false"
-        >Email address has not been verified. Please check your email for the
-        verification link.</mat-error
-      >
-      <div class="line-item">
-        <div
-          *ngIf="this.isEditing; else showStatic"
-          [formGroup]="profileForm"
-          class="left-text"
-        >
-          <mat-form-field class="form-field">
-            <mat-label>Email</mat-label>
-            <input
-              matInput
-              type="email"
-              formControlName="email"
-              [email]="true"
-            />
-            <mat-error *ngIf="emailFormControl.invalid"
-              >Invalid Email Address</mat-error
-            >
-          </mat-form-field>
-        </div>
-        <ng-template #showStatic>
-          <mat-label class="static-label">Email</mat-label>
-          <mat-label class="static-label">{{
-            profileForm.get("email")?.value
-          }}</mat-label>
-        </ng-template>
-        <button
-          mat-button
-          disabled="{{ this.isEditing }}"
-          (click)="this.isEditing = !this.isEditing"
-          class="right-button"
-        >
-          Edit
-        </button>
-      </div>
-    </mat-card-content>
-
-    <mat-card-actions>
-      <button
-        *ngIf="user?.emailVerified === false"
-        mat-button
-        (click)="sendVerificationEmail()"
-      >
-        Re-send Verification Email
-      </button>
-      <button
-        mat-button
-        disabled="{{
-          profileForm.pristine ||
-            emailFormControl.invalid ||
-            !(os.online$ | async)
-        }}"
-        (click)="saveChanges()"
-      >
-        Save Changes
-      </button>
-      <button
-        mat-button
-        disabled="{{ !this.isEditing }}"
-        (click)="cancelChanges()"
-      >
-        Cancel
-      </button>
-    </mat-card-actions>
-  </mat-card>
-
+  <app-profile-card
+    (isDirty)="onDirtyChange($event)"
+    class="card"
+  ></app-profile-card>
   <button mat-button (click)="logout()">Logout</button>
 </div>
