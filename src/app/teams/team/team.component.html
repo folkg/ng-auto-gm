@@ -1,4 +1,8 @@
-<mat-card class="team-card" [class.mat-elevation-z0]="team.end_date > date">
+<mat-card
+  class="team-card"
+  [class.mat-elevation-z1]="team.end_date < date"
+  [class.mat-elevation-z4]="team.end_date > date"
+>
   <mat-card-header>
     <img
       mat-card-avatar

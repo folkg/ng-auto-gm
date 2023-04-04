@@ -1,3 +1,4 @@
+@use "@angular/material" as mat;
 @import './theme.scss';
 
 html,
@@ -8,4 +9,12 @@ body {
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.mat-mdc-card.mat-elevation-z1 {
+    @include mat.elevation(1);
+}
+
+.mat-mdc-card.mat-elevation-z4 {
+    @include mat.elevation(4);
 }
