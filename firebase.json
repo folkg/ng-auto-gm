@@ -1,12 +1,12 @@
 {
   "hosting": {
     "public": "dist/auto-gm",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      },
       {
         "source": "/api/fetchuserteams",
         "run": {
@@ -20,6 +20,10 @@
           "serviceId": "email-sendfeedbackemail",
           "region": "us-central1"
         }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
       }
     ]
   }
