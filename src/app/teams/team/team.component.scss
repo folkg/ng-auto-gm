@@ -5,9 +5,21 @@
     margin: 1rem;
 }
 
+.header-actions-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+button {
+    margin-left: auto;
+    margin-right: 0.5rem;
+    padding: 0;
+}
+
 .card-content-section {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .flex-sb {

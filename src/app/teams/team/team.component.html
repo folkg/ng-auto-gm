@@ -3,17 +3,25 @@
   [class.mat-elevation-z1]="team.end_date < date"
   [class.mat-elevation-z4]="team.end_date > date"
 >
-  <mat-card-header>
-    <img
-      mat-card-avatar
-      src="{{ team.team_logo }}"
-      alt="{{ team.team_name }}"
-    />
-    <mat-card-title>{{ team.team_name }}</mat-card-title>
-    <mat-card-subtitle
-      >{{ team.league_name }} ({{ team.game_name }}, {{ team.game_season }})
-    </mat-card-subtitle>
-  </mat-card-header>
+  <div class="header-actions-wrapper">
+    <mat-card-header>
+      <img
+        mat-card-avatar
+        src="{{ team.team_logo }}"
+        alt="{{ team.team_name }}"
+      />
+      <mat-card-title>{{ team.team_name }}</mat-card-title>
+      <mat-card-subtitle
+        >{{ team.league_name }} ({{ team.game_name }},
+        {{ team.game_season }})</mat-card-subtitle
+      >
+    </mat-card-header>
+    <div>
+      <button mat-icon-button (click)="gotoExternalDomain(team.team_url)">
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+    </div>
+  </div>
   <mat-card-content>
     <div class="card-content-section">
       <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
@@ -64,10 +72,8 @@
       (change)="onToggle($event)"
       >Automatically Manage Lineups
     </mat-slide-toggle>
-    <div>
-      <button mat-button (click)="gotoExternalDomain(team.team_url)">
-        OPEN IN YAHOO
-      </button>
-    </div>
+    <button mat-icon-button [disabled]="!team.is_setting_lineups">
+      <mat-icon>settings</mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>
