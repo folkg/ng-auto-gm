@@ -17,9 +17,11 @@ export class TeamComponent {
   @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
   public date: number;
   public scoringType: { [key: string]: string } = {
-    head: 'Head to Head',
-    roto: 'Rotisserie',
-    point: 'Points',
+    head: 'Head to Head Scoring',
+    roto: 'Rotisserie Scoring',
+    point: 'Points Scoring',
+    headpoint: 'Head to Head (Points) Scoring',
+    headone: 'Head to Head (One Win) Scoring',
   };
 
   constructor(
