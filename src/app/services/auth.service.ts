@@ -9,6 +9,8 @@ import {
   updateEmail,
   User,
   sendEmailVerification,
+  setPersistence,
+  browserLocalPersistence,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
@@ -37,6 +39,7 @@ export class AuthService {
   async loginYahoo(): Promise<void> {
     try {
       const provider = new OAuthProvider('yahoo.com');
+      await setPersistence(this.auth, browserLocalPersistence);
       const result = await signInWithPopup(this.auth, provider);
       if (result) {
         this.router.navigate(['/teams']);
