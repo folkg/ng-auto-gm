@@ -26,12 +26,9 @@ $angular-dark-theme: mat.define-dark-theme((color: (primary: $angular-primary,
 .light-theme {
     @include mat.all-component-themes($angular-light-theme);
     @include theme-color-grabber($angular-light-theme);
-    // there may be a more elegant way to do this, but this works for now
-    --card-header-footer-bg: #f5f5f5;
 }
 
 .dark-theme {
     @include mat.all-component-colors($angular-dark-theme);
     @include theme-color-grabber($angular-dark-theme);
-    --card-header-footer-bg: #3b3b3b;
 }
