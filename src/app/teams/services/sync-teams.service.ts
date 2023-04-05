@@ -29,7 +29,7 @@ export class SyncTeamsService {
     const fetchTeamsFromServer = httpsCallableFromURL(
       this.fns,
       // 'https://lineup-fetchuserteams-nw73xubluq-uc.a.run.app'
-      'https://auto-gm-372620.web.app/api/fetchuserteams'
+      'https://fantasyautocoach.com/api/fetchuserteams'
     );
     try {
       const teams = await fetchTeamsFromServer();
