@@ -11,6 +11,13 @@ p {
     font-size: medium;
 }
 
+.card-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .header {
     padding-top: 2rem;
     padding-bottom: 1rem;

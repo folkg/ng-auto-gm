@@ -17,15 +17,15 @@ export interface Team {
   max_innings_pitched: number;
   game_name: string;
   game_season: string;
-  game_is_over: boolean;
+  game_is_over: boolean | number;
   team_name: string;
   team_url: string;
   team_logo: string;
   league_name: string;
   rank: string | number;
-  points_for: string | number;
-  points_against: string | number;
-  points_back: string | number;
+  points_for: string | number | null;
+  points_against: string | number | null;
+  points_back: string | number | null;
   outcome_totals: {
     wins: string | number;
     losses: string | number;

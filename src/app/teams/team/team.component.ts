@@ -36,14 +36,17 @@ export class TeamComponent {
   }
 
   gotoExternalDomain(url: string) {
-    (window as any).open(url, '_blank');
+    if (url) {
+      (window as any).open(url, '_blank');
+    }
   }
 
   getNextLineupUpdate(): string {
     const SERVER_UPDATE_MINUTES = 55;
 
-    // set the editKey of the team to a Date object in PST timezone
-    const editKeyDate = new Date(Date.parse(this.team.edit_key! + 'GMT-0800'));
+    // set the editKey of the team to a Date object in PT timezone
+    // -8 hours from GMT is conservative and will work for PST and PDT
+    const editKeyDate = new Date(Date.parse(this.team.edit_key + 'GMT-0800'));
     const today = new Date();
 
     if (

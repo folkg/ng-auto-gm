@@ -31,6 +31,7 @@ import { TeamsComponent } from './teams.component';
     MatTooltipModule,
     SharedModule,
   ],
+  exports: [TeamComponent],
   providers: [RelativeDatePipe],
 })
 export class TeamsModule {}
