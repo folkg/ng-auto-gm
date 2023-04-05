@@ -1,6 +1,6 @@
 <mat-card
   class="team-card"
-  [class.mat-elevation-z1]="team.end_date < date"
+  [appearance]="team.end_date < date ? 'outlined' : 'raised'"
   [class.mat-elevation-z4]="team.end_date > date"
 >
   <div class="header-actions-wrapper header-footer-bg">
