@@ -53,17 +53,33 @@ export class AboutComponent {
   };
 
   getLastUpdate(): number {
-    return new Date().setUTCHours(8, 55, 0, 0);
+    return this.setPTHours(new Date(), 0, 55, 0, 0);
   }
 
   getNextUpdate(): number {
-    const date = new Date();
-    if (date.getHours() >= 18) {
-      date.setDate(date.getDate() + 1);
-      date.setUTCHours(8, 55, 0, 0);
-    } else {
-      date.setHours(18, 55, 0, 0);
-    }
-    return date.getTime();
+    const timestamp = this.setPTHours(new Date(), 15, 55, 0, 0);
+    return timestamp < Date.now()
+      ? this.setPTHours(new Date(), 0, 55, 0, 0)
+      : timestamp;
+  }
+
+  setPTHours(
+    date: Date,
+    hours: number,
+    min: number,
+    sec: number,
+    ms: number
+  ): number {
+    const PTOffset = 24 - 8 + (this.isDaylightSavingTime() ? 1 : 0);
+    let UTCHours = hours - PTOffset;
+    return date.setUTCHours(UTCHours, min, sec, ms);
+  }
+
+  isDaylightSavingTime() {
+    const today = new Date();
+    const january = new Date(today.getFullYear(), 0, 1);
+    const stdTimezoneOffset = january.getTimezoneOffset();
+    const currentOffset = today.getTimezoneOffset();
+    return currentOffset !== stdTimezoneOffset;
   }
 }

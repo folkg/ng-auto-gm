@@ -46,7 +46,13 @@ export class TeamComponent {
 
     // set the editKey of the team to a Date object in PT timezone
     // -8 hours from GMT is conservative and will work for PST and PDT
-    const editKeyDate = new Date(Date.parse(this.team.edit_key + 'GMT-0800'));
+    // .replace('PT', 'GMT-0800').replace('PDT', 'GMT-0700')
+    const editKeyDate = new Date(
+      Date.parse(
+        this.team.edit_key +
+          (this.isDaylightSavingTime() ? 'GMT-0700' : 'GMT-0800')
+      )
+    );
     const today = new Date();
 
     if (
@@ -94,5 +100,13 @@ export class TeamComponent {
     }
 
     return 'Next Game Day';
+  }
+
+  isDaylightSavingTime() {
+    const today = new Date();
+    const january = new Date(today.getFullYear(), 0, 1);
+    const stdTimezoneOffset = january.getTimezoneOffset();
+    const currentOffset = today.getTimezoneOffset();
+    return currentOffset !== stdTimezoneOffset;
   }
 }
