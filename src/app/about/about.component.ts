@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Team } from '../teams/interfaces/team';
+import spacetime from 'spacetime';
 
 @Component({
   selector: 'app-about',
@@ -53,33 +54,22 @@ export class AboutComponent {
   };
 
   getLastUpdate(): number {
-    return this.setPTHours(new Date(), 0, 55, 0, 0);
+    const now = spacetime.now('Canada/Pacific');
+    const update = now.time('15:55');
+    if (now.isAfter(update)) {
+      return update.epoch;
+    } else {
+      return now.time('01:55').epoch;
+    }
   }
 
   getNextUpdate(): number {
-    const timestamp = this.setPTHours(new Date(), 15, 55, 0, 0);
-    return timestamp < Date.now()
-      ? this.setPTHours(new Date(), 0, 55, 0, 0)
-      : timestamp;
-  }
-
-  setPTHours(
-    date: Date,
-    hours: number,
-    min: number,
-    sec: number,
-    ms: number
-  ): number {
-    const PTOffset = 24 - 8 + (this.isDaylightSavingTime() ? 1 : 0);
-    let UTCHours = hours - PTOffset;
-    return date.setUTCHours(UTCHours, min, sec, ms);
-  }
-
-  isDaylightSavingTime() {
-    const today = new Date();
-    const january = new Date(today.getFullYear(), 0, 1);
-    const stdTimezoneOffset = january.getTimezoneOffset();
-    const currentOffset = today.getTimezoneOffset();
-    return currentOffset !== stdTimezoneOffset;
+    const now = spacetime.now('Canada/Pacific');
+    const update = now.time('15:55');
+    if (now.isAfter(update)) {
+      return now.add(1, 'day').time('01:55').epoch;
+    } else {
+      return update.epoch;
+    }
   }
 }

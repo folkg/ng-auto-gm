@@ -1,10 +1,10 @@
-import { NodeWithI18n } from '@angular/compiler';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
 import { Team, getEmptyTeamObject } from '../interfaces/team';
 import { RelativeDatePipe } from '../pipes/relative-date.pipe';
+import spacetime from 'spacetime';
 
 @Component({
   selector: 'app-team[team]',
@@ -42,71 +42,35 @@ export class TeamComponent {
   }
 
   getNextLineupUpdate(): string {
-    const SERVER_UPDATE_MINUTES = 55;
+    // server update is in Pacific Time
+    const SERVER_UPDATE_HOUR = 1;
+    const SERVER_UPDATE_MINUTE = 55;
 
-    // set the editKey of the team to a Date object in PT timezone
-    // -8 hours from GMT is conservative and will work for PST and PDT
-    // .replace('PT', 'GMT-0800').replace('PDT', 'GMT-0700')
-    const editKeyDate = new Date(
-      Date.parse(
-        this.team.edit_key +
-          (this.isDaylightSavingTime() ? 'GMT-0700' : 'GMT-0800')
-      )
-    );
-    const today = new Date();
+    const editKeyDate = spacetime(this.team.edit_key, 'Canada/Pacific');
+    const now = spacetime.now('Canada/Pacific');
 
-    if (
-      this.team.weekly_deadline !== 'intraday' &&
-      this.team.weekly_deadline !== '' &&
-      editKeyDate.getDay() !== today.getDay()
-    ) {
-      // if the editKeyDate is not today in a weekly league, then the next update is next week
-      // set the minutes to 55 on editKeyDate
-      editKeyDate.setMinutes(SERVER_UPDATE_MINUTES);
-      return this.datePipe.transform(editKeyDate.getTime());
+    if (this.team.weekly_deadline === '1' && editKeyDate.day() !== now.day()) {
+      const nextMondayMorning = editKeyDate
+        .hour(SERVER_UPDATE_HOUR)
+        .minute(SERVER_UPDATE_MINUTE);
+      return this.datePipe.transform(nextMondayMorning.epoch);
     } else if (this.gameTimeStamps) {
-      // find the first game that hasn't happened yet
-      const now = Date.now();
-      const nextGame = this.gameTimeStamps.find(
-        (timestamp: number) => timestamp > now
+      const nextGameTimestamp = this.gameTimeStamps.find(
+        (timestamp: number) => timestamp > Date.now()
       );
-      if (nextGame) {
-        // get the timestamp of the scheduled update before the next game
-        // 55 minutes after the hour cron job on server
-        const nextGameHour = new Date(nextGame).getHours();
-        const nextGameMinutes = new Date(nextGame).getMinutes();
-        let updateTime;
-        if (nextGameMinutes < SERVER_UPDATE_MINUTES) {
-          updateTime = new Date(
-            new Date(nextGame).setHours(
-              nextGameHour - 1,
-              SERVER_UPDATE_MINUTES,
-              0,
-              0
-            )
-          ).getTime();
-        } else {
-          updateTime = new Date(
-            new Date(nextGame).setHours(
-              nextGameHour,
-              SERVER_UPDATE_MINUTES,
-              0,
-              0
-            )
-          ).getTime();
+      if (nextGameTimestamp) {
+        const nextGame = spacetime(nextGameTimestamp);
+        let nextUpdateTime = nextGame.minute(SERVER_UPDATE_MINUTE);
+        if (nextGame.minute() < SERVER_UPDATE_MINUTE) {
+          nextUpdateTime = nextUpdateTime.subtract(1, 'hour');
         }
-        return this.datePipe.transform(updateTime);
+        return this.datePipe.transform(nextUpdateTime.epoch);
       }
     }
-
-    return 'Next Game Day';
-  }
-
-  isDaylightSavingTime() {
-    const today = new Date();
-    const january = new Date(today.getFullYear(), 0, 1);
-    const stdTimezoneOffset = january.getTimezoneOffset();
-    const currentOffset = today.getTimezoneOffset();
-    return currentOffset !== stdTimezoneOffset;
+    const tomorrowMorning = now
+      .add(1, 'day')
+      .hour(SERVER_UPDATE_HOUR)
+      .minute(SERVER_UPDATE_MINUTE);
+    return this.datePipe.transform(tomorrowMorning.epoch);
   }
 }
