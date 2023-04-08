@@ -1,10 +1,10 @@
-# AutoGm
+# Fantasy AutoCoach
 
 ## Hosted Version
 
 This is the frontend client for a full stack app. The hosted version can be accessed and used at the following address:
 
-https://auto-gm-372620.web.app/teams
+https://fantasyautocoach.com/
 
 ## Development server
 
