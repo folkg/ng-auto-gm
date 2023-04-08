@@ -42,21 +42,21 @@ export class TeamComponent {
   }
 
   getNextLineupUpdate(): string {
-    // server update is in Pacific Time
-    const SERVER_UPDATE_HOUR = 1;
+    // server update is in Pacific Time, this is when yahoo resets for the day
     const SERVER_UPDATE_MINUTE = 55;
+    const FIRST_SERVER_UPDATE_HOUR = 1;
 
     const editKeyDate = spacetime(this.team.edit_key, 'Canada/Pacific');
     const now = spacetime.now('Canada/Pacific');
 
     if (this.team.weekly_deadline === '1' && editKeyDate.day() !== now.day()) {
       const nextMondayMorning = editKeyDate
-        .hour(SERVER_UPDATE_HOUR)
+        .hour(FIRST_SERVER_UPDATE_HOUR)
         .minute(SERVER_UPDATE_MINUTE);
       return this.datePipe.transform(nextMondayMorning.epoch);
     } else if (this.gameTimeStamps) {
       const nextGameTimestamp = this.gameTimeStamps.find(
-        (timestamp: number) => timestamp > Date.now()
+        (timestamp: number) => timestamp > now.epoch
       );
       if (nextGameTimestamp) {
         const nextGame = spacetime(nextGameTimestamp);
@@ -69,7 +69,7 @@ export class TeamComponent {
     }
     const tomorrowMorning = now
       .add(1, 'day')
-      .hour(SERVER_UPDATE_HOUR)
+      .hour(FIRST_SERVER_UPDATE_HOUR)
       .minute(SERVER_UPDATE_MINUTE);
     return this.datePipe.transform(tomorrowMorning.epoch);
   }
