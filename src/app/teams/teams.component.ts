@@ -57,13 +57,13 @@ export class TeamsComponent implements OnInit, OnDestroy {
         snackBarRef = this._snackBar.open('Refreshing Teams');
         this.teams = JSON.parse(localStorage.getItem('yahooTeams') || '[]');
         this.teams = await this.sts.fetchTeamsFromYahoo();
+        await this.fetchTeamPropertiesFromFirestore();
         snackBarRef.dismiss();
         localStorage.setItem('yahooTeams', JSON.stringify(this.teams));
       } else {
         // If teams exist in sessionStorage, just refresh properties from firestore
         await this.fetchTeamPropertiesFromFirestore();
       }
-      // save teams to sessionStorage
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
     } catch (err: Error | any) {
       snackBarRef?.dismiss();

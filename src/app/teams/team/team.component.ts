@@ -28,7 +28,7 @@ export class TeamComponent {
     public os: OnlineStatusService,
     private datePipe: RelativeDatePipe
   ) {
-    this.date = Date.now();
+    this.date = spacetime.now().epoch;
   }
 
   onToggle($event: MatSlideToggleChange) {
