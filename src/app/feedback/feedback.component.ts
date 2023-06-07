@@ -30,7 +30,7 @@ export class FeedbackComponent {
   onSubmitCloudFunction() {
     if (this.honeypot === '') {
       this.submitted = true;
-      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
+      this.auth.user$.pipe(take(1)).subscribe((user) => {
         const emailBody: string =
           user.displayName + '\n' + user.uid + '\n\n' + this.feedback;
         const data = {
@@ -45,17 +45,18 @@ export class FeedbackComponent {
           // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
           'https://fantasyautocoach.com/api/sendfeedbackemail'
         );
-        try {
-          const result = await sendFeedbackEmail(data);
-          this.success = result.data as boolean;
-        } catch (err: Error | any) {
-          this.success = false;
-        }
+        sendFeedbackEmail(data)
+          .then((result) => {
+            this.success = result.data as boolean;
+          })
+          .catch((_) => {
+            this.success = false;
+          });
       });
     }
   }
 
   public canDeactivate(): boolean {
-    return this.feedbackForm?.pristine || this.submitted;
+    return this.feedbackForm?.pristine ?? this.submitted;
   }
 }
