@@ -4,7 +4,11 @@ import { OnlineStatusService } from 'src/app/services/online-status.service';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
 import { Team, getEmptyTeamObject } from '../interfaces/team';
 import { RelativeDatePipe } from '../pipes/relative-date.pipe';
-import spacetime from 'spacetime';
+import spacetime, { Spacetime } from 'spacetime';
+
+// server update is in Pacific Time, this is when yahoo resets for the day
+const SERVER_UPDATE_MINUTE = 55;
+const FIRST_SERVER_UPDATE_HOUR = 1;
 
 @Component({
   selector: 'app-team[team]',
@@ -42,35 +46,50 @@ export class TeamComponent {
   }
 
   getNextLineupUpdate(): string {
-    // server update is in Pacific Time, this is when yahoo resets for the day
-    const SERVER_UPDATE_MINUTE = 55;
-    const FIRST_SERVER_UPDATE_HOUR = 1;
-
     const editKeyDate = spacetime(this.team.edit_key, 'Canada/Pacific');
     const now = spacetime.now('Canada/Pacific');
+    const isWeeklyLeague =
+      this.team.weekly_deadline !== 'intraday' &&
+      this.team.weekly_deadline !== '';
 
-    if (this.team.weekly_deadline === '1' && editKeyDate.day() !== now.day()) {
-      const nextMondayMorning = editKeyDate
+    if (isWeeklyLeague) {
+      let nextWeeklyUpdate: Spacetime = editKeyDate
         .hour(FIRST_SERVER_UPDATE_HOUR)
         .minute(SERVER_UPDATE_MINUTE);
-      return this.datePipe.transform(nextMondayMorning.epoch);
+
+      if (editKeyDate.day() === now.day()) {
+        const firstGameTimestamp = this.gameTimeStamps?.[0];
+        if (firstGameTimestamp && firstGameTimestamp > now.epoch) {
+          const firstGame: Spacetime = spacetime(firstGameTimestamp);
+          return this.getUpdateBeforeGame(firstGame);
+        }
+
+        nextWeeklyUpdate = nextWeeklyUpdate.add(1, 'week');
+      }
+
+      return this.datePipe.transform(nextWeeklyUpdate.epoch);
     } else if (this.gameTimeStamps) {
       const nextGameTimestamp = this.gameTimeStamps.find(
         (timestamp: number) => timestamp > now.epoch
       );
       if (nextGameTimestamp) {
-        const nextGame = spacetime(nextGameTimestamp);
-        let nextUpdateTime = nextGame.minute(SERVER_UPDATE_MINUTE);
-        if (nextGame.minute() < SERVER_UPDATE_MINUTE) {
-          nextUpdateTime = nextUpdateTime.subtract(1, 'hour');
-        }
-        return this.datePipe.transform(nextUpdateTime.epoch);
+        const nextGame: Spacetime = spacetime(nextGameTimestamp);
+        return this.getUpdateBeforeGame(nextGame);
       }
     }
+
     const tomorrowMorning = now
       .add(1, 'day')
       .hour(FIRST_SERVER_UPDATE_HOUR)
       .minute(SERVER_UPDATE_MINUTE);
     return this.datePipe.transform(tomorrowMorning.epoch);
+  }
+
+  getUpdateBeforeGame(game: Spacetime): string {
+    let updateTime = game.minute(SERVER_UPDATE_MINUTE);
+    if (game.minute() < SERVER_UPDATE_MINUTE) {
+      updateTime = updateTime.subtract(1, 'hour');
+    }
+    return this.datePipe.transform(updateTime.epoch);
   }
 }

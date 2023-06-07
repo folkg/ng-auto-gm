@@ -37,15 +37,28 @@
       </ng-container>
       <ng-container *ngIf="team.points_for">
         <br />
-        {{ team.points_for }} points
+        {{ team.points_for | number : "1.2-2" }} points
         <ng-container *ngIf="team.points_against">
-          for, {{ team.points_against }} points against</ng-container
+          for, {{ team.points_against | number : "1.2-2" }} points
+          against</ng-container
         >
         <ng-container *ngIf="team.points_back">
-          ({{ team.points_back }} points behind leader)</ng-container
+          ({{ team.points_back | number : "1.2-2" }} points behind
+          leader)</ng-container
         >
       </ng-container>
       <br />{{ scoringType[team.scoring_type] }}
+      <ng-container
+        *ngIf="team.max_games_played > 0 || team.max_innings_pitched > 0"
+      >
+        <br />Max Games Played Limit
+      </ng-container>
+      <ng-container
+        *ngIf="team.weekly_deadline != 'intraday' && team.weekly_deadline != ''"
+      >
+        <br />
+        Weekly Lineup Changes
+      </ng-container>
     </div>
     <mat-divider></mat-divider>
     <div
@@ -66,21 +79,6 @@
     <ng-template #seasonOver
       ><div class="card-content-section">The season is over.</div>
     </ng-template>
-
-    <ng-container
-      *ngIf="
-        team.end_date > date &&
-        (team.max_games_played > 0 || team.max_innings_pitched > 0)
-      "
-    >
-      <mat-divider></mat-divider>
-      <div class="error card-content-section">
-        <span>
-          Note: Automatically Managing Lineups is not recommended for leagues
-          with Max Games Played at this time
-        </span>
-      </div>
-    </ng-container>
   </mat-card-content>
   <mat-divider></mat-divider>
   <mat-card-actions>
@@ -91,11 +89,6 @@
         "
         [(ngModel)]="team.is_setting_lineups"
         (change)="onToggle($event)"
-        color="{{
-          team.max_games_played > 0 || team.max_innings_pitched > 0
-            ? 'warn'
-            : 'accent'
-        }}"
         >Automatically Manage Lineups
       </mat-slide-toggle>
       <!-- <button
