@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanDeactivate, UrlTree } from '@angular/router';
+import { UrlTree } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import {
@@ -15,7 +15,7 @@ export interface ComponentCanDeactivate {
 @Injectable({
   providedIn: 'root',
 })
-export class DirtyFormGuard implements CanDeactivate<unknown> {
+export class DirtyFormGuard  {
   constructor(public dialog: MatDialog) {}
 
   async confirmDialog(): Promise<boolean> {
