@@ -9,7 +9,11 @@ import {
   updateDoc,
   getDoc,
 } from '@angular/fire/firestore';
-import { Functions, httpsCallableFromURL } from '@angular/fire/functions';
+import {
+  Functions,
+  HttpsCallable,
+  httpsCallableFromURL,
+} from '@angular/fire/functions';
 import { Team } from '../interfaces/team';
 import { AuthService } from 'src/app/services/auth.service';
 import { take } from 'rxjs';
@@ -26,14 +30,15 @@ export class SyncTeamsService {
 
   async fetchTeamsFromYahoo(): Promise<Team[]> {
     // fetch teams from yahoo via firebase function
-    const fetchTeamsFromServer = httpsCallableFromURL(
-      this.fns,
-      // 'https://lineup-fetchuserteams-nw73xubluq-uc.a.run.app'
-      'https://fantasyautocoach.com/api/fetchuserteams'
-    );
+    const fetchTeamsFromServer: HttpsCallable<null, Team[]> =
+      httpsCallableFromURL(
+        this.fns,
+        // 'https://lineup-fetchuserteams-nw73xubluq-uc.a.run.app'
+        'https://fantasyautocoach.com//api/gettransactions'
+      );
     try {
       const teams = await fetchTeamsFromServer();
-      return teams.data as Team[];
+      return teams.data;
     } catch (err: Error | any) {
       if (err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired

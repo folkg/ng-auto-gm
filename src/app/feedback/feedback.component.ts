@@ -1,5 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { Functions, httpsCallableFromURL } from '@angular/fire/functions';
+import {
+  Functions,
+  HttpsCallable,
+  httpsCallableFromURL,
+} from '@angular/fire/functions';
 import { NgForm } from '@angular/forms';
 import { take } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -33,21 +37,22 @@ export class FeedbackComponent {
       this.auth.user$.pipe(take(1)).subscribe((user) => {
         const emailBody: string =
           user.displayName + '\n' + user.uid + '\n\n' + this.feedback;
-        const data = {
+        const data: FeedbackData = {
           userEmail: user.email,
           feedbackType: this.feedbackType || 'General',
           title: this.title,
           message: emailBody,
         };
 
-        const sendFeedbackEmail = httpsCallableFromURL(
-          this.fns,
-          // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
-          'https://fantasyautocoach.com/api/sendfeedbackemail'
-        );
+        const sendFeedbackEmail: HttpsCallable<FeedbackData, boolean> =
+          httpsCallableFromURL(
+            this.fns,
+            // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
+            'https://fantasyautocoach.com/api/sendfeedbackemail'
+          );
         sendFeedbackEmail(data)
           .then((result) => {
-            this.success = result.data as boolean;
+            this.success = result.data;
           })
           .catch((_) => {
             this.success = false;
@@ -60,3 +65,10 @@ export class FeedbackComponent {
     return this.feedbackForm?.pristine ?? this.submitted;
   }
 }
+
+type FeedbackData = {
+  userEmail: string;
+  feedbackType: string;
+  title: string;
+  message: string;
+};
