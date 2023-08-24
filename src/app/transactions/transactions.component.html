@@ -1,1 +1,25 @@
-<p>transactions works!</p>
+<div class="header primaryColorBG">
+  <h1>Suggested Transactions</h1>
+</div>
+<div class="content">
+  <ng-container *ngIf="displayTransactions !== undefined; else showLoading">
+    <ng-container *ngIf="displayTransactions | keyvalue; let teams">
+      <ng-container *ngIf="teams.length > 0; else noTransactions">
+        <div *ngFor="let team of teams">
+          <h2>
+            {{ team.value[0].teamName }} ({{ team.value[0].leagueName }}):
+          </h2>
+          <div *ngFor="let transaction of team.value">
+            <p>{{ transaction.reason }}</p>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noTransactions>
+        <h2>No transactions available. Check back tomorrow.</h2>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+  <ng-template #showLoading>
+    <h2>Loading Transactions...</h2>
+  </ng-template>
+</div>
