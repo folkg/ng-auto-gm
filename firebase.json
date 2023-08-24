@@ -1,16 +1,26 @@
 {
   "hosting": {
     "public": "dist/auto-gm",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "/api/fetchuserteams",
         "run": {
           "serviceId": "lineup-fetchuserteams",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/gettransactions",
+        "run": {
+          "serviceId": "transactions-gettransactions",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/posttransactions",
+        "run": {
+          "serviceId": "transactions-posttransactions",
           "region": "us-central1"
         }
       },
