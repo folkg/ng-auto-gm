@@ -1,0 +1,59 @@
+<mat-card class="team-card mat-elevation-z4">
+  <div class="header-actions-wrapper header-footer-bg">
+    <mat-card-header>
+      <img
+        mat-card-avatar
+        src="{{ team.team_logo }}"
+        alt="{{ team.team_name }}"
+      />
+      <mat-card-title>{{ team.team_name }}</mat-card-title>
+      <mat-card-subtitle
+        >{{ team.league_name }} ({{ team.game_name }},
+        {{ team.game_season }})</mat-card-subtitle
+      >
+    </mat-card-header>
+    <div>
+      <button
+        mat-icon-button
+        matTooltip="Open {{ team.team_name }} in Yahoo"
+        (click)="gotoExternalDomain(team.team_url)"
+      >
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <div class="card-content-section">
+      <ng-container *ngIf="team.outcome_totals"
+        ><br />{{ team.outcome_totals.wins }}-{{
+          team.outcome_totals.losses
+        }}-{{ team.outcome_totals.ties }} ({{ team.outcome_totals.percentage }})
+      </ng-container>
+      <ng-container *ngIf="team.points_for">
+        <br />
+        {{ team.points_for | number : "1.2-2" }} points
+        <ng-container *ngIf="team.points_against">
+          for, {{ team.points_against | number : "1.2-2" }} points
+          against</ng-container
+        >
+        <ng-container *ngIf="team.points_back">
+          ({{ team.points_back | number : "1.2-2" }} points behind
+          leader)</ng-container
+        >
+      </ng-container>
+      <br />{{ scoringType[team.scoring_type] }}
+      <ng-container
+        *ngIf="team.max_games_played > 0 || team.max_innings_pitched > 0"
+      >
+        <br />Max Games Played Limit
+      </ng-container>
+      <ng-container
+        *ngIf="team.weekly_deadline != 'intraday' && team.weekly_deadline != ''"
+      >
+        <br />
+        Weekly Lineup Changes
+      </ng-container>
+    </div>
+  </mat-card-content>
+</mat-card>

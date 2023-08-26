@@ -22,4 +22,11 @@
   <ng-template #showLoading>
     <h2>Loading Transactions...</h2>
   </ng-template>
+  <ng-container *ngIf="teams.length !== 0">
+    <app-team
+      class="card-container"
+      *ngFor="let team of teams"
+      [team]="team"
+    ></app-team>
+  </ng-container>
 </div>

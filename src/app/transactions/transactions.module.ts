@@ -9,9 +9,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { SharedModule } from '../shared/shared.module';
 import { TransactionsRoutingModule } from './transactions-routing.module';
 import { TransactionsComponent } from './transactions.component';
+import { TeamComponent } from './team/team.component';
 
 @NgModule({
-  declarations: [TransactionsComponent],
+  declarations: [TransactionsComponent, TeamComponent],
   imports: [
     CommonModule,
     TransactionsRoutingModule,

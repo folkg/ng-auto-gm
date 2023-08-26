@@ -9,6 +9,9 @@ import {
   PlayerTransaction,
   TransactionsData,
 } from './interfaces/TransactionsData';
+import { SyncTeamsService } from '../services/sync-teams.service';
+import { Team } from '../services/interfaces/team';
+import { Subscription } from 'rxjs';
 
 type GroupedPlayerTransactions = {
   [key: string]: PlayerTransaction[];
@@ -20,13 +23,26 @@ type GroupedPlayerTransactions = {
   styleUrls: ['./transactions.component.scss'],
 })
 export class TransactionsComponent {
+  public teams: Team[] = [];
   private transactions: TransactionsData | undefined;
   public displayTransactions: GroupedPlayerTransactions | undefined;
+  private teamsSubscription: Subscription | undefined;
 
-  constructor(private fns: Functions) {}
+  constructor(private fns: Functions, private sts: SyncTeamsService) {
+    this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
+      this.teams = teams;
+    });
+  }
 
   async ngOnInit(): Promise<void> {
-    await this.fetchTransactions();
+    // await this.fetchTransactions();
+    const { transactionsData } = await import('./sample/sampleTransactions');
+    this.transactions = transactionsData;
+    this.setDisplayTransactions();
+  }
+
+  ngOnDestroy(): void {
+    this.teamsSubscription?.unsubscribe();
   }
 
   private async fetchTransactions(): Promise<void> {
@@ -42,26 +58,34 @@ export class TransactionsComponent {
 
       this.transactions = transactions;
 
-      const { dropPlayerTransactions, addSwapTransactions } = transactions;
-
-      const proposedTransactions: PlayerTransaction[] = (
-        dropPlayerTransactions ?? []
-      )
-        .concat(addSwapTransactions ?? [])
-        .flat();
-
-      // assign a unique key (index) to each transaction so we can track them later
-      proposedTransactions.forEach((t, i) => {
-        t.key = i;
-      });
-
-      this.displayTransactions =
-        this.groupTransactionsByTeam(proposedTransactions);
+      this.setDisplayTransactions();
     } catch (err: any) {
       console.error(
         'Error fetching transactions from Firebase: ' + err.message
       );
     }
+  }
+
+  private setDisplayTransactions() {
+    if (!this.transactions) {
+      return;
+    }
+
+    const { dropPlayerTransactions, addSwapTransactions } = this.transactions;
+
+    const proposedTransactions: PlayerTransaction[] = (
+      dropPlayerTransactions ?? []
+    )
+      .concat(addSwapTransactions ?? [])
+      .flat();
+
+    // assign a unique key (index) to each transaction so we can track them later
+    proposedTransactions.forEach((t, i) => {
+      t.key = i;
+    });
+
+    this.displayTransactions =
+      this.groupTransactionsByTeam(proposedTransactions);
   }
 
   private groupTransactionsByTeam(
