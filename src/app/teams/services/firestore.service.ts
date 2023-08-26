@@ -8,7 +8,7 @@ import {
 } from '@angular/fire/firestore';
 import { take } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { Team } from '../interfaces/team';
+import { Team } from '../../services/interfaces/team';
 
 @Injectable({
   providedIn: null,

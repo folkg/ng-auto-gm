@@ -11,15 +11,15 @@ import {
 } from '../shared/confirm-dialog/confirm-dialog.component';
 import { Schedule } from './interfaces/schedules';
 import { SetLineupEvent } from './interfaces/set-lineup-event';
-import { Team } from './interfaces/team';
-import { SyncTeamsService } from './services/sync-teams.service';
+import { Team } from '../services/interfaces/team';
 import { FirestoreService } from './services/firestore.service';
+import { SyncTeamsService } from '../services/sync-teams.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './teams.component.html',
   styleUrls: ['./teams.component.scss'],
-  providers: [SyncTeamsService, FirestoreService],
+  providers: [FirestoreService],
 })
 export class TeamsComponent implements OnInit, OnDestroy {
   public teams: Team[] = [];

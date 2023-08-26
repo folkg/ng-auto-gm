@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Team } from '../teams/interfaces/team';
+import { Team } from '../services/interfaces/team';
 import spacetime from 'spacetime';
 
 @Component({

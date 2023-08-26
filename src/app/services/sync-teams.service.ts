@@ -18,10 +18,10 @@ import {
   ConfirmDialogComponent,
   DialogData,
 } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
-import { Team } from '../interfaces/team';
+import { Team } from './interfaces/team';
 
 @Injectable({
-  providedIn: null,
+  providedIn: 'root',
 })
 export class SyncTeamsService {
   private teamsSubject = new BehaviorSubject<Team[]>([]);
