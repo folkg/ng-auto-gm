@@ -24,8 +24,8 @@ import { SyncTeamsService } from '../services/sync-teams.service';
 export class TeamsComponent implements OnInit, OnDestroy {
   public teams: Team[] = [];
   public schedule: Schedule | null = null;
+  public user: User | null = null;
   private isDirty: boolean = false;
-  user: User | null = null;
   private userSubscription: Subscription | undefined;
   private teamsSubscription: Subscription | undefined;
   private loadingTeamsSubscription: Subscription | undefined;
@@ -36,7 +36,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     public dialog: MatDialog,
     public os: OnlineStatusService,
-    private _snackBar: MatSnackBar
+    private snackBar: MatSnackBar
   ) {
     this.userSubscription = this.auth.user$.subscribe((user) => {
       if (user) {
@@ -50,9 +50,9 @@ export class TeamsComponent implements OnInit, OnDestroy {
 
     this.loadingTeamsSubscription = this.sts.loading$.subscribe((loading) => {
       if (loading) {
-        this._snackBar.open('Refreshing Teams');
+        this.snackBar.open('Refreshing Teams');
       } else {
-        this._snackBar.dismiss();
+        this.snackBar.dismiss();
       }
     });
   }

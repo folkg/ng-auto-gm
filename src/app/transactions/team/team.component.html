@@ -54,6 +54,16 @@
         <br />
         Weekly Lineup Changes
       </ng-container>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="transactions.length > 0; else noTransactions">
+        <app-transaction
+          *ngFor="let transaction of transactions"
+          [transaction]="transaction"
+        ></app-transaction>
+      </ng-container>
+      <ng-template #noTransactions>
+        <p>No transactions available. Check back tomorrow.</p>
+      </ng-template>
     </div>
   </mat-card-content>
 </mat-card>

@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { OnlineStatusService } from 'src/app/services/online-status.service';
-import { PlayerTransaction } from '../interfaces/TransactionsData';
 import { Team, getEmptyTeamObject } from 'src/app/services/interfaces/team';
+import { PlayerTransaction } from '../interfaces/TransactionsData';
 
 @Component({
   selector: 'app-team[team]',
@@ -18,8 +17,6 @@ export class TeamComponent {
     headpoint: 'Head to Head (Points) Scoring',
     headone: 'Head to Head (One Win) Scoring',
   };
-
-  constructor(public os: OnlineStatusService) {}
 
   gotoExternalDomain(url: string) {
     if (url) {

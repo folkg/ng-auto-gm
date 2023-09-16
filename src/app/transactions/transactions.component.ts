@@ -25,6 +25,7 @@ type GroupedPlayerTransactions = {
 export class TransactionsComponent {
   public teams: Team[] = [];
   private transactions: TransactionsData | undefined;
+  private flatTransactions: PlayerTransaction[] | undefined;
   public displayTransactions: GroupedPlayerTransactions | undefined;
   private teamsSubscription: Subscription | undefined;
 
@@ -38,7 +39,7 @@ export class TransactionsComponent {
     // await this.fetchTransactions();
     const { transactionsData } = await import('./sample/sampleTransactions');
     this.transactions = transactionsData;
-    this.setDisplayTransactions();
+    this.formatTransactions();
   }
 
   ngOnDestroy(): void {
@@ -57,8 +58,7 @@ export class TransactionsComponent {
       const transactions = result.data;
 
       this.transactions = transactions;
-
-      this.setDisplayTransactions();
+      this.formatTransactions();
     } catch (err: any) {
       console.error(
         'Error fetching transactions from Firebase: ' + err.message
@@ -66,26 +66,26 @@ export class TransactionsComponent {
     }
   }
 
-  private setDisplayTransactions() {
+  private formatTransactions() {
     if (!this.transactions) {
       return;
     }
 
     const { dropPlayerTransactions, addSwapTransactions } = this.transactions;
 
-    const proposedTransactions: PlayerTransaction[] = (
-      dropPlayerTransactions ?? []
-    )
+    this.flatTransactions = (dropPlayerTransactions ?? [])
       .concat(addSwapTransactions ?? [])
       .flat();
 
     // assign a unique key (index) to each transaction so we can track them later
-    proposedTransactions.forEach((t, i) => {
+    this.flatTransactions.forEach((t, i) => {
       t.key = i;
+      t.selected = false;
     });
 
-    this.displayTransactions =
-      this.groupTransactionsByTeam(proposedTransactions);
+    this.displayTransactions = this.groupTransactionsByTeam(
+      this.flatTransactions
+    );
   }
 
   private groupTransactionsByTeam(
@@ -104,24 +104,16 @@ export class TransactionsComponent {
     return result;
   }
 
-  private async submitTransactions(): Promise<void> {
-    // TODO: Implement logic to get the selected transactions from the UI, group them as expected, and post them to Firebase
+  public get selectedTransactions(): PlayerTransaction[] {
+    return this.flatTransactions?.filter((t) => t.selected) ?? [];
   }
 
-  private regroupTransactions(
-    transactions: PlayerTransaction[],
-    lineupChanges: LineupChanges[]
-  ): TransactionsData {
-    const dropPlayerTransactions: PlayerTransaction[][] = [];
-    const addSwapTransactions: PlayerTransaction[][] = [];
+  public get numSelectedTransactions(): number {
+    return this.selectedTransactions.length;
+  }
 
-    // TODO: Implement logic
-
-    return {
-      dropPlayerTransactions,
-      lineupChanges,
-      addSwapTransactions,
-    };
+  private async submitTransactions(): Promise<void> {
+    // TODO: Implement logic to get the selected transactions from the UI, group them as expected, and post them to Firebase
   }
 
   private async postTransactions(
