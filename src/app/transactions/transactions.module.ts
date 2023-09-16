@@ -13,9 +13,10 @@ import { TransactionsRoutingModule } from './transactions-routing.module';
 import { TransactionsComponent } from './transactions.component';
 import { TeamComponent } from './team/team.component';
 import { TransactionComponent } from './transaction/transaction.component';
+import { SortTeamsByTransactionsPipe } from './sort-teams-by-transactions.pipe';
 
 @NgModule({
-  declarations: [TransactionsComponent, TeamComponent, TransactionComponent],
+  declarations: [TransactionsComponent, TeamComponent, TransactionComponent, SortTeamsByTransactionsPipe],
   imports: [
     CommonModule,
     FormsModule,

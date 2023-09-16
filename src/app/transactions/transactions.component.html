@@ -6,7 +6,9 @@
     <ng-container *ngIf="displayTransactions !== undefined; else showLoading">
       <app-team
         class="card-container"
-        *ngFor="let team of teams"
+        *ngFor="
+          let team of teams | sortTeamsByTransactions : displayTransactions
+        "
         [team]="team"
         [transactions]="displayTransactions[team.team_key] ?? []"
       ></app-team>
