@@ -4,14 +4,13 @@ import {
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
+import { Subscription } from 'rxjs';
+import { Team } from '../services/interfaces/team';
+import { SyncTeamsService } from '../services/sync-teams.service';
 import {
-  LineupChanges,
   PlayerTransaction,
   TransactionsData,
 } from './interfaces/TransactionsData';
-import { SyncTeamsService } from '../services/sync-teams.service';
-import { Team } from '../services/interfaces/team';
-import { Subscription } from 'rxjs';
 
 type GroupedPlayerTransactions = {
   [key: string]: PlayerTransaction[];
@@ -25,8 +24,7 @@ type GroupedPlayerTransactions = {
 export class TransactionsComponent {
   public teams: Team[] = [];
   private transactions: TransactionsData | undefined;
-  private flatTransactions: PlayerTransaction[] | undefined;
-  public displayTransactions: GroupedPlayerTransactions | undefined;
+  public flatTransactions: PlayerTransaction[] | undefined;
   private teamsSubscription: Subscription | undefined;
 
   constructor(private fns: Functions, private sts: SyncTeamsService) {
@@ -77,15 +75,9 @@ export class TransactionsComponent {
       .concat(addSwapTransactions ?? [])
       .flat();
 
-    // assign a unique key (index) to each transaction so we can track them later
-    this.flatTransactions.forEach((t, i) => {
-      t.key = i;
+    this.flatTransactions.forEach((t) => {
       t.selected = false;
     });
-
-    this.displayTransactions = this.groupTransactionsByTeam(
-      this.flatTransactions
-    );
   }
 
   private groupTransactionsByTeam(
@@ -112,8 +104,55 @@ export class TransactionsComponent {
     return this.selectedTransactions.length;
   }
 
-  private async submitTransactions(): Promise<void> {
+  public async submitTransactions(): Promise<void> {
     // TODO: Implement logic to get the selected transactions from the UI, group them as expected, and post them to Firebase
+    console.log('Selected transactions Data:', this.selectedTransactionsData());
+  }
+
+  private selectedTransactionsData(): TransactionsData {
+    const result: TransactionsData = {
+      dropPlayerTransactions: null,
+      lineupChanges: null,
+      addSwapTransactions: null,
+    };
+
+    if (!this.transactions) {
+      return result;
+    }
+
+    const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
+      this.transactions;
+
+    result.dropPlayerTransactions = this.filterSelectedTransactionsData(
+      dropPlayerTransactions
+    );
+
+    result.addSwapTransactions =
+      this.filterSelectedTransactionsData(addSwapTransactions);
+
+    // Keep all the lineup changes for the teams that have selected transactions, even if we don't need them all
+    const teamsWithTransactions: Set<string> = new Set(
+      this.selectedTransactions.map((t) => t.teamKey)
+    );
+    result.lineupChanges =
+      lineupChanges?.filter((lc) => teamsWithTransactions.has(lc.teamKey)) ??
+      null;
+
+    return result;
+  }
+
+  private filterSelectedTransactionsData(
+    playerTransactions: PlayerTransaction[][] | null
+  ): PlayerTransaction[][] | null {
+    if (!playerTransactions) {
+      return null;
+    }
+
+    return playerTransactions
+      .map((teamTransactions) =>
+        teamTransactions.filter((transaction) => transaction.selected)
+      )
+      .filter((selectedTransactions) => selectedTransactions.length > 0);
   }
 
   private async postTransactions(

@@ -8,18 +8,20 @@
       button at the bottom of the page. These transactions will be submitted to
       Yahoo for immediate (and permanent) processing.
     </h3>
+    <p>
+      Note: The number in square brackets next to each player is their projected
+      value based on your league's settings.
+    </p>
   </div>
   <ng-container *ngIf="teams.length !== 0; else showLoadingTeams">
     <ng-container
-      *ngIf="displayTransactions !== undefined; else showLoadingTransactions"
+      *ngIf="flatTransactions !== undefined; else showLoadingTransactions"
     >
       <app-team
         class="card-container"
-        *ngFor="
-          let team of teams | sortTeamsByTransactions : displayTransactions
-        "
+        *ngFor="let team of teams | sortTeamsByTransactions : flatTransactions"
         [team]="team"
-        [transactions]="displayTransactions[team.team_key] ?? []"
+        [allTransactions]="flatTransactions"
       ></app-team>
     </ng-container>
     <ng-template #showLoadingTransactions>
@@ -48,6 +50,7 @@
     color="accent"
     class="button"
     [disabled]="!numSelectedTransactions"
+    (click)="submitTransactions()"
   >
     Submit {{ numSelectedTransactions || "" }} Transaction{{
       numSelectedTransactions !== 1 ? "s" : ""

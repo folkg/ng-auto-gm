@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { Team, getEmptyTeamObject } from 'src/app/services/interfaces/team';
 import { PlayerTransaction } from '../interfaces/TransactionsData';
 
@@ -9,7 +9,8 @@ import { PlayerTransaction } from '../interfaces/TransactionsData';
 })
 export class TeamComponent {
   @Input() team: Team = getEmptyTeamObject();
-  @Input() transactions: PlayerTransaction[] = [];
+  @Input() allTransactions: PlayerTransaction[] = [];
+  public transactions: PlayerTransaction[] = [];
   public scoringType: { [key: string]: string } = {
     head: 'Head to Head Scoring',
     roto: 'Rotisserie Scoring',
@@ -17,6 +18,14 @@ export class TeamComponent {
     headpoint: 'Head to Head (Points) Scoring',
     headone: 'Head to Head (One Win) Scoring',
   };
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['allTransactions']) {
+      this.transactions = this.allTransactions.filter(
+        (transaction) => transaction.teamKey === this.team.team_key
+      );
+    }
+  }
 
   gotoExternalDomain(url: string) {
     if (url) {
