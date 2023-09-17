@@ -6,7 +6,7 @@ export const transactionsData: TransactionsData = {
       {
         teamName: 'Team A',
         leagueName: 'League 1',
-        teamKey: '422.l.17808.t.2 ',
+        teamKey: '422.l.17808.t.2',
         sameDayTransactions: true,
         reason: 'Injury',
         players: [
@@ -23,6 +23,22 @@ export const transactionsData: TransactionsData = {
         ],
       },
       {
+        teamName: 'Team A',
+        leagueName: 'League 1',
+        teamKey: '422.l.17808.t.2',
+        sameDayTransactions: false,
+        reason: 'Poor Performance',
+        players: [
+          {
+            playerKey: 'player-6-key',
+            transactionType: 'drop',
+            isInactiveList: false,
+          },
+        ],
+      },
+    ],
+    [
+      {
         teamName: 'Team B',
         leagueName: 'League 1',
         teamKey: '422.l.34143.t.10',
@@ -31,6 +47,20 @@ export const transactionsData: TransactionsData = {
         players: [
           {
             playerKey: 'player-3-key',
+            transactionType: 'drop',
+            isInactiveList: false,
+          },
+        ],
+      },
+      {
+        teamName: 'Team B',
+        leagueName: 'League 1',
+        teamKey: '422.l.34143.t.10',
+        sameDayTransactions: false,
+        reason: 'Trade',
+        players: [
+          {
+            playerKey: 'player-7-key',
             transactionType: 'drop',
             isInactiveList: false,
           },
@@ -57,7 +87,7 @@ export const transactionsData: TransactionsData = {
       {
         teamName: 'Team D',
         leagueName: 'League 2',
-        teamKey: '422.l.90351.t.2 ',
+        teamKey: '422.l.90351.t.2',
         sameDayTransactions: true,
         reason: 'Injury',
         players: [
@@ -69,42 +99,10 @@ export const transactionsData: TransactionsData = {
         ],
       },
     ],
-    [
-      {
-        teamName: 'Team A',
-        leagueName: 'League 1',
-        teamKey: '422.l.17808.t.2 ',
-        sameDayTransactions: false,
-        reason: 'Poor Performance',
-        players: [
-          {
-            playerKey: 'player-6-key',
-            transactionType: 'drop',
-            isInactiveList: false,
-          },
-        ],
-      },
-    ],
-    [
-      {
-        teamName: 'Team B',
-        leagueName: 'League 1',
-        teamKey: '422.l.34143.t.10',
-        sameDayTransactions: false,
-        reason: 'Trade',
-        players: [
-          {
-            playerKey: 'player-7-key',
-            transactionType: 'drop',
-            isInactiveList: false,
-          },
-        ],
-      },
-    ],
   ],
   lineupChanges: [
     {
-      teamKey: '422.l.17808.t.2 ',
+      teamKey: '422.l.17808.t.2',
       coverageType: 'daily',
       coveragePeriod: '2022-01-01',
       newPlayerPositions: {
@@ -129,7 +127,7 @@ export const transactionsData: TransactionsData = {
       },
     },
     {
-      teamKey: '422.l.90351.t.2 ',
+      teamKey: '422.l.90351.t.2',
       coverageType: 'weekly',
       coveragePeriod: '2022-01-01',
       newPlayerPositions: {
@@ -142,7 +140,7 @@ export const transactionsData: TransactionsData = {
       {
         teamName: 'Team A',
         leagueName: 'League 1',
-        teamKey: '422.l.17808.t.2 ',
+        teamKey: '422.l.17808.t.2',
         sameDayTransactions: true,
         reason: 'Injury',
         players: [
@@ -159,6 +157,27 @@ export const transactionsData: TransactionsData = {
         ],
       },
       {
+        teamName: 'Team A',
+        leagueName: 'League 1',
+        teamKey: '422.l.17808.t.2',
+        sameDayTransactions: false,
+        reason: 'Poor Performance',
+        players: [
+          {
+            playerKey: 'player-16-key',
+            transactionType: 'add',
+            isInactiveList: false,
+          },
+          {
+            playerKey: 'player-17-key',
+            transactionType: 'drop',
+            isInactiveList: false,
+          },
+        ],
+      },
+    ],
+    [
+      {
         teamName: 'Team B',
         leagueName: 'League 1',
         teamKey: '422.l.34143.t.10',
@@ -172,6 +191,25 @@ export const transactionsData: TransactionsData = {
           },
           {
             playerKey: 'player-11-key',
+            transactionType: 'drop',
+            isInactiveList: false,
+          },
+        ],
+      },
+      {
+        teamName: 'Team B',
+        leagueName: 'League 1',
+        teamKey: '422.l.34143.t.10',
+        sameDayTransactions: false,
+        reason: 'Trade',
+        players: [
+          {
+            playerKey: 'player-18-key',
+            transactionType: 'add',
+            isInactiveList: false,
+          },
+          {
+            playerKey: 'player-19-key',
             transactionType: 'drop',
             isInactiveList: false,
           },
@@ -203,7 +241,7 @@ export const transactionsData: TransactionsData = {
       {
         teamName: 'Team D',
         leagueName: 'League 2',
-        teamKey: '422.l.90351.t.2 ',
+        teamKey: '422.l.90351.t.2',
         sameDayTransactions: true,
         reason: 'Injury',
         players: [
@@ -214,48 +252,6 @@ export const transactionsData: TransactionsData = {
           },
           {
             playerKey: 'player-15-key',
-            transactionType: 'drop',
-            isInactiveList: false,
-          },
-        ],
-      },
-    ],
-    [
-      {
-        teamName: 'Team A',
-        leagueName: 'League 1',
-        teamKey: '422.l.17808.t.2 ',
-        sameDayTransactions: false,
-        reason: 'Poor Performance',
-        players: [
-          {
-            playerKey: 'player-16-key',
-            transactionType: 'add',
-            isInactiveList: false,
-          },
-          {
-            playerKey: 'player-17-key',
-            transactionType: 'drop',
-            isInactiveList: false,
-          },
-        ],
-      },
-    ],
-    [
-      {
-        teamName: 'Team B',
-        leagueName: 'League 1',
-        teamKey: '422.l.34143.t.10',
-        sameDayTransactions: false,
-        reason: 'Trade',
-        players: [
-          {
-            playerKey: 'player-18-key',
-            transactionType: 'add',
-            isInactiveList: false,
-          },
-          {
-            playerKey: 'player-19-key',
             transactionType: 'drop',
             isInactiveList: false,
           },
