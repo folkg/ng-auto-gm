@@ -4,17 +4,18 @@ import {
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
-import { Subscription } from 'rxjs';
+import { Subscription, lastValueFrom } from 'rxjs';
 import { Team } from '../services/interfaces/team';
 import { SyncTeamsService } from '../services/sync-teams.service';
 import {
   PlayerTransaction,
   TransactionsData,
 } from './interfaces/TransactionsData';
-
-type GroupedPlayerTransactions = {
-  [key: string]: PlayerTransaction[];
-};
+import { MatDialog } from '@angular/material/dialog';
+import {
+  ConfirmDialogComponent,
+  DialogData,
+} from '../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-transactions',
@@ -27,7 +28,11 @@ export class TransactionsComponent {
   public flatTransactions: PlayerTransaction[] | undefined;
   private teamsSubscription: Subscription | undefined;
 
-  constructor(private fns: Functions, private sts: SyncTeamsService) {
+  constructor(
+    private fns: Functions,
+    private sts: SyncTeamsService,
+    private dialog: MatDialog
+  ) {
     this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
       this.teams = teams;
     });
@@ -88,11 +93,6 @@ export class TransactionsComponent {
     return this.selectedTransactions.length;
   }
 
-  public async submitTransactions(): Promise<void> {
-    // TODO: Implement logic to get the selected transactions from the UI, group them as expected, and post them to Firebase
-    console.log('Selected transactions Data:', this.selectedTransactionsData());
-  }
-
   private selectedTransactionsData(): TransactionsData {
     const result: TransactionsData = {
       dropPlayerTransactions: null,
@@ -137,6 +137,41 @@ export class TransactionsComponent {
         teamTransactions.filter((transaction) => transaction.selected)
       )
       .filter((selectedTransactions) => selectedTransactions.length > 0);
+  }
+
+  public async submitTransactions(): Promise<void> {
+    const userSelectionConfirmed = await this.confirmDialog();
+    if (userSelectionConfirmed) {
+      console.log(
+        'Selected transactions Data:',
+        this.selectedTransactionsData()
+      );
+    } else {
+      console.log('User Cancelled');
+    }
+  }
+
+  async confirmDialog(): Promise<boolean> {
+    const numSelectedTransactions = this.numSelectedTransactions;
+    const title = 'WARNING: Permanent Action';
+    const message = `These transactions will be permanent. Click Proceed to officially process your ${
+      numSelectedTransactions || ''
+    } selected transaction${
+      numSelectedTransactions !== 1 ? 's' : ''
+    } with Yahoo, or Cancel to return to the transactions page.`;
+    const dialogData: DialogData = {
+      title,
+      message,
+      trueButton: 'Proceed',
+      falseButton: 'Cancel',
+    };
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      minWidth: '350px',
+      width: '90%',
+      maxWidth: '500px',
+      data: dialogData,
+    });
+    return await lastValueFrom(dialogRef.afterClosed());
   }
 
   private async postTransactions(
