@@ -4,18 +4,18 @@ import {
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
+import { MatDialog } from '@angular/material/dialog';
 import { Subscription, lastValueFrom } from 'rxjs';
 import { Team } from '../services/interfaces/team';
 import { SyncTeamsService } from '../services/sync-teams.service';
 import {
-  PlayerTransaction,
-  TransactionsData,
-} from './interfaces/TransactionsData';
-import { MatDialog } from '@angular/material/dialog';
-import {
   ConfirmDialogComponent,
   DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import {
+  PlayerTransaction,
+  TransactionsData,
+} from './interfaces/TransactionsData';
 
 @Component({
   selector: 'app-transactions',
@@ -34,7 +34,7 @@ export class TransactionsComponent {
     private dialog: MatDialog
   ) {
     this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
-      this.teams = teams;
+      this.teams = teams.filter((team) => team.allow_transactions);
     });
   }
 

@@ -4,14 +4,24 @@
 <div class="content">
   <div class="instructions">
     <h3>
-      Select any transactions you would like to process and click the Submit
-      button at the bottom of the page. These transactions will be submitted to
-      Yahoo for immediate (and permanent) processing.
+      Select any transactions you would like to process for your teams and click
+      the Submit button at the bottom of the page.
     </h3>
-    <p>
-      Note: The number in square brackets next to each player is their projected
-      value based on your league's settings.
-    </p>
+    <p>Notes:</p>
+    <ul>
+      <li>
+        The number in square brackets next to each player is their calculated
+        value based on your league's settings.
+      </li>
+      <li>
+        Placing transactions is a permanent action. Once you submit a
+        transaction, it will be processed by Yahoo and cannot be undone.
+      </li>
+      <li>
+        If any of your teams are missing, go back to the 'My Teams' page and
+        enable Transactions in the settings.
+      </li>
+    </ul>
   </div>
   <ng-container *ngIf="teams.length !== 0; else showLoadingTeams">
     <ng-container
