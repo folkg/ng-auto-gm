@@ -27,6 +27,7 @@ export class TransactionsComponent {
   private transactions: TransactionsData | undefined;
   public flatTransactions: PlayerTransaction[] | undefined;
   private teamsSubscription: Subscription | undefined;
+  public submitted: boolean | null = null;
 
   constructor(
     private fns: Functions,
@@ -39,10 +40,7 @@ export class TransactionsComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    // await this.fetchTransactions();
-    const { transactionsData } = await import('./sample/sampleTransactions');
-    this.transactions = transactionsData;
-    this.formatTransactions();
+    await this.fetchTransactions();
   }
 
   ngOnDestroy(): void {
@@ -142,12 +140,28 @@ export class TransactionsComponent {
   public async submitTransactions(): Promise<void> {
     const userSelectionConfirmed = await this.confirmDialog();
     if (userSelectionConfirmed) {
-      console.log(
-        'Selected transactions Data:',
-        this.selectedTransactionsData()
-      );
+      const transactions = this.selectedTransactionsData();
+      await this.postTransactions(transactions);
     } else {
       console.log('User Cancelled');
+    }
+  }
+
+  private async postTransactions(
+    transactions: TransactionsData
+  ): Promise<void> {
+    const postTransactions: HttpsCallable<TransactionsData, boolean> =
+      httpsCallableFromURL(
+        this.fns,
+        'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
+        //'https://fantasyautocoach.com/api/posttransactions'
+      );
+    try {
+      const result = await postTransactions(transactions);
+      this.submitted = result.data;
+    } catch (err: any) {
+      console.error('Error posting transactions to Firebase: ' + err.message);
+      this.submitted = false;
     }
   }
 
@@ -172,22 +186,5 @@ export class TransactionsComponent {
       data: dialogData,
     });
     return await lastValueFrom(dialogRef.afterClosed());
-  }
-
-  private async postTransactions(
-    transactions: TransactionsData
-  ): Promise<void> {
-    const postTransactions: HttpsCallable<TransactionsData, boolean> =
-      httpsCallableFromURL(
-        this.fns,
-        'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
-        //'https://fantasyautocoach.com/api/posttransactions'
-      );
-    try {
-      const result = await postTransactions(transactions);
-      console.log('Result of posting transactions:', result.data);
-    } catch (err: any) {
-      console.error('Error posting transactions to Firebase: ' + err.message);
-    }
   }
 }
