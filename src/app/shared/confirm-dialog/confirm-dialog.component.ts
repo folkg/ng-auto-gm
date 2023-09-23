@@ -22,8 +22,8 @@ export class ConfirmDialogComponent implements OnInit, OnDestroy {
     // Update view with given values
     this.title = data.title;
     this.message = data.message;
-    this.trueButton = data.trueButton || '';
-    this.falseButton = data.falseButton || '';
+    this.trueButton = data.trueButton ?? '';
+    this.falseButton = data.falseButton ?? '';
   }
 
   ngOnInit() {

@@ -29,6 +29,13 @@
   <mat-divider></mat-divider>
   <mat-card-content>
     <div class="card-content-section">
+      <span
+        >This team is set to process transactions
+        <strong>{{
+          team.automated_transaction_processing ? "automatically" : "manually"
+        }}</strong></span
+      >
+      <div class="padded-divider"><mat-divider></mat-divider></div>
       <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
       <ng-container *ngIf="team.outcome_totals"
         ><br />{{ team.outcome_totals.wins }}-{{
@@ -59,7 +66,7 @@
         <br />
         Weekly Lineup Changes
       </ng-container>
-      <mat-divider></mat-divider>
+      <div class="padded-divider"><mat-divider></mat-divider></div>
       <ng-container *ngIf="transactions.length > 0; else noTransactions">
         <app-transaction
           *ngFor="let transaction of transactions"
