@@ -3,8 +3,8 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
 import { Team, getEmptyTeamObject } from '../../services/interfaces/team';
-import { RelativeDatePipe } from '../pipes/relative-date.pipe';
 import spacetime, { Spacetime } from 'spacetime';
+import { RelativeDatePipe } from '../pipes/relative-date.pipe';
 
 // server update is in Pacific Time, this is when yahoo resets for the day
 const SERVER_UPDATE_MINUTE = 55;

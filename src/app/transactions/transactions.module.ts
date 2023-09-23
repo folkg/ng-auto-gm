@@ -9,14 +9,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SharedModule } from '../shared/shared.module';
-import { TransactionsRoutingModule } from './transactions-routing.module';
-import { TransactionsComponent } from './transactions.component';
+import { SortTeamsByTransactionsPipe } from './sort-teams-by-transactions.pipe';
 import { TeamComponent } from './team/team.component';
 import { TransactionComponent } from './transaction/transaction.component';
-import { SortTeamsByTransactionsPipe } from './sort-teams-by-transactions.pipe';
+import { TransactionsRoutingModule } from './transactions-routing.module';
+import { TransactionsComponent } from './transactions.component';
 
 @NgModule({
-  declarations: [TransactionsComponent, TeamComponent, TransactionComponent, SortTeamsByTransactionsPipe],
+  declarations: [
+    TransactionsComponent,
+    TeamComponent,
+    TransactionComponent,
+    SortTeamsByTransactionsPipe,
+  ],
   imports: [
     CommonModule,
     FormsModule,

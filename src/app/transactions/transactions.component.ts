@@ -80,22 +80,6 @@ export class TransactionsComponent {
     });
   }
 
-  private groupTransactionsByTeam(
-    transactions: PlayerTransaction[]
-  ): GroupedPlayerTransactions {
-    const result: { [key: string]: PlayerTransaction[] } = {};
-
-    transactions.forEach((t) => {
-      if (result[t.teamKey]) {
-        result[t.teamKey].push(t);
-      } else {
-        result[t.teamKey] = [t];
-      }
-    });
-
-    return result;
-  }
-
   public get selectedTransactions(): PlayerTransaction[] {
     return this.flatTransactions?.filter((t) => t.selected) ?? [];
   }

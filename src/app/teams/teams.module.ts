@@ -10,14 +10,13 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProfileModule } from '../profile/profile.module';
 import { SharedModule } from '../shared/shared.module';
-import { NthPipe } from './pipes/nth.pipe';
-import { RelativeDatePipe } from './pipes/relative-date.pipe';
 import { TeamComponent } from './team/team.component';
 import { TeamsRoutingModule } from './teams-routing.module';
 import { TeamsComponent } from './teams.component';
+import { RelativeDatePipe } from './pipes/relative-date.pipe';
 
 @NgModule({
-  declarations: [TeamsComponent, TeamComponent, NthPipe, RelativeDatePipe],
+  declarations: [TeamsComponent, TeamComponent, RelativeDatePipe],
   imports: [
     CommonModule,
     TeamsRoutingModule,
