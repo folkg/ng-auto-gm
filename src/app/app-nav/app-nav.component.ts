@@ -4,6 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { ThemingService } from '../services/theming.service';
+import { SyncTeamsService } from '../services/sync-teams.service';
 
 @Component({
   selector: 'app-app-nav',
@@ -17,27 +18,37 @@ export class AppNavComponent implements OnInit, OnDestroy {
       map((result) => result.matches),
       shareReplay()
     );
-  isLoggedIn: boolean = false;
-  private subscription: Subscription | undefined;
+  public isLoggedIn: boolean = false;
+  public hasTransactionsEnabled: boolean = false;
+  private userSubscription: Subscription | undefined;
+  private teamsSubscription: Subscription | undefined;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
     public themingService: ThemingService,
-    public auth: AuthService
+    public auth: AuthService,
+    private sts: SyncTeamsService
   ) {}
 
   ngOnInit(): void {
-    this.subscription = this.auth.user$.subscribe((user) => {
+    this.userSubscription = this.auth.user$.subscribe((user) => {
       if (user) {
         this.isLoggedIn = true;
       } else {
         this.isLoggedIn = false;
       }
     });
+
+    this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
+      this.hasTransactionsEnabled = teams.some(
+        (team) => team.allow_transactions
+      );
+    });
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();
+    this.teamsSubscription?.unsubscribe();
   }
 
   toggleDarkMode() {

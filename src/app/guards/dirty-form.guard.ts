@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanDeactivate, UrlTree } from '@angular/router';
+import { UrlTree } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import {
@@ -15,13 +15,13 @@ export interface ComponentCanDeactivate {
 @Injectable({
   providedIn: 'root',
 })
-export class DirtyFormGuard implements CanDeactivate<unknown> {
+export class DirtyFormGuard {
   constructor(public dialog: MatDialog) {}
 
   async confirmDialog(): Promise<boolean> {
-    const title = 'WARNING: You have unsaved changes.';
+    const title = 'WARNING: You have unsaved changes';
     const message =
-      'Press Cancel to stay and save these changes, or Proeed to leave this page and lose these changes.';
+      'Press Cancel to stay and save these changes, or Proceed to leave this page and lose these changes.';
     const dialogData: DialogData = {
       title,
       message,

@@ -40,6 +40,7 @@ export interface Team {
   allow_adding: boolean;
   allow_add_drops: boolean;
   allow_waiver_adds: boolean;
+  automated_transaction_processing?: boolean;
 }
 
 export function getEmptyTeamObject(): Team {
@@ -85,5 +86,6 @@ export function getEmptyTeamObject(): Team {
     allow_adding: false,
     allow_add_drops: false,
     allow_waiver_adds: false,
+    automated_transaction_processing: false,
   };
 }

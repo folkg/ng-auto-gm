@@ -1,0 +1,70 @@
+<div class="header primaryColorBG">
+  <h1>Suggested Transactions</h1>
+</div>
+<div class="content">
+  <div class="instructions">
+    <h3>
+      Select any transactions you would like to process for your teams and click
+      the Submit button at the bottom of the page.
+    </h3>
+    <p>Notes:</p>
+    <ul>
+      <li>
+        The number in square brackets next to each player is their calculated
+        value based on your league's settings.
+      </li>
+      <li>
+        Placing transactions is a permanent action. Once you submit a
+        transaction, it will be processed by Yahoo and cannot be undone.
+      </li>
+      <li>
+        If any of your teams are missing, go back to the 'My Teams' page and
+        enable Transactions in the settings.
+      </li>
+    </ul>
+  </div>
+  <ng-container *ngIf="teams.length !== 0; else showLoadingTeams">
+    <ng-container
+      *ngIf="flatTransactions !== undefined; else showLoadingTransactions"
+    >
+      <app-team
+        class="card-container"
+        *ngFor="let team of teams | sortTeamsByTransactions : flatTransactions"
+        [team]="team"
+        [allTransactions]="flatTransactions"
+      ></app-team>
+    </ng-container>
+    <ng-template #showLoadingTransactions>
+      <mat-card class="card">
+        <mat-card-header>
+          <mat-card-title>Loading Transactions...</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Please wait</p>
+        </mat-card-content>
+      </mat-card>
+    </ng-template>
+  </ng-container>
+  <ng-template #showLoadingTeams>
+    <mat-card class="card">
+      <mat-card-header>
+        <mat-card-title>Loading Teams...</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Please wait</p>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+  <button
+    mat-raised-button
+    color="accent"
+    class="button"
+    [disabled]="!numSelectedTransactions"
+    (click)="submitTransactions()"
+  >
+    Submit {{ numSelectedTransactions || "" }} Transaction{{
+      numSelectedTransactions !== 1 ? "s" : ""
+    }}
+    to Yahoo
+  </button>
+</div>

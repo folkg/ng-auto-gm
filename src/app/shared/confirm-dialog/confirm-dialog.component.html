@@ -7,15 +7,15 @@
 </div>
 
 <div mat-dialog-actions>
-  <button *ngIf="falseButton" mat-button (click)="onDismiss()">
+  <button
+    *ngIf="falseButton"
+    mat-flat-button
+    color="primary"
+    (click)="onDismiss()"
+  >
     {{ falseButton }}
   </button>
-  <button
-    *ngIf="trueButton"
-    mat-raised-button
-    color="primary"
-    (click)="onConfirm()"
-  >
+  <button *ngIf="trueButton" mat-flat-button (click)="onConfirm()">
     {{ trueButton }}
   </button>
 </div>
