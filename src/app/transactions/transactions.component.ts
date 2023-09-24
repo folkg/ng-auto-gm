@@ -150,14 +150,16 @@ export class TransactionsComponent {
   private async postTransactions(
     transactions: TransactionsData
   ): Promise<void> {
-    const postTransactions: HttpsCallable<TransactionsData, boolean> =
-      httpsCallableFromURL(
-        this.fns,
-        'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
-        //'https://fantasyautocoach.com/api/posttransactions'
-      );
+    const postTransactions: HttpsCallable<
+      { transactions: TransactionsData },
+      boolean
+    > = httpsCallableFromURL(
+      this.fns,
+      'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
+      //'https://fantasyautocoach.com/api/posttransactions'
+    );
     try {
-      const result = await postTransactions(transactions);
+      const result = await postTransactions({ transactions });
       this.submitted = result.data;
     } catch (err: any) {
       console.error('Error posting transactions to Firebase: ' + err.message);
