@@ -10,13 +10,13 @@
     <h3>Successful Transactions</h3>
     <ul>
       <li *ngFor="let transaction of transactionResults?.postedTransactions">
-        {{ transaction }}
+        {{ transaction.reason }} ({{ transaction.teamName }})
       </li>
     </ul>
     <h3>Failed Transactions</h3>
     <ul>
       <li *ngFor="let reason of transactionResults?.failedReasons">
-        {{ reason }}
+        {{ reason | json }}
       </li>
     </ul>
   </ng-container>
