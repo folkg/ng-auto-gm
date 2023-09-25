@@ -4,6 +4,16 @@ export type TransactionsData = {
   addSwapTransactions: PlayerTransaction[][] | null;
 };
 
+export type PostTransactionsResult = {
+  success: boolean;
+  transactionResults: TransactionResults;
+};
+
+export type TransactionResults = {
+  postedTransactions: PlayerTransaction[];
+  failedReasons: string[];
+};
+
 export interface PlayerTransaction {
   teamName: string;
   leagueName: string;

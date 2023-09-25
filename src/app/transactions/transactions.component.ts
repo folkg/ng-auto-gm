@@ -14,6 +14,8 @@ import {
 } from '../shared/confirm-dialog/confirm-dialog.component';
 import {
   PlayerTransaction,
+  PostTransactionsResult,
+  TransactionResults,
   TransactionsData,
 } from './interfaces/TransactionsData';
 
@@ -27,7 +29,8 @@ export class TransactionsComponent {
   private transactions: TransactionsData | undefined;
   public flatTransactions: PlayerTransaction[] | undefined;
   private teamsSubscription: Subscription | undefined;
-  public submitted: boolean | null = null;
+  public success: boolean | null = null;
+  public transactionResults?: TransactionResults;
 
   constructor(
     private fns: Functions,
@@ -152,7 +155,7 @@ export class TransactionsComponent {
   ): Promise<void> {
     const postTransactions: HttpsCallable<
       { transactions: TransactionsData },
-      boolean
+      PostTransactionsResult
     > = httpsCallableFromURL(
       this.fns,
       'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
@@ -160,10 +163,11 @@ export class TransactionsComponent {
     );
     try {
       const result = await postTransactions({ transactions });
-      this.submitted = result.data;
+      this.success = result.data.success;
+      this.transactionResults = result.data.transactionResults;
     } catch (err: any) {
       console.error('Error posting transactions to Firebase: ' + err.message);
-      this.submitted = false;
+      this.success = false;
     }
   }
 
