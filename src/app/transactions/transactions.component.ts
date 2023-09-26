@@ -54,8 +54,8 @@ export class TransactionsComponent {
     const fetchTransactions: HttpsCallable<null, TransactionsData> =
       httpsCallableFromURL(
         this.fns,
-        'https://transactions-gettransactions-nw73xubluq-uc.a.run.app'
-        // 'https://fantasyautocoach.com/api/gettransactions'
+        // 'https://transactions-gettransactions-nw73xubluq-uc.a.run.app'
+        'https://fantasyautocoach.com/api/gettransactions'
       );
     try {
       const result = await fetchTransactions();
@@ -158,8 +158,8 @@ export class TransactionsComponent {
       PostTransactionsResult
     > = httpsCallableFromURL(
       this.fns,
-      'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
-      //'https://fantasyautocoach.com/api/posttransactions'
+      // 'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
+      'https://fantasyautocoach.com/api/posttransactions'
     );
     try {
       const result = await postTransactions({ transactions });
