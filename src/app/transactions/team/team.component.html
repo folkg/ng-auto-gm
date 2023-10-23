@@ -67,6 +67,19 @@
         Weekly Lineup Changes
       </ng-container>
       <div class="padded-divider"><mat-divider></mat-divider></div>
+      {{ team.current_season_adds }}
+      {{ team.max_season_adds > 0 ? "of " + team.max_season_adds : "" }}
+      transactions this season
+      <br />
+      {{
+        team.max_weekly_adds > 0
+          ? team.current_weekly_adds +
+            " of " +
+            team.max_weekly_adds +
+            " transactions this week"
+          : ""
+      }}
+      <div class="padded-divider"><mat-divider></mat-divider></div>
       <ng-container *ngIf="transactions.length > 0; else noTransactions">
         <app-transaction
           *ngFor="let transaction of transactions"
