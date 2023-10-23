@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card" [ngClass]="{ selected: transaction?.selected }">
   <mat-checkbox *ngIf="transaction" [(ngModel)]="transaction.selected">
     <div *ngIf="transaction.reason" class="card-container">
       <mat-icon class="info-icon">info</mat-icon>

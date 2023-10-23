@@ -29,13 +29,13 @@
   <mat-divider></mat-divider>
   <mat-card-content>
     <div class="card-content-section">
-      <span
+      <!-- <span
         >This team is set to process transactions
         <strong>{{
           team.automated_transaction_processing ? "automatically" : "manually"
         }}</strong></span
       >
-      <div class="padded-divider"><mat-divider></mat-divider></div>
+      <div class="padded-divider"><mat-divider></mat-divider></div> -->
       <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
       <ng-container *ngIf="team.outcome_totals"
         ><br />{{ team.outcome_totals.wins }}-{{

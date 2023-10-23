@@ -5,9 +5,8 @@
   </p>
   <div class="card-content">
     <p class="player-details">
-      {{ player.player_name }} ({{ playerPositions }}) [{{
-        player.ownership_score | number : "1.2-2"
-      }}]
+      {{ player.player_name }} [{{ player.ownership_score | number : "1.2-2" }}]
+      ({{ playerPositions }})
     </p>
     <button mat-icon-button (click)="expanded = !expanded">
       <mat-icon>{{
