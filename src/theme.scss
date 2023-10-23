@@ -1,6 +1,5 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 @import "./theme-color-grabber";
-
 
 @include mat.core();
 
@@ -9,26 +8,42 @@ $angular-accent: mat.define-palette(mat.$amber-palette);
 
 $angular-warn: mat.define-palette(mat.$red-palette);
 
-$angular-light-theme: mat.define-light-theme((color: (primary: $angular-primary,
-                accent: $angular-accent,
-                warn: $angular-warn,
-            ), background: (card-header-footer-background: red,
-            ),
-        ));
+$angular-light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $angular-primary,
+      accent: $angular-accent,
+      warn: $angular-warn,
+    ),
+    background: (
+      card-header-footer-background: red,
+    ),
+  )
+);
 
-$angular-dark-theme: mat.define-dark-theme((color: (primary: $angular-primary,
-                accent: $angular-accent,
-                warn: $angular-warn,
-            ), background: (card-header-footer-background: blue,
-            ),
-        ));
+$angular-dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $angular-primary,
+      accent: $angular-accent,
+      warn: $angular-warn,
+    ),
+    background: (
+      card-header-footer-background: blue,
+    ),
+  )
+);
 
 .light-theme {
-    @include mat.all-component-themes($angular-light-theme);
-    @include theme-color-grabber($angular-light-theme);
+  @include mat.all-component-themes($angular-light-theme);
+  @include theme-color-grabber($angular-light-theme);
+  --accent-grey: #e0e0e0;
+  --text-grey: #6e6e6e;
 }
 
 .dark-theme {
-    @include mat.all-component-colors($angular-dark-theme);
-    @include theme-color-grabber($angular-dark-theme);
+  @include mat.all-component-colors($angular-dark-theme);
+  @include theme-color-grabber($angular-dark-theme);
+  --accent-grey: #595959;
+  --text-grey: #c5c5c5;
 }
