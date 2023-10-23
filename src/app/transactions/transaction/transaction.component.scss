@@ -1,0 +1,32 @@
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.info-icon {
+  color: #007bff;
+  margin-right: 0.5rem;
+}
+
+.add-icon {
+  color: green;
+  margin-right: 0.5rem;
+}
+
+.remove-icon {
+  color: red;
+  margin-right: 0.5rem;
+}
+
+.player-card {
+  flex-grow: 1;
+}

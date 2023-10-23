@@ -1,4 +1,25 @@
-<mat-checkbox *ngIf="transaction" [(ngModel)]="transaction.selected">
-  {{ transaction.reason }}
-</mat-checkbox>
-<br />
+<div class="card">
+  <mat-checkbox *ngIf="transaction" [(ngModel)]="transaction.selected">
+    <div *ngIf="transaction.reason" class="card-container">
+      <mat-icon class="info-icon">info</mat-icon>
+      <div>{{ transaction.reason }}</div>
+    </div>
+    <ng-container *ngFor="let tPlayer of transaction.players">
+      <div class="card-container">
+        <ng-container
+          *ngIf="tPlayer.transactionType === 'add'; else showRemove"
+        >
+          <mat-icon class="add-icon">add</mat-icon>
+        </ng-container>
+        <ng-template #showRemove>
+          <mat-icon class="remove-icon">remove</mat-icon>
+        </ng-template>
+        <app-player
+          [player]="tPlayer.player"
+          [isAdding]="tPlayer.transactionType === 'add'"
+          class="player-card"
+        ></app-player>
+      </div>
+    </ng-container>
+  </mat-checkbox>
+</div>

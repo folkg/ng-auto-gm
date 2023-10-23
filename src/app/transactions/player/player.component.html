@@ -1,0 +1,55 @@
+<div class="card">
+  <div [ngClass]="{ 'green-header': isAdding, 'red-header': !isAdding }"></div>
+  <p class="ownership">
+    {{ playerOwnership }}
+  </p>
+  <div class="card-content">
+    <p class="player-details">
+      {{ player.player_name }} ({{ playerPositions }}) [{{
+        player.ownership_score | number : "1.2-2"
+      }}]
+    </p>
+    <button mat-icon-button (click)="expanded = !expanded">
+      <mat-icon>{{
+        expanded ? "keyboard_arrow_up" : "keyboard_arrow_down"
+      }}</mat-icon>
+    </button>
+  </div>
+  <div *ngIf="expanded" class="card-content player-stats">
+    <table>
+      <tr>
+        <td>Percent Owned</td>
+        <td>{{ player.percent_owned }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.last30Days !== -1">
+        <td>Last 30 Days Rank</td>
+        <td>{{ player.ranks.last30Days }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.last14Days !== -1">
+        <td>Last 14 Days Rank</td>
+        <td>{{ player.ranks.last14Days }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.next7Days !== -1">
+        <td>Next 7 Days Rank</td>
+        <td>{{ player.ranks.next7Days }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.last4Weeks !== -1">
+        <td>Last 4 Weeks Rank</td>
+        <td>{{ player.ranks.last4Weeks }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.projectedWeek !== -1">
+        <td>Projected Week Rank</td>
+        <td>{{ player.ranks.projectedWeek }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.next4Weeks !== -1">
+        <td>Next 4 Weeks Rank</td>
+        <td>{{ player.ranks.next4Weeks }}</td>
+      </tr>
+      <tr *ngIf="player.ranks.restOfSeason !== -1">
+        <td>Rest of Season Rank</td>
+        <td>{{ player.ranks.restOfSeason }}</td>
+      </tr>
+      <!-- {{Open in Yahoo Button}} -->
+    </table>
+  </div>
+</div>
