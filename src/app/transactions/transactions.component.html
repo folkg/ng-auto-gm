@@ -10,7 +10,7 @@
     <h3>Successful Transactions</h3>
     <ul>
       <li *ngFor="let transaction of transactionResults?.postedTransactions">
-        {{ transaction.reason }} ({{ transaction.teamName }})
+        {{ transaction.description }} ({{ transaction.teamName }})
       </li>
     </ul>
     <h3>Failed Transactions</h3>

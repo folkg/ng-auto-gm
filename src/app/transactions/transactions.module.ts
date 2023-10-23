@@ -14,6 +14,8 @@ import { TeamComponent } from './team/team.component';
 import { TransactionComponent } from './transaction/transaction.component';
 import { TransactionsRoutingModule } from './transactions-routing.module';
 import { TransactionsComponent } from './transactions.component';
+import { EditTransactionComponent } from './edit-transaction/edit-transaction.component';
+import { PlayerComponent } from './player/player.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { TransactionsComponent } from './transactions.component';
     TeamComponent,
     TransactionComponent,
     SortTeamsByTransactionsPipe,
+    EditTransactionComponent,
+    PlayerComponent,
   ],
   imports: [
     CommonModule,

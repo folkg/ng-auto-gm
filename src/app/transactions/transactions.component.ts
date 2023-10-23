@@ -61,6 +61,8 @@ export class TransactionsComponent {
       const result = await fetchTransactions();
       const transactions = result.data;
 
+      console.log('transactions: ', transactions);
+
       this.transactions = transactions;
       this.formatTransactions();
     } catch (err: any) {

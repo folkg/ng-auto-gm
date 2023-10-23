@@ -8,7 +8,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.17808.t.2',
         sameDayTransactions: true,
-        reason: 'Injury',
+        description: 'Injury',
         players: [
           {
             playerKey: 'player-1-key',
@@ -27,7 +27,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.17808.t.2',
         sameDayTransactions: false,
-        reason: 'Poor Performance',
+        description: 'Poor Performance',
         players: [
           {
             playerKey: 'player-6-key',
@@ -43,7 +43,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.34143.t.10',
         sameDayTransactions: true,
-        reason: 'Poor Performance',
+        description: 'Poor Performance',
         players: [
           {
             playerKey: 'player-3-key',
@@ -57,7 +57,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.34143.t.10',
         sameDayTransactions: false,
-        reason: 'Trade',
+        description: 'Trade',
         players: [
           {
             playerKey: 'player-7-key',
@@ -73,7 +73,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 2',
         teamKey: '422.l.58716.t.20',
         sameDayTransactions: false,
-        reason: 'Trade',
+        description: 'Trade',
         players: [
           {
             playerKey: 'player-4-key',
@@ -89,7 +89,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 2',
         teamKey: '422.l.90351.t.2',
         sameDayTransactions: true,
-        reason: 'Injury',
+        description: 'Injury',
         players: [
           {
             playerKey: 'player-5-key',
@@ -142,7 +142,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.17808.t.2',
         sameDayTransactions: true,
-        reason: 'Injury',
+        description: 'Injury',
         players: [
           {
             playerKey: 'player-8-key',
@@ -161,7 +161,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.17808.t.2',
         sameDayTransactions: false,
-        reason: 'Poor Performance',
+        description: 'Poor Performance',
         players: [
           {
             playerKey: 'player-16-key',
@@ -182,7 +182,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.34143.t.10',
         sameDayTransactions: true,
-        reason: 'Poor Performance',
+        description: 'Poor Performance',
         players: [
           {
             playerKey: 'player-10-key',
@@ -201,7 +201,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 1',
         teamKey: '422.l.34143.t.10',
         sameDayTransactions: false,
-        reason: 'Trade',
+        description: 'Trade',
         players: [
           {
             playerKey: 'player-18-key',
@@ -222,7 +222,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 2',
         teamKey: '422.l.58716.t.20',
         sameDayTransactions: false,
-        reason: 'Trade',
+        description: 'Trade',
         players: [
           {
             playerKey: 'player-12-key',
@@ -243,7 +243,7 @@ export const transactionsData: TransactionsData = {
         leagueName: 'League 2',
         teamKey: '422.l.90351.t.2',
         sameDayTransactions: true,
-        reason: 'Injury',
+        description: 'Injury',
         players: [
           {
             playerKey: 'player-14-key',

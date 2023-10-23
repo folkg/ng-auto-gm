@@ -1,3 +1,5 @@
+import { Player } from './Player';
+
 export type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
   lineupChanges: LineupChanges[] | null;
@@ -19,7 +21,8 @@ export interface PlayerTransaction {
   leagueName: string;
   teamKey: string;
   sameDayTransactions: boolean;
-  reason: string;
+  description: string;
+  reason: string | null;
   isFaabRequired?: boolean;
   players: TPlayer[];
   selected?: boolean; // a temporary flag to track transactions in the frontend
@@ -29,6 +32,7 @@ type TPlayer = {
   playerKey: string;
   transactionType: TransactionType;
   isInactiveList: boolean;
+  player: Player;
   isFromWaivers?: boolean;
 };
 
