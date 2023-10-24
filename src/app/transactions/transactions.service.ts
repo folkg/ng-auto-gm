@@ -11,6 +11,7 @@ import {
   PostTransactionsResult,
   TransactionsData,
 } from './interfaces/TransactionsData';
+import { Player } from './interfaces/Player';
 
 @Injectable({
   providedIn: 'root',
@@ -61,14 +62,6 @@ export class TransactionsService {
     this.transactionsSubject.next(flatTransactions);
   }
 
-  private get selectedTransactions(): PlayerTransaction[] {
-    return this.transactionsSubject.value.filter((t) => t.selected);
-  }
-
-  public get numSelectedTransactions(): number {
-    return this.selectedTransactions.length;
-  }
-
   public updateTransaction(transaction: PlayerTransaction): void {
     const updatedTransaction = { ...transaction };
 
@@ -82,11 +75,30 @@ export class TransactionsService {
     this.transactionsSubject.next(newTransactions);
   }
 
+  public getTopAddCandidatesList(teamKey: string): Player[] {
+    return this.originalTransactions?.topAddCandidatesList[teamKey] ?? [];
+  }
+
+  public getTopDropCandidatesList(teamKey: string): Player[] {
+    return this.originalTransactions?.topDropCandidatesList[teamKey] ?? [];
+  }
+
+  private get selectedTransactions(): PlayerTransaction[] {
+    return this.transactionsSubject.value.filter((t) => t.selected);
+  }
+
+  public get numSelectedTransactions(): number {
+    return this.selectedTransactions.length;
+  }
+
   private selectedTransactionsData(): TransactionsData {
     const result: TransactionsData = {
       dropPlayerTransactions: null,
       lineupChanges: null,
       addSwapTransactions: null,
+      topAddCandidatesList: {},
+      topDropCandidatesList: {},
+      playersAtPositionList: {},
     };
 
     if (!this.originalTransactions) {
