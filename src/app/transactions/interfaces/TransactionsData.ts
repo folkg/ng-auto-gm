@@ -26,6 +26,7 @@ export interface PlayerTransaction {
   isFaabRequired?: boolean;
   players: TPlayer[];
   selected?: boolean; // a temporary flag to track transactions in the frontend
+  id: string; // a temporary flag to track transactions in the frontend
 }
 
 type TPlayer = {
