@@ -1,7 +1,7 @@
 .card {
   border: 1px solid var(--accent-grey);
   border-radius: 4px;
-  padding: 1rem;
+  padding: 1rem 0;
   margin-bottom: 0.5rem;
 }
 
@@ -16,19 +16,23 @@
   margin-bottom: 0.5rem;
 }
 
+.info-icon,
+.add-icon,
+.remove-icon {
+  min-width: 1em;
+  margin-right: 0.5rem;
+}
+
 .info-icon {
   color: #007bff;
-  margin-right: 0.5rem;
 }
 
 .add-icon {
   color: green;
-  margin-right: 0.5rem;
 }
 
 .remove-icon {
   color: red;
-  margin-right: 0.5rem;
 }
 
 .player-card {

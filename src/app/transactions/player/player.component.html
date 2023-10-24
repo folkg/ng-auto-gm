@@ -33,32 +33,36 @@
           </ng-container>
         </td>
       </tr>
+      <tr>
+        <td><strong>Ranks</strong></td>
+        <td></td>
+      </tr>
       <tr *ngIf="player.ranks.last30Days !== -1">
-        <td>Last 30 Days Rank</td>
+        <td>Last 30 Days</td>
         <td>{{ player.ranks.last30Days }}</td>
       </tr>
       <tr *ngIf="player.ranks.last14Days !== -1">
-        <td>Last 14 Days Rank</td>
+        <td>Last 14 Days</td>
         <td>{{ player.ranks.last14Days }}</td>
       </tr>
       <tr *ngIf="player.ranks.next7Days !== -1">
-        <td>Next 7 Days Rank</td>
+        <td>Next 7 Days</td>
         <td>{{ player.ranks.next7Days }}</td>
       </tr>
       <tr *ngIf="player.ranks.last4Weeks !== -1">
-        <td>Last 4 Weeks Rank</td>
+        <td>Last 4 Weeks</td>
         <td>{{ player.ranks.last4Weeks }}</td>
       </tr>
       <tr *ngIf="player.ranks.projectedWeek !== -1">
-        <td>Projected Week Rank</td>
+        <td>Projected Week</td>
         <td>{{ player.ranks.projectedWeek }}</td>
       </tr>
       <tr *ngIf="player.ranks.next4Weeks !== -1">
-        <td>Next 4 Weeks Rank</td>
+        <td>Next 4 Weeks</td>
         <td>{{ player.ranks.next4Weeks }}</td>
       </tr>
       <tr *ngIf="player.ranks.restOfSeason !== -1">
-        <td>Rest of Season Rank</td>
+        <td>Rest of Season</td>
         <td>{{ player.ranks.restOfSeason }}</td>
       </tr>
       <!-- {{Open in Yahoo Button}} -->
