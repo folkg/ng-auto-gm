@@ -71,15 +71,15 @@ export class TransactionsService {
 
   public updateTransaction(transaction: PlayerTransaction): void {
     const updatedTransaction = { ...transaction };
-    const transactions = this.transactionsSubject.value;
 
-    const transactionIndex = transactions.findIndex(
-      (t) => t.id === updatedTransaction.id
-    );
+    const newTransactions = this.transactionsSubject.value.map((t) => {
+      if (t.id === updatedTransaction.id) {
+        return updatedTransaction;
+      }
+      return t;
+    });
 
-    transactions[transactionIndex] = updatedTransaction;
-
-    this.transactionsSubject.next(transactions);
+    this.transactionsSubject.next(newTransactions);
   }
 
   private selectedTransactionsData(): TransactionsData {

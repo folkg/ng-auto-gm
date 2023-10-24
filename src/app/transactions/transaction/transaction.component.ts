@@ -16,7 +16,11 @@ export class TransactionComponent {
     if (!this.transaction) {
       return;
     }
-    this.transaction.selected = !this.transaction.selected;
-    this.transactionsService.updateTransaction(this.transaction);
+
+    const updateTransaction = {
+      ...this.transaction,
+      selected: !this.transaction.selected,
+    };
+    this.transactionsService.updateTransaction(updateTransaction);
   }
 }
