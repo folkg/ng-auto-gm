@@ -18,7 +18,20 @@
     <table>
       <tr>
         <td>Percent Owned</td>
-        <td>{{ player.percent_owned }}</td>
+        <td>
+          {{ player.percent_owned ?? 0 }}
+          <ng-container *ngIf="player.percent_owned_delta">
+            <span
+              [ngClass]="{
+                'text-green': player.percent_owned_delta > 0,
+                'text-red': player.percent_owned_delta < 0
+              }"
+            >
+              ({{ player.percent_owned_delta > 0 ? "+" : ""
+              }}{{ player.percent_owned_delta }}%)</span
+            >
+          </ng-container>
+        </td>
       </tr>
       <tr *ngIf="player.ranks.last30Days !== -1">
         <td>Last 30 Days Rank</td>
