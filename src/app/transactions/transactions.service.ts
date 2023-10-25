@@ -76,11 +76,19 @@ export class TransactionsService {
   }
 
   public getTopAddCandidatesList(teamKey: string): Player[] {
-    return this.originalTransactions?.topAddCandidatesList[teamKey] ?? [];
+    return (
+      this.originalTransactions?.topAddCandidatesList[teamKey].sort(
+        (a, b) => b.ownership_score - a.ownership_score
+      ) ?? []
+    );
   }
 
   public getTopDropCandidatesList(teamKey: string): Player[] {
-    return this.originalTransactions?.topDropCandidatesList[teamKey] ?? [];
+    return (
+      this.originalTransactions?.topDropCandidatesList[teamKey].sort(
+        (a, b) => a.ownership_score - b.ownership_score
+      ) ?? []
+    );
   }
 
   private get selectedTransactions(): PlayerTransaction[] {
