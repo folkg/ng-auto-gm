@@ -4,6 +4,9 @@ export type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
   lineupChanges: LineupChanges[] | null;
   addSwapTransactions: PlayerTransaction[][] | null;
+  topAddCandidatesList: AssignedPlayersList;
+  topDropCandidatesList: AssignedPlayersList;
+  playersAtPositionList: PlayetsAtPositionsList;
 };
 
 export type PostTransactionsResult = {
@@ -26,6 +29,7 @@ export interface PlayerTransaction {
   isFaabRequired?: boolean;
   players: TPlayer[];
   selected?: boolean; // a temporary flag to track transactions in the frontend
+  id: string; // a temporary flag to track transactions in the frontend
 }
 
 type TPlayer = {
@@ -36,7 +40,7 @@ type TPlayer = {
   isFromWaivers?: boolean;
 };
 
-type TransactionType = 'add' | 'drop' | 'add/drop';
+export type TransactionType = 'add' | 'drop';
 
 export interface LineupChanges {
   teamKey: string;
@@ -44,3 +48,12 @@ export interface LineupChanges {
   coveragePeriod: string;
   newPlayerPositions: { [key: string]: string };
 }
+
+type PlayetsAtPositionsList = {
+  [teamKey: string]: {
+    [position: string]: number;
+  };
+};
+type AssignedPlayersList = {
+  [teamKey: string]: Player[];
+};

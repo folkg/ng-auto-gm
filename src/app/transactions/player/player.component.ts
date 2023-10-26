@@ -8,7 +8,7 @@ import { Player } from '../interfaces/Player';
 })
 export class PlayerComponent {
   @Input() player!: Player;
-  @Input() isAdding = false;
+  @Input() isAdding: boolean | null = null;
   public expanded = false;
 
   get playerPositions(): string {

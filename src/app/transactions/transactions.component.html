@@ -1,7 +1,7 @@
 <div class="header primaryColorBG">
   <h1>Suggested Transactions</h1>
 </div>
-<div class="content" [ngSwitch]="success">
+<div class="content" [ngSwitch]="postTransactionsSuccess">
   <ng-container *ngSwitchCase="false">
     <h2>There was an error with your submission. Please try again later.</h2>
   </ng-container>
@@ -9,13 +9,15 @@
     <h2>Transactions Succesfully Submitted!</h2>
     <h3>Successful Transactions</h3>
     <ul>
-      <li *ngFor="let transaction of transactionResults?.postedTransactions">
+      <li
+        *ngFor="let transaction of postTransactionsResults?.postedTransactions"
+      >
         {{ transaction.description }} ({{ transaction.teamName }})
       </li>
     </ul>
     <h3>Failed Transactions</h3>
     <ul>
-      <li *ngFor="let reason of transactionResults?.failedReasons">
+      <li *ngFor="let reason of postTransactionsResults?.failedReasons">
         {{ reason | json }}
       </li>
     </ul>
@@ -44,15 +46,13 @@
     </div>
     <ng-container *ngIf="teams.length !== 0; else showLoadingTeams">
       <ng-container
-        *ngIf="flatTransactions !== undefined; else showLoadingTransactions"
+        *ngIf="transactions !== undefined; else showLoadingTransactions"
       >
         <app-team
           class="card-container"
-          *ngFor="
-            let team of teams | sortTeamsByTransactions : flatTransactions
-          "
+          *ngFor="let team of teams | sortTeamsByTransactions : transactions"
           [team]="team"
-          [allTransactions]="flatTransactions"
+          [allTransactions]="transactions"
         ></app-team>
       </ng-container>
       <ng-template #showLoadingTransactions>
