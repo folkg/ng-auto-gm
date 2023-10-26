@@ -1,5 +1,10 @@
 <div class="card">
-  <div [ngClass]="{ 'green-header': isAdding, 'red-header': !isAdding }"></div>
+  <div
+    [ngClass]="{
+      'green-header': isAdding === true,
+      'red-header': isAdding === false
+    }"
+  ></div>
   <p class="ownership">
     {{ playerOwnership }}
   </p>
@@ -19,7 +24,7 @@
       <tr>
         <td>Percent Owned</td>
         <td>
-          {{ player.percent_owned ?? 0 }}
+          {{ player.percent_owned }}
           <ng-container *ngIf="player.percent_owned_delta">
             <span
               [ngClass]="{

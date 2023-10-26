@@ -40,7 +40,7 @@ type TPlayer = {
   isFromWaivers?: boolean;
 };
 
-type TransactionType = 'add' | 'drop' | 'add/drop';
+export type TransactionType = 'add' | 'drop';
 
 export interface LineupChanges {
   teamKey: string;
