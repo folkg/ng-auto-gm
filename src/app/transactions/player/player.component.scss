@@ -3,14 +3,18 @@
   border-radius: 4px;
 }
 
+.green-header,
+.red-header {
+  height: 0.3em;
+  border-radius: 4px 4px 0 0;
+}
+
 .green-header {
   background-color: green;
-  padding: 0.1em;
 }
 
 .red-header {
   background-color: red;
-  padding: 0.1em;
 }
 
 .card-content {

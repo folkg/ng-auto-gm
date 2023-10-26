@@ -5,6 +5,13 @@
   margin-bottom: 0.5rem;
 }
 
+.info-bubble {
+  border: 1px solid var(--accent-grey);
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .selected {
   background-color: rgba($color: #000000, $alpha: 0.05);
 }
