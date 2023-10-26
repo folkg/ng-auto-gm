@@ -1,1 +1,20 @@
-<p>edit-transaction works!</p>
+<h1 mat-dialog-title>Choose Player for Transaction</h1>
+
+<div mat-dialog-content>
+  <mat-radio-group [(ngModel)]="playerKey" class="max-width">
+    <mat-radio-button
+      *ngFor="let player of playersList"
+      [value]="player.player_key"
+      class="max-width"
+    >
+      <div class="player-card">
+        <app-player [player]="player"></app-player>
+      </div>
+    </mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" (click)="onDismiss()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onConfirm()">Select</button>
+</div>
