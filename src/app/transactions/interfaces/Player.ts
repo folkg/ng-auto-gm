@@ -8,8 +8,8 @@ export interface Player {
   is_playing: boolean;
   injury_status: string;
   percent_started: number;
-  percent_owned: number | undefined;
-  percent_owned_delta: number | undefined;
+  percent_owned: number;
+  percent_owned_delta: number;
   start_score: number;
   ownership_score: number;
   is_starting: number | string;
