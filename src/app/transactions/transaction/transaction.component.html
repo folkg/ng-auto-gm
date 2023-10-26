@@ -6,7 +6,7 @@
   >
     <div *ngIf="transaction.reason" class="card-container">
       <mat-icon class="info-icon">info</mat-icon>
-      <div>{{ transaction.reason }}</div>
+      <div class="info-bubble">{{ transaction.reason }}</div>
     </div>
     <ng-container *ngFor="let tPlayer of transaction.players">
       <div class="card-container">
@@ -23,6 +23,12 @@
           [isAdding]="tPlayer.transactionType === 'add'"
           class="player-card"
         ></app-player>
+        <button
+          mat-icon-button
+          (click)="openEditDialog(tPlayer.playerKey, tPlayer.transactionType)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
       </div>
     </ng-container>
   </mat-checkbox>
