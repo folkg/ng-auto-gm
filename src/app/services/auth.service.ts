@@ -9,19 +9,16 @@ import {
   updateEmail,
   User,
   sendEmailVerification,
-  setPersistence,
-  browserLocalPersistence,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { EMPTY, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  public user$: Observable<any> = EMPTY;
+  readonly user$: Observable<User | null>;
 
-  constructor(private auth: Auth, private router: Router) {
-    // set up the user$ observable for the logged in user
+  constructor(private readonly auth: Auth, private readonly router: Router) {
     this.user$ = user(this.auth);
   }
 

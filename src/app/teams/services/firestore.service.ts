@@ -4,58 +4,74 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
+  query,
   updateDoc,
+  where,
 } from '@angular/fire/firestore';
-import { take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { Team } from '../../services/interfaces/team';
+import { Schedule } from '../interfaces/schedules';
+import { assert, is } from 'superstruct';
 
 @Injectable({
-  providedIn: null,
+  providedIn: 'root',
 })
 export class FirestoreService {
   constructor(private firestore: Firestore, private auth: AuthService) {}
 
-  public async setLineupsBooleanFirestore(
-    team: Team,
-    value: boolean
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
-        try {
-          const db = this.firestore;
-          const teamsRef = collection(db, 'users', user.uid, 'teams');
-          const docRef = doc(teamsRef, team.team_key);
-          await updateDoc(docRef, { is_setting_lineups: value });
-          resolve();
-        } catch (err: any) {
-          reject(
-            'Error updating is_setting_lineups in Firebase: ' + err.message
-          );
-        }
-      });
-    });
+  async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
+    try {
+      const user = await firstValueFrom(this.auth.user$);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const db = this.firestore;
+      const teamsRef = collection(db, 'users', user.uid, 'teams');
+      const docRef = doc(teamsRef, team.team_key);
+      await updateDoc(docRef, { is_setting_lineups: value });
+    } catch (err: any) {
+      console.error(
+        'Error updating is_setting_lineups in Firebase: ' + err.message
+      );
+    }
   }
 
-  public async fetchSchedulesFromFirestore(): Promise<any> {
-    // first check if schedules are already in sessionStorage
-    if (sessionStorage.getItem('schedules') !== null) {
-      return JSON.parse(sessionStorage.getItem('schedules')!);
-    }
-    try {
-      // fetch the schedules for all leagues from firebase and save them to sessionStorage
-      const db = this.firestore;
-      const schedulesRef = doc(db, 'schedule', 'today');
-      const scheduleSnap = await getDoc(schedulesRef);
-      const schedule = scheduleSnap.data();
-      if (schedule) {
-        // save schedules to sessionStorage
-        sessionStorage.setItem('schedules', JSON.stringify(schedule));
+  async fetchSchedulesFromFirestore(): Promise<Schedule> {
+  async fetchSchedules(): Promise<Schedule> {
+    const storedSchedule = sessionStorage.getItem('schedules');
+    if (storedSchedule !== null) {
+      const schedule = JSON.parse(storedSchedule);
+      if (is(schedule, Schedule)) {
         return schedule;
       }
-    } catch (err: any) {
-      throw new Error('Error fetching schedules from Firebase' + err.message);
     }
-    return null;
+
+    const schedulesRef = doc(this.firestore, 'schedule', 'today');
+    const scheduleSnap = await getDoc(schedulesRef);
+    const schedule = scheduleSnap.data();
+    assert(schedule, Schedule);
+
+    sessionStorage.setItem('schedules', JSON.stringify(schedule));
+    return schedule;
+  }
+
+  // TODO: Proper typing, validation, and error handling
+  async fetchTeams(): Promise<any> {
+    const user = await firstValueFrom(this.auth.user$);
+    if (!user) {
+      return null;
+    }
+    const db = this.firestore;
+    const teams: any = [];
+    // fetch teams for the current user and now < end_date
+    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const q = query(teamsRef, where('end_date', '>', Date.now()));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      teams.push({ team_key: doc.id, ...doc.data() });
+    });
+    return teams;
   }
 }

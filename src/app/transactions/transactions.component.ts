@@ -25,17 +25,17 @@ import {
   styleUrls: ['./transactions.component.scss'],
 })
 export class TransactionsComponent {
-  public teams: Team[] = [];
+  teams: Team[] = [];
   private transactions: TransactionsData | undefined;
-  public flatTransactions: PlayerTransaction[] | undefined;
-  private teamsSubscription: Subscription | undefined;
-  public success: boolean | null = null;
-  public transactionResults?: TransactionResults;
+  flatTransactions: PlayerTransaction[] | undefined;
+  private readonly teamsSubscription: Subscription;
+  success: boolean | null = null;
+  transactionResults?: TransactionResults;
 
   constructor(
-    private fns: Functions,
-    private sts: SyncTeamsService,
-    private dialog: MatDialog
+    private readonly fns: Functions,
+    private readonly sts: SyncTeamsService,
+    private readonly dialog: MatDialog
   ) {
     this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
       this.teams = teams.filter((team) => team.allow_transactions);
@@ -47,7 +47,7 @@ export class TransactionsComponent {
   }
 
   ngOnDestroy(): void {
-    this.teamsSubscription?.unsubscribe();
+    this.teamsSubscription.unsubscribe();
   }
 
   private async fetchTransactions(): Promise<void> {
@@ -59,11 +59,8 @@ export class TransactionsComponent {
       );
     try {
       const result = await fetchTransactions();
-      const transactions = result.data;
 
-      console.log('transactions: ', transactions);
-
-      this.transactions = transactions;
+      this.transactions = result.data;
       this.formatTransactions();
     } catch (err: any) {
       console.error(
@@ -88,11 +85,11 @@ export class TransactionsComponent {
     });
   }
 
-  public get selectedTransactions(): PlayerTransaction[] {
+  get selectedTransactions(): PlayerTransaction[] {
     return this.flatTransactions?.filter((t) => t.selected) ?? [];
   }
 
-  public get numSelectedTransactions(): number {
+  get numSelectedTransactions(): number {
     return this.selectedTransactions.length;
   }
 
@@ -118,7 +115,7 @@ export class TransactionsComponent {
       this.filterSelectedTransactionsData(addSwapTransactions);
 
     // Keep all the lineup changes for the teams that have selected transactions, even if we don't need them all
-    const teamsWithTransactions: Set<string> = new Set(
+    const teamsWithTransactions = new Set(
       this.selectedTransactions.map((t) => t.teamKey)
     );
     result.lineupChanges =
@@ -142,13 +139,11 @@ export class TransactionsComponent {
       .filter((selectedTransactions) => selectedTransactions.length > 0);
   }
 
-  public async submitTransactions(): Promise<void> {
+  async submitTransactions(): Promise<void> {
     const userSelectionConfirmed = await this.confirmDialog();
     if (userSelectionConfirmed) {
       const transactions = this.selectedTransactionsData();
       await this.postTransactions(transactions);
-    } else {
-      console.log('User Cancelled');
     }
   }
 
@@ -173,7 +168,7 @@ export class TransactionsComponent {
     }
   }
 
-  async confirmDialog(): Promise<boolean> {
+  confirmDialog(): Promise<boolean> {
     const numSelectedTransactions = this.numSelectedTransactions;
     const title = 'WARNING: Permanent Action';
     const message = `These transactions will be permanent. Click Proceed to officially process your ${
@@ -193,6 +188,6 @@ export class TransactionsComponent {
       maxWidth: '500px',
       data: dialogData,
     });
-    return await lastValueFrom(dialogRef.afterClosed());
+    return lastValueFrom(dialogRef.afterClosed());
   }
 }

@@ -22,56 +22,59 @@ import { SyncTeamsService } from '../services/sync-teams.service';
   providers: [FirestoreService],
 })
 export class TeamsComponent implements OnInit, OnDestroy {
-  public teams: Team[] = [];
-  public schedule: Schedule | null = null;
-  public user: User | null = null;
+  teams: Team[] = [];
+  schedule: Schedule | null = null;
+  user: User | null = null;
   private isDirty: boolean = false;
-  private userSubscription: Subscription | undefined;
-  private teamsSubscription: Subscription | undefined;
-  private loadingTeamsSubscription: Subscription | undefined;
+  private readonly subs: Subscription;
 
   constructor(
-    private sts: SyncTeamsService,
-    private fs: FirestoreService,
-    private auth: AuthService,
-    public dialog: MatDialog,
-    public os: OnlineStatusService,
-    private snackBar: MatSnackBar
+    private readonly auth: AuthService,
+    private readonly firestoreService: FirestoreService,
+    private readonly syncTeamsService: SyncTeamsService,
+    readonly dialog: MatDialog,
+    readonly os: OnlineStatusService,
+    private readonly snackBar: MatSnackBar
   ) {
-    this.userSubscription = this.auth.user$.subscribe((user) => {
-      if (user) {
-        this.user = user;
-      }
-    });
+    this.subs = new Subscription();
 
-    this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
-      this.teams = teams;
-    });
+    this.subs.add(
+      this.auth.user$.subscribe((user) => {
+        if (user) {
+          this.user = user;
+        }
+      })
+    );
 
-    this.loadingTeamsSubscription = this.sts.loading$.subscribe((loading) => {
-      if (loading) {
-        this.snackBar.open('Refreshing Teams');
-      } else {
-        this.snackBar.dismiss();
-      }
-    });
+    this.subs.add(
+      this.syncTeamsService.teams$.subscribe((teams) => {
+        this.teams = teams;
+      })
+    );
+
+    this.subs.add(
+      this.syncTeamsService.loading$.subscribe((loading) => {
+        if (loading) {
+          this.snackBar.open('Refreshing Teams');
+        } else {
+          this.snackBar.dismiss();
+        }
+      })
+    );
   }
 
   async ngOnInit(): Promise<void> {
-    this.schedule = JSON.parse(sessionStorage.getItem('schedules') ?? 'null');
     await this.fetchLeagueSchedules();
   }
 
   ngOnDestroy(): void {
-    this.userSubscription?.unsubscribe();
-    this.teamsSubscription?.unsubscribe();
-    this.loadingTeamsSubscription?.unsubscribe();
+    this.subs.unsubscribe();
   }
 
   private async fetchLeagueSchedules() {
     if (!this.schedule) {
       try {
-        this.schedule = await this.fs.fetchSchedulesFromFirestore();
+        this.schedule = await this.firestoreService.fetchSchedules();
       } catch (err: any) {
         this.errorDialog(
           err.message +
@@ -84,7 +87,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
 
   async setLineupBoolean($event: SetLineupEvent): Promise<void> {
     try {
-      await this.fs.setLineupsBooleanFirestore($event.team, $event.state);
+      await this.firestoreService.setLineupsBoolean($event.team, $event.state);
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
     } catch (err) {
       // revert the change if the database write failed
@@ -95,15 +98,15 @@ export class TeamsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onDirtyChange(dirty: boolean): void {
+  onDirtyChange(dirty: boolean): void {
     this.isDirty = dirty;
   }
 
-  public canDeactivate(): Observable<boolean> | boolean {
+  canDeactivate(): Observable<boolean> | boolean {
     return !this.isDirty;
   }
 
-  private async errorDialog(
+  private errorDialog(
     message: string,
     title: string = 'ERROR',
     trueButton: string = 'OK',
@@ -125,6 +128,6 @@ export class TeamsComponent implements OnInit, OnDestroy {
       data: dialogData,
     });
 
-    return await lastValueFrom(dialogRef.afterClosed());
+    return lastValueFrom(dialogRef.afterClosed());
   }
 }

@@ -1,6 +1,8 @@
+import type { Leagues } from 'src/app/shared/interfaces/Leagues';
+
 export interface Team {
   team_key: string;
-  game_code: string;
+  game_code: Leagues | undefined;
   start_date: number;
   end_date: number;
   num_teams: number;
@@ -46,7 +48,7 @@ export interface Team {
 export function getEmptyTeamObject(): Team {
   return {
     game_name: '',
-    game_code: '',
+    game_code: undefined,
     game_season: '',
     game_is_over: false,
     team_key: '',

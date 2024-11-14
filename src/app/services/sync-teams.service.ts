@@ -1,43 +1,39 @@
 import { Injectable } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  getDocs,
-  query,
-  where,
-} from '@angular/fire/firestore';
+
 import {
   Functions,
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable, lastValueFrom, take } from 'rxjs';
+import { BehaviorSubject, Observable, lastValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { Team } from './interfaces/team';
+import { FirestoreService } from '../teams/services/firestore.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SyncTeamsService {
-  private teamsSubject = new BehaviorSubject<Team[]>([]);
-  public teams$: Observable<Team[]> = this.teamsSubject.asObservable();
+  private readonly teamsSubject = new BehaviorSubject<Team[]>([]);
+  readonly teams$: Observable<Team[]> = this.teamsSubject.asObservable();
 
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$: Observable<boolean> = this.loadingSubject.asObservable();
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  readonly loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
   constructor(
-    private firestore: Firestore,
-    private fns: Functions,
-    private auth: AuthService,
-    public dialog: MatDialog
+    private readonly fns: Functions,
+    private readonly auth: AuthService,
+    private readonly firestoreService: FirestoreService,
+    readonly dialog: MatDialog
   ) {
     this.teams$.subscribe((teams) => {
       if (teams.length > 0) {
+        // TODO: Why is this being stored in both sessionStorage and localStorage?
         sessionStorage.setItem('yahooTeams', JSON.stringify(teams));
         localStorage.setItem('yahooTeams', JSON.stringify(teams));
       }
@@ -60,6 +56,7 @@ export class SyncTeamsService {
         const localStorageTeams = JSON.parse(
           localStorage.getItem('yahooTeams') ?? '[]'
         );
+        // TODO: User superstruct to validate the teams
         this.teamsSubject.next(localStorageTeams);
 
         const fetchedTeams = await this.fetchTeamsFromYahoo();
@@ -87,6 +84,7 @@ export class SyncTeamsService {
       );
     try {
       const teams = await fetchTeamsFromServer();
+      // TODO: User superstruct to validate the teams
       return teams.data;
     } catch (err: any) {
       if (err.code === 'functions/data-loss') {
@@ -104,31 +102,13 @@ export class SyncTeamsService {
       const firestoreTeam = firestoreTeams.find(
         (t: any) => t.team_key === team.team_key
       );
+      // TODO: User superstruct to validate the team
       Object.assign(team, firestoreTeam);
     });
   }
 
-  private async fetchTeamsFromFirestore(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
-        if (user) {
-          try {
-            const db = this.firestore;
-            const teams: any = [];
-            // fetch teams for the current user and now < end_date
-            const teamsRef = collection(db, 'users', user.uid, 'teams');
-            const q = query(teamsRef, where('end_date', '>', Date.now()));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach((doc) => {
-              teams.push({ team_key: doc.id, ...doc.data() });
-            });
-            resolve(teams);
-          } catch (err: Error | any) {
-            reject('Error fetching teams from Firebase. ' + err.message);
-          }
-        }
-      });
-    });
+  private fetchTeamsFromFirestore(): Promise<any> {
+    return this.firestoreService.fetchTeams();
   }
 
   private async handleFetchTeamsError(err: any) {
@@ -157,7 +137,7 @@ export class SyncTeamsService {
     await this.auth.reauthenticateYahoo();
   }
 
-  private async errorDialog(
+  private errorDialog(
     message: string,
     title: string = 'ERROR',
     trueButton: string = 'OK',
@@ -179,6 +159,6 @@ export class SyncTeamsService {
       data: dialogData,
     });
 
-    return await lastValueFrom(dialogRef.afterClosed());
+    return lastValueFrom(dialogRef.afterClosed());
   }
 }

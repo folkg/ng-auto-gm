@@ -5,7 +5,7 @@ import {
   httpsCallableFromURL,
 } from '@angular/fire/functions';
 import { NgForm } from '@angular/forms';
-import { take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { OnlineStatusService } from '../services/online-status.service';
 
@@ -23,7 +23,7 @@ export class FeedbackComponent {
   submitted: boolean = false;
   success: boolean | null = null;
 
-  @ViewChild('feedbackForm') feedbackForm!: NgForm;
+  @ViewChild('feedbackForm') feedbackForm: NgForm | undefined;
 
   constructor(
     private auth: AuthService,
@@ -31,15 +31,18 @@ export class FeedbackComponent {
     public os: OnlineStatusService
   ) {}
 
-  onSubmitCloudFunction() {
+  onSubmitCloudFunction(): void {
     if (this.honeypot === '') {
       this.submitted = true;
-      this.auth.user$.pipe(take(1)).subscribe((user) => {
+      firstValueFrom(this.auth.user$).then((user) => {
+        if (!user) {
+          return;
+        }
         const emailBody: string =
           user.displayName + '\n' + user.uid + '\n\n' + this.feedback;
         const data: FeedbackData = {
-          userEmail: user.email,
-          feedbackType: this.feedbackType || 'General',
+          userEmail: user.email ?? 'unknown email',
+          feedbackType: this.feedbackType,
           title: this.title,
           message: emailBody,
         };
