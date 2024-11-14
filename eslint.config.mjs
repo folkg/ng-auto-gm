@@ -1,15 +1,14 @@
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import tsParser from "@typescript-eslint/parser";
 import js from "@eslint/js";
-import tseslint from "typescript-eslint";
+import tsParser from "@typescript-eslint/parser";
 import eslintConfigPrettier from "eslint-config-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import tseslint from "typescript-eslint";
 
 export default [
   {
-    ignores: ["node_modules/**/*", "**/node_modules/**/*"],
+    ignores: ["node_modules/**/*", "**/node_modules/**/*", "eslint.config.mjs"],
   },
   js.configs.recommended,
-  // TODO strict
   ...tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,
   {
@@ -62,6 +61,12 @@ export default [
           allowString: true,
           allowNumber: false,
           allowNullableObject: true,
+        },
+      ],
+      "@typescript-eslint/unbound-method": [
+        "error",
+        {
+          ignoreStatic: true,
         },
       ],
     },

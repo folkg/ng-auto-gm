@@ -8,12 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { ProfileModule } from '../profile/profile.module';
 import { SharedModule } from '../shared/shared.module';
-import { TeamComponent } from './team/team.component';
-import { TeamsRoutingModule } from './teams-routing.module';
-import { TeamsComponent } from './teams.component';
 import { RelativeDatePipe } from './pipes/relative-date.pipe';
+import { TeamComponent } from './team/team.component';
+import { TeamsComponent } from './teams.component';
+import { TeamsRoutingModule } from './teams-routing.module';
 
 @NgModule({
   declarations: [TeamsComponent, TeamComponent, RelativeDatePipe],

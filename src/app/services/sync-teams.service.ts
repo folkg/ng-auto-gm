@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FirebaseError } from '@angular/fire/app';
 import {
   Functions,
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable, lastValueFrom } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
-import { Team, type TeamFirestore } from './interfaces/team';
-import { FirestoreService } from '../teams/services/firestore.service';
 import { array, assert } from 'superstruct';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { getErrorMessage } from '../shared/utils/error';
+import { FirestoreService } from '../teams/services/firestore.service';
+import { Team, type TeamFirestore } from './interfaces/team';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +50,7 @@ export class SyncTeamsService {
   async init(): Promise<void> {
     const sessionStorageTeams = JSON.parse(
       sessionStorage.getItem('yahooTeams') ?? '[]'
-    );
+    ) as unknown;
     assert(sessionStorageTeams, array(Team));
     this.teamsSubject.next(sessionStorageTeams);
 
@@ -60,7 +62,7 @@ export class SyncTeamsService {
 
         const localStorageTeams = JSON.parse(
           localStorage.getItem('yahooTeams') ?? '[]'
-        );
+        ) as unknown;
         assert(localStorageTeams, array(Team));
         this.teamsSubject.next(localStorageTeams);
 
@@ -74,7 +76,7 @@ export class SyncTeamsService {
         await this.patchTeamPropertiesFromFirestore(sessionStorageTeams);
         this.teamsSubject.next(sessionStorageTeams);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.loadingSubject.next(false);
       await this.handleFetchTeamsError(err);
     }
@@ -93,12 +95,15 @@ export class SyncTeamsService {
 
       assert(teams, array(Team));
       return teams;
-    } catch (err: any) {
-      if (err.code === 'functions/data-loss') {
+    } catch (err: unknown) {
+      if (err instanceof FirebaseError && err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired
         throw new Error('Refresh Token Error');
       }
-      throw new Error('Error fetching teams from Yahoo: ' + err.message);
+
+      throw new Error(
+        'Error fetching teams from Yahoo: ' + getErrorMessage(err)
+      );
     }
   }
 
@@ -117,8 +122,9 @@ export class SyncTeamsService {
     return this.firestoreService.fetchTeams();
   }
 
-  private async handleFetchTeamsError(err: any) {
-    if (err.message === 'Refresh Token Error') {
+  private async handleFetchTeamsError(err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    if (errorMessage === 'Refresh Token Error') {
       const result = await this.errorDialog(
         'Your teams are currently not being managed!\n' +
           'Please sign in again below to grant access for Fantasy AutoCoach to continue managing your teams.',
@@ -127,12 +133,12 @@ export class SyncTeamsService {
         'Cancel'
       );
       if (result) {
-        this.reauthenticateYahoo();
+        await this.reauthenticateYahoo();
       }
-    } else if (err.message) {
-      this.errorDialog(err.message, 'ERROR Fetching Teams');
+    } else if (errorMessage) {
+      await this.errorDialog(errorMessage, 'ERROR Fetching Teams');
     } else {
-      this.errorDialog(
+      await this.errorDialog(
         'Please ensure you are connected to the internet and try again',
         'ERROR Fetching Teams'
       );
@@ -154,7 +160,7 @@ export class SyncTeamsService {
       message,
       trueButton: trueButton,
     };
-    if (falseButton) {
+    if (falseButton !== null) {
       dialogData.falseButton = falseButton;
     }
 

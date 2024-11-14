@@ -5,13 +5,15 @@ import {
   httpsCallableFromURL,
 } from '@angular/fire/functions';
 import { MatDialog } from '@angular/material/dialog';
-import { Subscription, lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
+
 import { Team } from '../services/interfaces/team';
 import { SyncTeamsService } from '../services/sync-teams.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { logError } from '../shared/utils/error';
 import {
   PlayerTransaction,
   PostTransactionsResult,
@@ -62,10 +64,8 @@ export class TransactionsComponent {
 
       this.transactions = result.data;
       this.formatTransactions();
-    } catch (err: any) {
-      console.error(
-        'Error fetching transactions from Firebase: ' + err.message
-      );
+    } catch (err: unknown) {
+      logError(err, 'Error fetching transactions from Firebase:');
     }
   }
 
@@ -162,8 +162,8 @@ export class TransactionsComponent {
       const result = await postTransactions({ transactions });
       this.success = result.data.success;
       this.transactionResults = result.data.transactionResults;
-    } catch (err: any) {
-      console.error('Error posting transactions to Firebase: ' + err.message);
+    } catch (err: unknown) {
+      logError(err, 'Error posting transactions to Firebase:');
       this.success = false;
     }
   }
@@ -172,7 +172,7 @@ export class TransactionsComponent {
     const numSelectedTransactions = this.numSelectedTransactions;
     const title = 'WARNING: Permanent Action';
     const message = `These transactions will be permanent. Click Proceed to officially process your ${
-      numSelectedTransactions || ''
+      numSelectedTransactions !== 0 ? numSelectedTransactions : ''
     } selected transaction${
       numSelectedTransactions !== 1 ? 's' : ''
     } with Yahoo, or Cancel to return to the transactions page.`;

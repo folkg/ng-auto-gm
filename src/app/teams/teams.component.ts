@@ -2,18 +2,20 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, Subscription, lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
+
 import { AuthService } from '../services/auth.service';
+import { Team } from '../services/interfaces/team';
 import { OnlineStatusService } from '../services/online-status.service';
+import { SyncTeamsService } from '../services/sync-teams.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { getErrorMessage, logError } from '../shared/utils/error';
 import { Schedule } from './interfaces/schedules';
 import { SetLineupEvent } from './interfaces/set-lineup-event';
-import { Team } from '../services/interfaces/team';
 import { FirestoreService } from './services/firestore.service';
-import { SyncTeamsService } from '../services/sync-teams.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -63,8 +65,8 @@ export class TeamsComponent implements OnInit, OnDestroy {
     );
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.fetchLeagueSchedules();
+  ngOnInit(): void {
+    this.fetchLeagueSchedules().catch(logError);
   }
 
   ngOnDestroy(): void {
@@ -75,9 +77,9 @@ export class TeamsComponent implements OnInit, OnDestroy {
     if (!this.schedule) {
       try {
         this.schedule = await this.firestoreService.fetchSchedules();
-      } catch (err: any) {
-        this.errorDialog(
-          err.message +
+      } catch (err: unknown) {
+        await this.errorDialog(
+          getErrorMessage(err) +
             ' Please ensure you are connected to the internet and try again later.',
           'ERROR Fetching Schedules'
         );
@@ -89,10 +91,10 @@ export class TeamsComponent implements OnInit, OnDestroy {
     try {
       await this.firestoreService.setLineupsBoolean($event.team, $event.state);
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
-    } catch (err) {
+    } catch (ignore) {
       // revert the change if the database write failed
       $event.team.is_setting_lineups = !$event.state;
-      this.errorDialog(
+      await this.errorDialog(
         "Could not update team's status on the server. Please check your internet connection and try again later."
       );
     }
@@ -102,7 +104,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
     this.isDirty = dirty;
   }
 
-  canDeactivate(): Observable<boolean> | boolean {
+  canDeactivate(): boolean {
     return !this.isDirty;
   }
 
@@ -117,7 +119,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
       message,
       trueButton: trueButton,
     };
-    if (falseButton) {
+    if (falseButton !== null) {
       dialogData.falseButton = falseButton;
     }
 

@@ -1,4 +1,4 @@
-import { union, literal, type Infer } from 'superstruct';
+import { type Infer,literal, union } from 'superstruct';
 
 export const Leagues = union([
   literal('mlb'),

@@ -6,6 +6,7 @@ import {
 } from '@angular/fire/functions';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+
 import { AuthService } from '../services/auth.service';
 import { OnlineStatusService } from '../services/online-status.service';
 
@@ -31,10 +32,10 @@ export class FeedbackComponent {
     public os: OnlineStatusService
   ) {}
 
-  onSubmitCloudFunction(): void {
+  async onSubmitCloudFunction(): Promise<void> {
     if (this.honeypot === '') {
       this.submitted = true;
-      firstValueFrom(this.auth.user$).then((user) => {
+      await firstValueFrom(this.auth.user$).then((user) => {
         if (!user) {
           return;
         }
@@ -57,7 +58,7 @@ export class FeedbackComponent {
           .then((result) => {
             this.success = result.data;
           })
-          .catch((_) => {
+          .catch(() => {
             this.success = false;
           });
       });

@@ -3,10 +3,11 @@ import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
+
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { OfflineWarningCardComponent } from './offline-warning-card/offline-warning-card.component';
-import { RobotsComponent } from './robots/robots.component';
 import { NthPipe } from './pipes/nth.pipe';
+import { RobotsComponent } from './robots/robots.component';
 
 @NgModule({
   declarations: [

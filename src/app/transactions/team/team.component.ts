@@ -1,5 +1,6 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
 import { Team } from 'src/app/services/interfaces/team';
+
 import { PlayerTransaction } from '../interfaces/TransactionsData';
 
 @Component({
@@ -20,7 +21,10 @@ export class TeamComponent {
   };
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['allTransactions']) {
+    if (
+      changes['allTransactions'].currentValue !==
+      changes['allTransactions'].previousValue
+    ) {
       this.transactions = this.allTransactions.filter(
         (transaction) => transaction.teamKey === this.team.team_key
       );

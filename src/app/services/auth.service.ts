@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
-  signOut,
-  signInWithPopup,
-  reauthenticateWithPopup,
-  user,
   OAuthProvider,
+  reauthenticateWithPopup,
+  sendEmailVerification,
+  signInWithPopup,
+  signOut,
   updateEmail,
   User,
-  sendEmailVerification,
+  user,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+
+import { getErrorMessage } from '../shared/utils/error';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,52 +28,55 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await signOut(this.auth);
-      this.router.navigate(['/login']);
+      await this.router.navigate(['/login']);
       localStorage.clear();
       sessionStorage.clear();
-    } catch (err: Error | any) {
-      throw new Error("Couldn't sign out: " + err.message);
+    } catch (err: unknown) {
+      throw new Error("Couldn't sign out: " + getErrorMessage(err));
     }
   }
 
   async loginYahoo(): Promise<void> {
     try {
       const provider = new OAuthProvider('yahoo.com');
-      const result = await signInWithPopup(this.auth, provider);
-      if (result) {
-        this.router.navigate(['/teams']);
-      }
-    } catch (err: Error | any) {
-      throw new Error("Couldn't sign in with Yahoo: " + err.message);
+      await signInWithPopup(this.auth, provider);
+      await this.router.navigate(['/teams']);
+    } catch (err: unknown) {
+      throw new Error("Couldn't sign in with Yahoo: " + getErrorMessage(err));
     }
   }
 
   async reauthenticateYahoo(): Promise<void> {
     const provider = new OAuthProvider('yahoo.com');
-    await reauthenticateWithPopup(this.auth.currentUser!, provider);
+    if (!this.auth.currentUser) {
+      throw new Error('User not found');
+    }
+    await reauthenticateWithPopup(this.auth.currentUser, provider);
   }
 
   async sendVerificationEmail(): Promise<void> {
     try {
       await sendEmailVerification(this.auth.currentUser as User);
       //TODO: Dialog to tell user to check email
-    } catch (err: Error | any) {
-      throw new Error("Couldn't send verification email: " + err.message);
+    } catch (err: unknown) {
+      throw new Error(
+        "Couldn't send verification email: " + getErrorMessage(err)
+      );
     }
   }
 
   async updateUserEmail(email: string): Promise<void> {
     try {
       await updateEmail(this.auth.currentUser as User, email);
-      this.sendVerificationEmail();
+      await this.sendVerificationEmail();
     } catch (err) {
       if (err instanceof Error) {
         if (err.message === 'Firebase: Error (auth/requires-recent-login).') {
           try {
             await this.reauthenticateYahoo();
-            this.updateUserEmail(email);
-          } catch (err: Error | any) {
-            throw new Error("Couldn't reauthenticate: " + err.message);
+            await this.updateUserEmail(email);
+          } catch (err: unknown) {
+            throw new Error("Couldn't reauthenticate: " + getErrorMessage(err));
           }
         }
       }

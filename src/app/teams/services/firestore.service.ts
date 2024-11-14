@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
-  Firestore,
   collection,
   doc,
+  Firestore,
   getDoc,
   getDocs,
   query,
@@ -11,7 +11,9 @@ import {
 } from '@angular/fire/firestore';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { getErrorMessage } from 'src/app/shared/utils/error';
 import { assert, is } from 'superstruct';
+
 import { Team, TeamFirestore } from '../../services/interfaces/team';
 import { Schedule } from '../interfaces/schedules';
 
@@ -34,9 +36,9 @@ export class FirestoreService {
       const teamsRef = collection(db, 'users', user.uid, 'teams');
       const docRef = doc(teamsRef, team.team_key);
       await updateDoc(docRef, { is_setting_lineups: value });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(
-        'Error updating is_setting_lineups in Firebase: ' + err.message
+        'Error updating is_setting_lineups in Firebase: ' + getErrorMessage(err)
       );
     }
   }
@@ -58,7 +60,7 @@ export class FirestoreService {
   async fetchSchedules(): Promise<Schedule> {
     const storedSchedule = sessionStorage.getItem('schedules');
     if (storedSchedule !== null) {
-      const schedule = JSON.parse(storedSchedule);
+      const schedule = JSON.parse(storedSchedule) as unknown;
       if (is(schedule, Schedule)) {
         return schedule;
       }

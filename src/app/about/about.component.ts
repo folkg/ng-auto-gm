@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Team } from '../services/interfaces/team';
 import spacetime from 'spacetime';
+
+import { Team } from '../services/interfaces/team';
 
 @Component({
   selector: 'app-about',

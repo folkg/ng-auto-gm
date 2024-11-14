@@ -1,14 +1,14 @@
 import { Leagues } from 'src/app/shared/interfaces/Leagues';
 import {
-  object,
-  string,
-  number,
   boolean,
-  record,
-  optional,
   Infer,
-  union,
   nullable,
+  number,
+  object,
+  optional,
+  record,
+  string,
+  union,
 } from 'superstruct';
 
 export const TeamFirestore = object({

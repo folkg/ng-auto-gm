@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
+import { RouterModule, Routes } from '@angular/router';
+
 import { DirtyFormGuard } from '../guards/dirty-form.guard';
 import { FeedbackComponent } from './feedback.component';
 
