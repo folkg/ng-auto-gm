@@ -2,18 +2,20 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, Subscription, lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
+
 import { AuthService } from '../services/auth.service';
+import { Team } from '../services/interfaces/team';
 import { OnlineStatusService } from '../services/online-status.service';
+import { SyncTeamsService } from '../services/sync-teams.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { getErrorMessage, logError } from '../shared/utils/error';
 import { Schedule } from './interfaces/schedules';
 import { SetLineupEvent } from './interfaces/set-lineup-event';
-import { Team } from '../services/interfaces/team';
 import { FirestoreService } from './services/firestore.service';
-import { SyncTeamsService } from '../services/sync-teams.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,59 +24,62 @@ import { SyncTeamsService } from '../services/sync-teams.service';
   providers: [FirestoreService],
 })
 export class TeamsComponent implements OnInit, OnDestroy {
-  public teams: Team[] = [];
-  public schedule: Schedule | null = null;
-  public user: User | null = null;
+  teams: Team[] = [];
+  schedule: Schedule | null = null;
+  user: User | null = null;
   private isDirty: boolean = false;
-  private userSubscription: Subscription | undefined;
-  private teamsSubscription: Subscription | undefined;
-  private loadingTeamsSubscription: Subscription | undefined;
+  private readonly subs: Subscription;
 
   constructor(
-    private sts: SyncTeamsService,
-    private fs: FirestoreService,
-    private auth: AuthService,
-    public dialog: MatDialog,
-    public os: OnlineStatusService,
-    private snackBar: MatSnackBar
+    private readonly auth: AuthService,
+    private readonly firestoreService: FirestoreService,
+    private readonly syncTeamsService: SyncTeamsService,
+    readonly dialog: MatDialog,
+    readonly os: OnlineStatusService,
+    private readonly snackBar: MatSnackBar
   ) {
-    this.userSubscription = this.auth.user$.subscribe((user) => {
-      if (user) {
-        this.user = user;
-      }
-    });
+    this.subs = new Subscription();
 
-    this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
-      this.teams = teams;
-    });
+    this.subs.add(
+      this.auth.user$.subscribe((user) => {
+        if (user) {
+          this.user = user;
+        }
+      })
+    );
 
-    this.loadingTeamsSubscription = this.sts.loading$.subscribe((loading) => {
-      if (loading) {
-        this.snackBar.open('Refreshing Teams');
-      } else {
-        this.snackBar.dismiss();
-      }
-    });
+    this.subs.add(
+      this.syncTeamsService.teams$.subscribe((teams) => {
+        this.teams = teams;
+      })
+    );
+
+    this.subs.add(
+      this.syncTeamsService.loading$.subscribe((loading) => {
+        if (loading) {
+          this.snackBar.open('Refreshing Teams');
+        } else {
+          this.snackBar.dismiss();
+        }
+      })
+    );
   }
 
-  async ngOnInit(): Promise<void> {
-    this.schedule = JSON.parse(sessionStorage.getItem('schedules') ?? 'null');
-    await this.fetchLeagueSchedules();
+  ngOnInit(): void {
+    this.fetchLeagueSchedules().catch(logError);
   }
 
   ngOnDestroy(): void {
-    this.userSubscription?.unsubscribe();
-    this.teamsSubscription?.unsubscribe();
-    this.loadingTeamsSubscription?.unsubscribe();
+    this.subs.unsubscribe();
   }
 
   private async fetchLeagueSchedules() {
     if (!this.schedule) {
       try {
-        this.schedule = await this.fs.fetchSchedulesFromFirestore();
-      } catch (err: any) {
-        this.errorDialog(
-          err.message +
+        this.schedule = await this.firestoreService.fetchSchedules();
+      } catch (err: unknown) {
+        await this.errorDialog(
+          getErrorMessage(err) +
             ' Please ensure you are connected to the internet and try again later.',
           'ERROR Fetching Schedules'
         );
@@ -84,26 +89,26 @@ export class TeamsComponent implements OnInit, OnDestroy {
 
   async setLineupBoolean($event: SetLineupEvent): Promise<void> {
     try {
-      await this.fs.setLineupsBooleanFirestore($event.team, $event.state);
+      await this.firestoreService.setLineupsBoolean($event.team, $event.state);
       sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
-    } catch (err) {
+    } catch (ignore) {
       // revert the change if the database write failed
       $event.team.is_setting_lineups = !$event.state;
-      this.errorDialog(
+      await this.errorDialog(
         "Could not update team's status on the server. Please check your internet connection and try again later."
       );
     }
   }
 
-  public onDirtyChange(dirty: boolean): void {
+  onDirtyChange(dirty: boolean): void {
     this.isDirty = dirty;
   }
 
-  public canDeactivate(): Observable<boolean> | boolean {
+  canDeactivate(): boolean {
     return !this.isDirty;
   }
 
-  private async errorDialog(
+  private errorDialog(
     message: string,
     title: string = 'ERROR',
     trueButton: string = 'OK',
@@ -114,7 +119,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
       message,
       trueButton: trueButton,
     };
-    if (falseButton) {
+    if (falseButton !== null) {
       dialogData.falseButton = falseButton;
     }
 
@@ -125,6 +130,6 @@ export class TeamsComponent implements OnInit, OnDestroy {
       data: dialogData,
     });
 
-    return await lastValueFrom(dialogRef.afterClosed());
+    return lastValueFrom(dialogRef.afterClosed());
   }
 }

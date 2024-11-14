@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
+import type { User } from '@angular/fire/auth';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
+
 import { AuthService } from '../services/auth.service';
 import {
-  DialogData,
   ConfirmDialogComponent,
+  DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { getErrorMessage } from '../shared/utils/error';
 
 @Component({
   selector: 'app-login',
@@ -13,24 +16,18 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  user$: Observable<any> = this.auth.user$;
+  user$: Observable<User | null> = this.auth.user$;
 
   constructor(private auth: AuthService, public dialog: MatDialog) {}
 
-  async login() {
-    try {
-      await this.auth.loginYahoo();
-    } catch (err: Error | any) {
-      this.errorDialog(err.message);
-    }
+  login() {
+    this.auth
+      .loginYahoo()
+      .catch((err) => this.errorDialog(getErrorMessage(err)));
   }
 
-  async logout() {
-    try {
-      await this.auth.logout();
-    } catch (err: Error | any) {
-      this.errorDialog(err.message);
-    }
+  logout() {
+    this.auth.logout().catch((err) => this.errorDialog(getErrorMessage(err)));
   }
 
   errorDialog(message: string, title: string = 'ERROR'): void {

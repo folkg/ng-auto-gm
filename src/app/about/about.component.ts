@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Team } from '../services/interfaces/team';
 import spacetime from 'spacetime';
+
+import { Team } from '../services/interfaces/team';
 
 @Component({
   selector: 'app-about',
@@ -51,6 +52,8 @@ export class AboutComponent {
     allow_adding: false,
     allow_add_drops: false,
     allow_waiver_adds: false,
+    uid: '',
+    roster_positions: {},
   };
 
   getLastUpdate(): number {

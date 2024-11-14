@@ -20,7 +20,9 @@
       class="card-container"
       *ngFor="let team of teams"
       [team]="team"
-      [gameTimeStamps]="schedule ? schedule.games[team.game_code] : null"
+      [gameTimeStamps]="
+        schedule && team.game_code ? schedule.games[team.game_code] : null
+      "
       (toggleEvent)="setLineupBoolean($event)"
     ></app-team>
   </ng-container>

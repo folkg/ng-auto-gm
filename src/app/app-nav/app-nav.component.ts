@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+
 import { AuthService } from '../services/auth.service';
-import { ThemingService } from '../services/theming.service';
 import { SyncTeamsService } from '../services/sync-teams.service';
+import { ThemingService } from '../services/theming.service';
 
 @Component({
   selector: 'app-app-nav',

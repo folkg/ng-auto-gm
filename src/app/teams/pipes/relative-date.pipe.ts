@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class RelativeDatePipe implements PipeTransform {
   transform(timestamp: number | null): string {
     const now = new Date();
-    if (timestamp) {
+    if (timestamp !== null) {
       const date = new Date(timestamp);
       // if the timstamp is today, just return the HH:MM
       if (

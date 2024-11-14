@@ -1,15 +1,16 @@
 import { Component, Input, SimpleChanges } from '@angular/core';
-import { Team, getEmptyTeamObject } from 'src/app/services/interfaces/team';
+import { Team } from 'src/app/services/interfaces/team';
+
 import { PlayerTransaction } from '../interfaces/TransactionsData';
 
 @Component({
-  selector: 'app-team[team]',
+  selector: 'app-team[team][allTransactions]',
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.scss'],
 })
 export class TeamComponent {
-  @Input() team: Team = getEmptyTeamObject();
-  @Input() allTransactions: PlayerTransaction[] = [];
+  @Input({ required: true }) team!: Team;
+  @Input({ required: true }) allTransactions: PlayerTransaction[] = [];
   public transactions: PlayerTransaction[] = [];
   public scoringType: { [key: string]: string } = {
     head: 'Head to Head Scoring',
@@ -20,7 +21,10 @@ export class TeamComponent {
   };
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['allTransactions']) {
+    if (
+      changes['allTransactions'].currentValue !==
+      changes['allTransactions'].previousValue
+    ) {
       this.transactions = this.allTransactions.filter(
         (transaction) => transaction.teamKey === this.team.team_key
       );
@@ -29,7 +33,7 @@ export class TeamComponent {
 
   gotoExternalDomain(url: string) {
     if (url) {
-      (window as any).open(url, '_blank');
+      window.open(url, '_blank');
     }
   }
 }

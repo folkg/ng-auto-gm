@@ -1,5 +1,6 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { assert, boolean } from 'superstruct';
 
 @Injectable({
   providedIn: 'root',
@@ -21,16 +22,16 @@ export class ThemingService {
     const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     if (localStorage.getItem('darkModeOn') !== null) {
-      // First check if dark mode is enabled in local storage
-      this._darkModeOn = JSON.parse(
-        localStorage.getItem('darkModeOn') || 'false'
-      );
+      const storedValue = JSON.parse(
+        localStorage.getItem('darkModeOn') ?? 'false'
+      ) as unknown;
+      assert(storedValue, boolean());
+
+      this._darkModeOn = storedValue;
     } else {
-      // Next, check if dark mode is enabled on system
       this._darkModeOn = darkMediaQuery.matches;
     }
 
-    // If dark mode is enabled then directly switch to the dark-theme
     if (this.darkModeOn) {
       this.theme.next('dark-theme');
     }

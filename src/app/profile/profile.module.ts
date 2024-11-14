@@ -5,10 +5,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+
 import { ProfileCardComponent } from '../profile/profile-card/profile-card.component';
 import { SharedModule } from '../shared/shared.module';
-import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile.component';
+import { ProfileRoutingModule } from './profile-routing.module';
 
 @NgModule({
   declarations: [ProfileComponent, ProfileCardComponent],

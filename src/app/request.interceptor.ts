@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
 import {
-  HttpRequest,
-  HttpHandler,
   HttpEvent,
-  HttpInterceptor,
+  HttpHandler,
   HttpHeaders,
+  HttpInterceptor,
+  HttpRequest,
 } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 //TODO: Eliminate this interceptor. Just add the header as a property in the yahoo service class and attach it to all calls there. Also add the API url as a property there too? Or use proxy?

@@ -1,5 +1,5 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,10 +16,9 @@ export class ConfirmDialogComponent implements OnInit, OnDestroy {
   private clickSubscription: Subscription | undefined;
 
   constructor(
-    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    public dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
-    // Update view with given values
     this.title = data.title;
     this.message = data.message;
     this.trueButton = data.trueButton ?? '';
@@ -35,9 +34,7 @@ export class ConfirmDialogComponent implements OnInit, OnDestroy {
 
     this.clickSubscription = this.dialogRef
       .backdropClick()
-      .subscribe((event) => {
-        this.onDismiss();
-      });
+      .subscribe(() => this.onDismiss());
   }
 
   ngOnDestroy(): void {
@@ -46,17 +43,14 @@ export class ConfirmDialogComponent implements OnInit, OnDestroy {
   }
 
   onConfirm(): void {
-    // Close the dialog, return true
     this.dialogRef.close(true);
   }
 
   onDismiss(): void {
-    // Close the dialog, return false
     this.dialogRef.close(false);
   }
 }
 
-//Interface to represent confirm dialog model.
 export interface DialogData {
   title: string;
   message: string;

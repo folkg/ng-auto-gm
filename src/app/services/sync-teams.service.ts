@@ -1,54 +1,57 @@
 import { Injectable } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  getDocs,
-  query,
-  where,
-} from '@angular/fire/firestore';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FirebaseError } from '@angular/fire/app';
 import {
   Functions,
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable, lastValueFrom, take } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
-import { Team } from './interfaces/team';
+import { array, assert } from 'superstruct';
+
+import { getErrorMessage } from '../shared/utils/error';
+import { FirestoreService } from '../teams/services/firestore.service';
+import { Team, type TeamFirestore } from './interfaces/team';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SyncTeamsService {
-  private teamsSubject = new BehaviorSubject<Team[]>([]);
-  public teams$: Observable<Team[]> = this.teamsSubject.asObservable();
+  private readonly teamsSubject = new BehaviorSubject<Team[]>([]);
+  readonly teams$: Observable<Team[]> = this.teamsSubject.asObservable();
 
-  private loadingSubject = new BehaviorSubject<boolean>(false);
-  public loading$: Observable<boolean> = this.loadingSubject.asObservable();
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  readonly loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
   constructor(
-    private firestore: Firestore,
-    private fns: Functions,
-    private auth: AuthService,
-    public dialog: MatDialog
+    private readonly fns: Functions,
+    private readonly auth: AuthService,
+    private readonly firestoreService: FirestoreService,
+    readonly dialog: MatDialog
   ) {
-    this.teams$.subscribe((teams) => {
+    this.teams$.pipe(takeUntilDestroyed()).subscribe((teams) => {
       if (teams.length > 0) {
+        // localStorage will persist the teams across sessions
+        // If we fetch a team once per session, it is assumed to be fresh for the duration of the session.
         sessionStorage.setItem('yahooTeams', JSON.stringify(teams));
         localStorage.setItem('yahooTeams', JSON.stringify(teams));
       }
     });
-    this.init();
+
+    this.init().catch(console.error);
   }
 
   async init(): Promise<void> {
     const sessionStorageTeams = JSON.parse(
       sessionStorage.getItem('yahooTeams') ?? '[]'
-    );
+    ) as unknown;
+    assert(sessionStorageTeams, array(Team));
     this.teamsSubject.next(sessionStorageTeams);
 
     try {
@@ -59,7 +62,8 @@ export class SyncTeamsService {
 
         const localStorageTeams = JSON.parse(
           localStorage.getItem('yahooTeams') ?? '[]'
-        );
+        ) as unknown;
+        assert(localStorageTeams, array(Team));
         this.teamsSubject.next(localStorageTeams);
 
         const fetchedTeams = await this.fetchTeamsFromYahoo();
@@ -72,7 +76,7 @@ export class SyncTeamsService {
         await this.patchTeamPropertiesFromFirestore(sessionStorageTeams);
         this.teamsSubject.next(sessionStorageTeams);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.loadingSubject.next(false);
       await this.handleFetchTeamsError(err);
     }
@@ -86,53 +90,41 @@ export class SyncTeamsService {
         'https://fantasyautocoach.com/api/fetchuserteams'
       );
     try {
-      const teams = await fetchTeamsFromServer();
-      return teams.data;
-    } catch (err: any) {
-      if (err.code === 'functions/data-loss') {
+      const teamsData = await fetchTeamsFromServer();
+      const teams = teamsData.data;
+
+      assert(teams, array(Team));
+      return teams;
+    } catch (err: unknown) {
+      if (err instanceof FirebaseError && err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired
         throw new Error('Refresh Token Error');
       }
-      throw new Error('Error fetching teams from Yahoo: ' + err.message);
+
+      throw new Error(
+        'Error fetching teams from Yahoo: ' + getErrorMessage(err)
+      );
     }
   }
 
   private async patchTeamPropertiesFromFirestore(teamsToPatch: Team[]) {
     const firestoreTeams = await this.fetchTeamsFromFirestore();
 
-    teamsToPatch.forEach((team) => {
+    teamsToPatch.forEach((teamToPatch) => {
       const firestoreTeam = firestoreTeams.find(
-        (t: any) => t.team_key === team.team_key
+        (firestoreTeam) => firestoreTeam.team_key === teamToPatch.team_key
       );
-      Object.assign(team, firestoreTeam);
+      Object.assign(teamToPatch, firestoreTeam);
     });
   }
 
-  private async fetchTeamsFromFirestore(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.auth.user$.pipe(take(1)).subscribe(async (user) => {
-        if (user) {
-          try {
-            const db = this.firestore;
-            const teams: any = [];
-            // fetch teams for the current user and now < end_date
-            const teamsRef = collection(db, 'users', user.uid, 'teams');
-            const q = query(teamsRef, where('end_date', '>', Date.now()));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach((doc) => {
-              teams.push({ team_key: doc.id, ...doc.data() });
-            });
-            resolve(teams);
-          } catch (err: Error | any) {
-            reject('Error fetching teams from Firebase. ' + err.message);
-          }
-        }
-      });
-    });
+  private fetchTeamsFromFirestore(): Promise<TeamFirestore[]> {
+    return this.firestoreService.fetchTeams();
   }
 
-  private async handleFetchTeamsError(err: any) {
-    if (err.message === 'Refresh Token Error') {
+  private async handleFetchTeamsError(err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    if (errorMessage === 'Refresh Token Error') {
       const result = await this.errorDialog(
         'Your teams are currently not being managed!\n' +
           'Please sign in again below to grant access for Fantasy AutoCoach to continue managing your teams.',
@@ -141,12 +133,12 @@ export class SyncTeamsService {
         'Cancel'
       );
       if (result) {
-        this.reauthenticateYahoo();
+        await this.reauthenticateYahoo();
       }
-    } else if (err.message) {
-      this.errorDialog(err.message, 'ERROR Fetching Teams');
+    } else if (errorMessage) {
+      await this.errorDialog(errorMessage, 'ERROR Fetching Teams');
     } else {
-      this.errorDialog(
+      await this.errorDialog(
         'Please ensure you are connected to the internet and try again',
         'ERROR Fetching Teams'
       );
@@ -157,7 +149,7 @@ export class SyncTeamsService {
     await this.auth.reauthenticateYahoo();
   }
 
-  private async errorDialog(
+  private errorDialog(
     message: string,
     title: string = 'ERROR',
     trueButton: string = 'OK',
@@ -168,7 +160,7 @@ export class SyncTeamsService {
       message,
       trueButton: trueButton,
     };
-    if (falseButton) {
+    if (falseButton !== null) {
       dialogData.falseButton = falseButton;
     }
 
@@ -179,6 +171,6 @@ export class SyncTeamsService {
       data: dialogData,
     });
 
-    return await lastValueFrom(dialogRef.afterClosed());
+    return lastValueFrom(dialogRef.afterClosed());
   }
 }
