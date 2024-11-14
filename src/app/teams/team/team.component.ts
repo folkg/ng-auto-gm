@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 import { SetLineupEvent } from '../interfaces/set-lineup-event';
-import { Team, getEmptyTeamObject } from '../../services/interfaces/team';
+import { Team } from '../../services/interfaces/team';
 import spacetime, { Spacetime } from 'spacetime';
 import { RelativeDatePipe } from '../pipes/relative-date.pipe';
 
@@ -11,13 +11,13 @@ const SERVER_UPDATE_MINUTE = 55;
 const FIRST_SERVER_UPDATE_HOUR = 1;
 
 @Component({
-  selector: 'app-team[team]',
+  selector: 'app-team[team][gameTimeStamps]',
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.scss'],
 })
 export class TeamComponent {
-  @Input() team: Team = getEmptyTeamObject();
-  @Input() gameTimeStamps: number[] | null = null;
+  @Input({ required: true }) team!: Team;
+  @Input({ required: true }) gameTimeStamps!: number[] | null;
   @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
   public date: number;
   public scoringType: { [key: string]: string } = {

@@ -11,15 +11,18 @@ import {
 } from '@angular/fire/firestore';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { Team } from '../../services/interfaces/team';
-import { Schedule } from '../interfaces/schedules';
 import { assert, is } from 'superstruct';
+import { Team, TeamFirestore } from '../../services/interfaces/team';
+import { Schedule } from '../interfaces/schedules';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirestoreService {
-  constructor(private firestore: Firestore, private auth: AuthService) {}
+  constructor(
+    private readonly firestore: Firestore,
+    private readonly auth: AuthService
+  ) {}
 
   async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
     try {
@@ -38,7 +41,20 @@ export class FirestoreService {
     }
   }
 
-  async fetchSchedulesFromFirestore(): Promise<Schedule> {
+  // async togglePauseLineupActions(team: Team) {
+  //   const user = await firstValueFrom(this.auth.user$);
+  //   if (!user) {
+  //     throw new Error('User not found');
+  //   }
+  //   const db = this.firestore;
+  //   const teamsRef = collection(db, 'users', user.uid, 'teams');
+  //   const docRef = doc(teamsRef, team.team_key);
+  //   const docSnap = await getDoc(docRef);
+  //   const data = docSnap.data();
+  //   assert(data, Team);
+  //   await updateDoc(docRef, { lineups_paused_at:  });
+  // }
+
   async fetchSchedules(): Promise<Schedule> {
     const storedSchedule = sessionStorage.getItem('schedules');
     if (storedSchedule !== null) {
@@ -57,21 +73,23 @@ export class FirestoreService {
     return schedule;
   }
 
-  // TODO: Proper typing, validation, and error handling
-  async fetchTeams(): Promise<any> {
+  async fetchTeams(): Promise<TeamFirestore[]> {
     const user = await firstValueFrom(this.auth.user$);
     if (!user) {
-      return null;
+      throw new Error('User not found');
     }
-    const db = this.firestore;
-    const teams: any = [];
+
+    const teams: TeamFirestore[] = [];
     // fetch teams for the current user and now < end_date
-    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const teamsRef = collection(this.firestore, 'users', user.uid, 'teams');
     const q = query(teamsRef, where('end_date', '>', Date.now()));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      teams.push({ team_key: doc.id, ...doc.data() });
+      const team = doc.data();
+      assert(team, TeamFirestore);
+      teams.push(team);
     });
+
     return teams;
   }
 }

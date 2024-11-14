@@ -6,6 +6,7 @@ import {
   ConfirmDialogComponent,
 } from '../shared/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import type { User } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  user$: Observable<any> = this.auth.user$;
+  user$: Observable<User | null> = this.auth.user$;
 
   constructor(private auth: AuthService, public dialog: MatDialog) {}
 

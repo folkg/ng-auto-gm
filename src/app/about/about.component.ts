@@ -51,6 +51,8 @@ export class AboutComponent {
     allow_adding: false,
     allow_add_drops: false,
     allow_waiver_adds: false,
+    uid: '',
+    roster_positions: {},
   };
 
   getLastUpdate(): number {

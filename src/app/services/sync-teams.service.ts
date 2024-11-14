@@ -12,8 +12,10 @@ import {
   ConfirmDialogComponent,
   DialogData,
 } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
-import { Team } from './interfaces/team';
+import { Team, type TeamFirestore } from './interfaces/team';
 import { FirestoreService } from '../teams/services/firestore.service';
+import { array, assert } from 'superstruct';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -31,20 +33,23 @@ export class SyncTeamsService {
     private readonly firestoreService: FirestoreService,
     readonly dialog: MatDialog
   ) {
-    this.teams$.subscribe((teams) => {
+    this.teams$.pipe(takeUntilDestroyed()).subscribe((teams) => {
       if (teams.length > 0) {
-        // TODO: Why is this being stored in both sessionStorage and localStorage?
+        // localStorage will persist the teams across sessions
+        // If we fetch a team once per session, it is assumed to be fresh for the duration of the session.
         sessionStorage.setItem('yahooTeams', JSON.stringify(teams));
         localStorage.setItem('yahooTeams', JSON.stringify(teams));
       }
     });
-    this.init();
+
+    this.init().catch(console.error);
   }
 
   async init(): Promise<void> {
     const sessionStorageTeams = JSON.parse(
       sessionStorage.getItem('yahooTeams') ?? '[]'
     );
+    assert(sessionStorageTeams, array(Team));
     this.teamsSubject.next(sessionStorageTeams);
 
     try {
@@ -56,7 +61,7 @@ export class SyncTeamsService {
         const localStorageTeams = JSON.parse(
           localStorage.getItem('yahooTeams') ?? '[]'
         );
-        // TODO: User superstruct to validate the teams
+        assert(localStorageTeams, array(Team));
         this.teamsSubject.next(localStorageTeams);
 
         const fetchedTeams = await this.fetchTeamsFromYahoo();
@@ -83,9 +88,11 @@ export class SyncTeamsService {
         'https://fantasyautocoach.com/api/fetchuserteams'
       );
     try {
-      const teams = await fetchTeamsFromServer();
-      // TODO: User superstruct to validate the teams
-      return teams.data;
+      const teamsData = await fetchTeamsFromServer();
+      const teams = teamsData.data;
+
+      assert(teams, array(Team));
+      return teams;
     } catch (err: any) {
       if (err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired
@@ -98,16 +105,15 @@ export class SyncTeamsService {
   private async patchTeamPropertiesFromFirestore(teamsToPatch: Team[]) {
     const firestoreTeams = await this.fetchTeamsFromFirestore();
 
-    teamsToPatch.forEach((team) => {
+    teamsToPatch.forEach((teamToPatch) => {
       const firestoreTeam = firestoreTeams.find(
-        (t: any) => t.team_key === team.team_key
+        (firestoreTeam) => firestoreTeam.team_key === teamToPatch.team_key
       );
-      // TODO: User superstruct to validate the team
-      Object.assign(team, firestoreTeam);
+      Object.assign(teamToPatch, firestoreTeam);
     });
   }
 
-  private fetchTeamsFromFirestore(): Promise<any> {
+  private fetchTeamsFromFirestore(): Promise<TeamFirestore[]> {
     return this.firestoreService.fetchTeams();
   }
 
