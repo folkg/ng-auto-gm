@@ -76,7 +76,7 @@ export class SyncTeamsService {
         await this.patchTeamPropertiesFromFirestore(sessionStorageTeams);
         this.teamsSubject.next(sessionStorageTeams);
       }
-    } catch (err: unknown) {
+    } catch (err) {
       this.loadingSubject.next(false);
       await this.handleFetchTeamsError(err);
     }
@@ -95,7 +95,7 @@ export class SyncTeamsService {
 
       assert(teams, array(Team));
       return teams;
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof FirebaseError && err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired
         throw new Error('Refresh Token Error');

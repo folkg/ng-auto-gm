@@ -42,9 +42,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
 
     this.subs.add(
       this.auth.user$.subscribe((user) => {
-        if (user) {
-          this.user = user;
-        }
+        this.user = user;
       })
     );
 
@@ -77,7 +75,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
     if (!this.schedule) {
       try {
         this.schedule = await this.firestoreService.fetchSchedules();
-      } catch (err: unknown) {
+      } catch (err) {
         await this.errorDialog(
           getErrorMessage(err) +
             ' Please ensure you are connected to the internet and try again later.',

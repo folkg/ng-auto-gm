@@ -25,13 +25,21 @@ export class AuthService {
     this.user$ = user(this.auth);
   }
 
+  get user(): User {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  }
+
   async logout(): Promise<void> {
     try {
       await signOut(this.auth);
       await this.router.navigate(['/login']);
       localStorage.clear();
       sessionStorage.clear();
-    } catch (err: unknown) {
+    } catch (err) {
       throw new Error("Couldn't sign out: " + getErrorMessage(err));
     }
   }
@@ -41,7 +49,7 @@ export class AuthService {
       const provider = new OAuthProvider('yahoo.com');
       await signInWithPopup(this.auth, provider);
       await this.router.navigate(['/teams']);
-    } catch (err: unknown) {
+    } catch (err) {
       throw new Error("Couldn't sign in with Yahoo: " + getErrorMessage(err));
     }
   }
@@ -58,7 +66,7 @@ export class AuthService {
     try {
       await sendEmailVerification(this.auth.currentUser as User);
       //TODO: Dialog to tell user to check email
-    } catch (err: unknown) {
+    } catch (err) {
       throw new Error(
         "Couldn't send verification email: " + getErrorMessage(err)
       );
@@ -75,7 +83,7 @@ export class AuthService {
           try {
             await this.reauthenticateYahoo();
             await this.updateUserEmail(email);
-          } catch (err: unknown) {
+          } catch (err) {
             throw new Error("Couldn't reauthenticate: " + getErrorMessage(err));
           }
         }

@@ -29,33 +29,37 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   });
   user: User | null = null;
   isEditing: boolean = false;
-  private userSubscription: Subscription | undefined;
-  private dirtySubscription: Subscription | undefined;
+  private subs = new Subscription();
   @Output() isDirty = new EventEmitter<boolean>();
 
   constructor(private auth: AuthService, public os: OnlineStatusService) {}
   ngOnInit(): void {
-    this.userSubscription = this.auth.user$.subscribe((user) => {
-      if (user) {
-        this.user = user;
-        this.profileForm.patchValue({
-          email: user.email,
-        });
-      }
-    });
+    this.subs = new Subscription();
 
-    this.dirtySubscription = this.profileForm.valueChanges.subscribe(() => {
-      if (this.profileForm.pristine) {
-        this.isDirty.emit(false);
-      } else {
-        this.isDirty.emit(true);
-      }
-    });
+    this.subs.add(
+      this.auth.user$.subscribe((user) => {
+        this.user = user;
+        if (user) {
+          this.profileForm.patchValue({
+            email: user.email,
+          });
+        }
+      })
+    );
+
+    this.subs.add(
+      this.profileForm.valueChanges.subscribe(() => {
+        if (this.profileForm.pristine) {
+          this.isDirty.emit(false);
+        } else {
+          this.isDirty.emit(true);
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    this.userSubscription?.unsubscribe();
-    this.dirtySubscription?.unsubscribe();
+    this.subs.unsubscribe();
   }
 
   cancelChanges() {
@@ -70,7 +74,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
       await this.auth.updateUserEmail(emailAddress);
       this.isEditing = !this.isEditing;
       this.profileForm.markAsPristine();
-    } catch (err: unknown) {
+    } catch (err) {
       logError(err, 'Error updating email:');
     }
   }

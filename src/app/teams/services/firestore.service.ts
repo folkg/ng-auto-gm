@@ -6,12 +6,11 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { getErrorMessage } from 'src/app/shared/utils/error';
 import { assert, is } from 'superstruct';
 
 import { Team, TeamFirestore } from '../../services/interfaces/team';
@@ -27,35 +26,26 @@ export class FirestoreService {
   ) {}
 
   async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
-    try {
-      const user = await firstValueFrom(this.auth.user$);
-      if (!user) {
-        throw new Error('User not found');
-      }
-      const db = this.firestore;
-      const teamsRef = collection(db, 'users', user.uid, 'teams');
-      const docRef = doc(teamsRef, team.team_key);
-      await updateDoc(docRef, { is_setting_lineups: value });
-    } catch (err: unknown) {
-      console.error(
-        'Error updating is_setting_lineups in Firebase: ' + getErrorMessage(err)
-      );
-    }
+    const user = this.auth.user;
+    const db = this.firestore;
+
+    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const docRef = doc(teamsRef, team.team_key);
+
+    await updateDoc(docRef, { is_setting_lineups: value });
   }
 
-  // async togglePauseLineupActions(team: Team) {
-  //   const user = await firstValueFrom(this.auth.user$);
-  //   if (!user) {
-  //     throw new Error('User not found');
-  //   }
-  //   const db = this.firestore;
-  //   const teamsRef = collection(db, 'users', user.uid, 'teams');
-  //   const docRef = doc(teamsRef, team.team_key);
-  //   const docSnap = await getDoc(docRef);
-  //   const data = docSnap.data();
-  //   assert(data, Team);
-  //   await updateDoc(docRef, { lineups_paused_at:  });
-  // }
+  async setPauseLineupActions(team: Team, value: boolean): Promise<void> {
+    const user = this.auth.user;
+    const db = this.firestore;
+
+    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const docRef = doc(teamsRef, team.team_key);
+
+    await updateDoc(docRef, {
+      lineups_paused_at: value === true ? serverTimestamp() : undefined,
+    });
+  }
 
   async fetchSchedules(): Promise<Schedule> {
     const storedSchedule = sessionStorage.getItem('schedules');
@@ -66,7 +56,9 @@ export class FirestoreService {
       }
     }
 
-    const schedulesRef = doc(this.firestore, 'schedule', 'today');
+    const db = this.firestore;
+
+    const schedulesRef = doc(db, 'schedule', 'today');
     const scheduleSnap = await getDoc(schedulesRef);
     const schedule = scheduleSnap.data();
     assert(schedule, Schedule);
@@ -76,14 +68,12 @@ export class FirestoreService {
   }
 
   async fetchTeams(): Promise<TeamFirestore[]> {
-    const user = await firstValueFrom(this.auth.user$);
-    if (!user) {
-      throw new Error('User not found');
-    }
+    const user = this.auth.user;
+    const db = this.firestore;
 
     const teams: TeamFirestore[] = [];
     // fetch teams for the current user and now < end_date
-    const teamsRef = collection(this.firestore, 'users', user.uid, 'teams');
+    const teamsRef = collection(db, 'users', user.uid, 'teams');
     const q = query(teamsRef, where('end_date', '>', Date.now()));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {

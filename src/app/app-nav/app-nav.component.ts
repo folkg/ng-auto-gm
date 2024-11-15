@@ -21,8 +21,7 @@ export class AppNavComponent implements OnInit, OnDestroy {
     );
   public isLoggedIn: boolean = false;
   public hasTransactionsEnabled: boolean = false;
-  private userSubscription: Subscription | undefined;
-  private teamsSubscription: Subscription | undefined;
+  private subs = new Subscription();
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -32,24 +31,29 @@ export class AppNavComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.userSubscription = this.auth.user$.subscribe((user) => {
-      if (user) {
-        this.isLoggedIn = true;
-      } else {
-        this.isLoggedIn = false;
-      }
-    });
+    this.subs = new Subscription();
 
-    this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
-      this.hasTransactionsEnabled = teams.some(
-        (team) => team.allow_transactions
-      );
-    });
+    this.subs.add(
+      this.auth.user$.subscribe((user) => {
+        if (user) {
+          this.isLoggedIn = true;
+        } else {
+          this.isLoggedIn = false;
+        }
+      })
+    );
+
+    this.subs.add(
+      this.sts.teams$.subscribe((teams) => {
+        this.hasTransactionsEnabled = teams.some(
+          (team) => team.allow_transactions
+        );
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    this.userSubscription?.unsubscribe();
-    this.teamsSubscription?.unsubscribe();
+    this.subs.unsubscribe();
   }
 
   toggleDarkMode() {

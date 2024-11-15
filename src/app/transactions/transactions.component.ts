@@ -64,7 +64,7 @@ export class TransactionsComponent {
 
       this.transactions = result.data;
       this.formatTransactions();
-    } catch (err: unknown) {
+    } catch (err) {
       logError(err, 'Error fetching transactions from Firebase:');
     }
   }
@@ -162,7 +162,7 @@ export class TransactionsComponent {
       const result = await postTransactions({ transactions });
       this.success = result.data.success;
       this.transactionResults = result.data.transactionResults;
-    } catch (err: unknown) {
+    } catch (err) {
       logError(err, 'Error posting transactions to Firebase:');
       this.success = false;
     }
