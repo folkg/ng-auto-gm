@@ -55,12 +55,14 @@ export const Team = object({
   points_for: nullable(union([string(), number()])),
   points_against: nullable(union([string(), number()])),
   points_back: nullable(union([string(), number()])),
-  outcome_totals: object({
-    wins: union([string(), number()]),
-    losses: union([string(), number()]),
-    ties: union([string(), number()]),
-    percentage: union([string(), number()]),
-  }),
+  outcome_totals: nullable(
+    object({
+      wins: union([string(), number()]),
+      losses: union([string(), number()]),
+      ties: union([string(), number()]),
+      percentage: union([string(), number()]),
+    })
+  ),
 });
 
 export type TeamFirestore = Infer<typeof TeamFirestore>;
