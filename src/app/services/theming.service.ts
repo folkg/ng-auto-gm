@@ -23,7 +23,7 @@ export class ThemingService {
 
     if (localStorage.getItem('darkModeOn') !== null) {
       const storedValue = JSON.parse(
-        localStorage.getItem('darkModeOn') ?? 'false'
+        localStorage.getItem('darkModeOn') ?? 'false',
       ) as unknown;
       assert(storedValue, boolean());
 

@@ -63,7 +63,7 @@ describe('AppNavComponent', () => {
     component.hasTransactionsEnabled = true;
     fixture.detectChanges();
     const transactionsLink = nativeElement.querySelector(
-      'a[routerLink="transactions"]'
+      'a[routerLink="transactions"]',
     );
     expect(transactionsLink).toBeTruthy();
   });
@@ -73,7 +73,7 @@ describe('AppNavComponent', () => {
     component.hasTransactionsEnabled = false;
     fixture.detectChanges();
     const transactionsLink = nativeElement.querySelector(
-      'a[routerLink="transactions"]'
+      'a[routerLink="transactions"]',
     );
     expect(transactionsLink).toBeFalsy();
   });

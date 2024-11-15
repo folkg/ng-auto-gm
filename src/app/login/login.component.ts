@@ -18,7 +18,10 @@ import { getErrorMessage } from '../shared/utils/error';
 export class LoginComponent {
   user$: Observable<User | null> = this.auth.user$;
 
-  constructor(private auth: AuthService, public dialog: MatDialog) {}
+  constructor(
+    private readonly auth: AuthService,
+    public readonly dialog: MatDialog,
+  ) {}
 
   login() {
     this.auth

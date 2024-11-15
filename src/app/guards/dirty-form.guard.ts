@@ -39,7 +39,7 @@ export class DirtyFormGuard {
   }
 
   canDeactivate(
-    component: ComponentCanDeactivate
+    component: ComponentCanDeactivate,
   ):
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>

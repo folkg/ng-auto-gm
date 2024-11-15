@@ -32,7 +32,10 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
   @Output() isDirty = new EventEmitter<boolean>();
 
-  constructor(private auth: AuthService, public os: OnlineStatusService) {}
+  constructor(
+    private readonly auth: AuthService,
+    public readonly os: OnlineStatusService,
+  ) {}
   ngOnInit(): void {
     this.subs = new Subscription();
 
@@ -44,7 +47,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
             email: user.email,
           });
         }
-      })
+      }),
     );
 
     this.subs.add(
@@ -54,7 +57,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
         } else {
           this.isDirty.emit(true);
         }
-      })
+      }),
     );
   }
 

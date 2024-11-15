@@ -21,7 +21,10 @@ import { getErrorMessage } from '../shared/utils/error';
 export class AuthService {
   readonly user$: Observable<User | null>;
 
-  constructor(private readonly auth: Auth, private readonly router: Router) {
+  constructor(
+    private readonly auth: Auth,
+    private readonly router: Router,
+  ) {
     this.user$ = user(this.auth);
   }
 
@@ -68,7 +71,7 @@ export class AuthService {
       //TODO: Dialog to tell user to check email
     } catch (err) {
       throw new Error(
-        "Couldn't send verification email: " + getErrorMessage(err)
+        "Couldn't send verification email: " + getErrorMessage(err),
       );
     }
   }

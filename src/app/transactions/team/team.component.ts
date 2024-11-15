@@ -26,7 +26,7 @@ export class TeamComponent {
       changes['allTransactions'].previousValue
     ) {
       this.transactions = this.allTransactions.filter(
-        (transaction) => transaction.teamKey === this.team.team_key
+        (transaction) => transaction.teamKey === this.team.team_key,
       );
     }
   }

@@ -1,77 +1,77 @@
 header {
-    display: block;
+  display: block;
 }
 
 li {
-    font-size: medium;
-    padding-bottom: 1rem;
+  font-size: medium;
+  padding-bottom: 1rem;
 }
 
 p {
-    font-size: medium;
+  font-size: medium;
 }
 
 .card-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .header {
-    padding-top: 2rem;
-    padding-bottom: 1rem;
-    text-align: center;
-    color: white;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  text-align: center;
+  color: white;
 }
 
 .header h1 {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 
 .content {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .page-content {
-    width: 90%;
-    max-width: 800px;
+  width: 90%;
+  max-width: 800px;
 }
 
 .grid-container {
-    display: flex;
+  display: flex;
 }
 
 .grid-item-why {
-    margin-left: auto;
-    margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .grid-item img {
-    vertical-align: left;
+  vertical-align: left;
 }
 
 .why p {
-    padding-left: 1rem;
-    display: inline-block;
-    vertical-align: right;
+  padding-left: 1rem;
+  display: inline-block;
+  vertical-align: right;
 }
 
 .why {
-    margin-left: auto;
-    margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .set-up img {
-    vertical-align: right;
+  vertical-align: right;
 }
 
 .set-up p {
-    padding-right: 1rem;
-    display: inline-block;
-    vertical-align: left;
+  padding-right: 1rem;
+  display: inline-block;
+  vertical-align: left;
 }

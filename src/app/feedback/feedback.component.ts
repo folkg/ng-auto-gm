@@ -28,7 +28,7 @@ export class FeedbackComponent {
   constructor(
     private readonly auth: AuthService,
     private readonly fns: Functions,
-    public readonly os: OnlineStatusService
+    public readonly os: OnlineStatusService,
   ) {}
 
   onSubmitCloudFunction(): void {
@@ -52,7 +52,7 @@ export class FeedbackComponent {
       httpsCallableFromURL(
         this.fns,
         // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
-        'https://fantasyautocoach.com/api/sendfeedbackemail'
+        'https://fantasyautocoach.com/api/sendfeedbackemail',
       );
     sendFeedbackEmail(data)
       .then((result) => {

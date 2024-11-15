@@ -11,7 +11,7 @@ export class OnlineStatusService {
     this.online$ = merge(
       of(null),
       fromEvent(window, 'online'),
-      fromEvent(window, 'offline')
+      fromEvent(window, 'offline'),
     ).pipe(map(() => navigator.onLine));
   }
 }

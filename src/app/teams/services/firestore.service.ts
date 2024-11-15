@@ -22,7 +22,7 @@ import { Schedule } from '../interfaces/schedules';
 export class FirestoreService {
   constructor(
     private readonly firestore: Firestore,
-    private readonly auth: AuthService
+    private readonly auth: AuthService,
   ) {}
 
   async setLineupsBoolean(team: Team, value: boolean): Promise<void> {

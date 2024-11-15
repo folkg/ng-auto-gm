@@ -8,7 +8,7 @@ export function hasValue(s: string | undefined | null): s is string {
 
 export function assertDefined<T>(
   value: T | null | undefined,
-  message: string = 'Expected value is not defined'
+  message: string = 'Expected value is not defined',
 ): asserts value is T {
   if (isDefined(value)) {
     return;
@@ -18,7 +18,7 @@ export function assertDefined<T>(
 
 export function assertTrue(
   condition: boolean,
-  errorMessage: string = 'Assertion failed'
+  errorMessage: string = 'Assertion failed',
 ): asserts condition {
   if (condition === false) {
     throw new Error(errorMessage);

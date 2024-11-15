@@ -17,7 +17,7 @@ export class AppNavComponent implements OnInit, OnDestroy {
     .observe(Breakpoints.Handset)
     .pipe(
       map((result) => result.matches),
-      shareReplay()
+      shareReplay(),
     );
   public isLoggedIn: boolean = false;
   public hasTransactionsEnabled: boolean = false;
@@ -27,7 +27,7 @@ export class AppNavComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver,
     public themingService: ThemingService,
     public auth: AuthService,
-    private sts: SyncTeamsService
+    private sts: SyncTeamsService,
   ) {}
 
   ngOnInit(): void {
@@ -40,15 +40,15 @@ export class AppNavComponent implements OnInit, OnDestroy {
         } else {
           this.isLoggedIn = false;
         }
-      })
+      }),
     );
 
     this.subs.add(
       this.sts.teams$.subscribe((teams) => {
         this.hasTransactionsEnabled = teams.some(
-          (team) => team.allow_transactions
+          (team) => team.allow_transactions,
         );
-      })
+      }),
     );
   }
 
