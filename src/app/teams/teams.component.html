@@ -23,8 +23,9 @@
       [gameTimeStamps]="
         schedule && team.game_code ? schedule.games[team.game_code] : null
       "
-      (toggleEvent)="setLineupBoolean($event)"
-    ></app-team>
+      (toggleSetLineupEvent)="setLineupBoolean($event)"
+      (togglePauseLineupEvent)="setPauseLineupActions($event)"
+    />
   </ng-container>
   <ng-template #showLoading>
     <mat-card class="card">

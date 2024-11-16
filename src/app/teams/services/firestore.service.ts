@@ -6,7 +6,6 @@ import {
   getDoc,
   getDocs,
   query,
-  serverTimestamp,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
@@ -22,11 +21,12 @@ import { Schedule } from '../interfaces/schedules';
 export class FirestoreService {
   constructor(
     private readonly firestore: Firestore,
-    private readonly auth: AuthService,
+    private readonly auth: AuthService
   ) {}
 
   async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
-    const user = this.auth.user;
+    const user = await this.auth.getUser();
+
     const db = this.firestore;
 
     const teamsRef = collection(db, 'users', user.uid, 'teams');
@@ -36,14 +36,14 @@ export class FirestoreService {
   }
 
   async setPauseLineupActions(team: Team, value: boolean): Promise<void> {
-    const user = this.auth.user;
+    const user = await this.auth.getUser();
     const db = this.firestore;
 
     const teamsRef = collection(db, 'users', user.uid, 'teams');
     const docRef = doc(teamsRef, team.team_key);
 
     await updateDoc(docRef, {
-      lineups_paused_at: value === true ? serverTimestamp() : undefined,
+      lineup_paused_at: value === true ? Date.now() : -1,
     });
   }
 
@@ -68,20 +68,19 @@ export class FirestoreService {
   }
 
   async fetchTeams(): Promise<TeamFirestore[]> {
-    const user = this.auth.user;
+    const user = await this.auth.getUser();
     const db = this.firestore;
 
-    const teams: TeamFirestore[] = [];
     // fetch teams for the current user and now < end_date
     const teamsRef = collection(db, 'users', user.uid, 'teams');
-    const q = query(teamsRef, where('end_date', '>', Date.now()));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
+    const teamsSnapshot = await getDocs(
+      query(teamsRef, where('end_date', '>=', Date.now()))
+    );
+
+    return teamsSnapshot.docs.map((doc) => {
       const team = doc.data();
       assert(team, TeamFirestore);
-      teams.push(team);
+      return team;
     });
-
-    return teams;
   }
 }
