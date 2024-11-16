@@ -38,12 +38,12 @@
       </ng-container>
       <ng-container *ngIf="team.points_for">
         <br />
-        {{ team.points_for | number : "1.2-2" }} points
+        {{ team.points_for | number: "1.2-2" }} points
         <ng-container *ngIf="team.points_against">
-          for, {{ team.points_against | number : "1.2-2" }} points against
+          for, {{ team.points_against | number: "1.2-2" }} points against
         </ng-container>
         <ng-container *ngIf="team.points_back">
-          ({{ team.points_back | number : "1.2-2" }} points behind leader)
+          ({{ team.points_back | number: "1.2-2" }} points behind leader)
         </ng-container>
       </ng-container>
       <br />{{ scoringType[team.scoring_type] }}

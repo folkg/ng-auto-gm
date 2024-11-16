@@ -20,7 +20,7 @@ export class LoginComponent {
 
   constructor(
     private readonly auth: AuthService,
-    public readonly dialog: MatDialog,
+    readonly dialog: MatDialog,
   ) {}
 
   login() {

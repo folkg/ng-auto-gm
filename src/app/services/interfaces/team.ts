@@ -61,7 +61,7 @@ export const Team = object({
       losses: union([string(), number()]),
       ties: union([string(), number()]),
       percentage: union([string(), number()]),
-    })
+    }),
   ),
 });
 

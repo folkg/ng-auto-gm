@@ -28,16 +28,16 @@ export class FeedbackComponent {
   constructor(
     private readonly auth: AuthService,
     private readonly fns: Functions,
-    public readonly os: OnlineStatusService,
+    readonly os: OnlineStatusService,
   ) {}
 
-  onSubmitCloudFunction(): void {
+  async onSubmitCloudFunction(): Promise<void> {
     if (this.honeypot !== '') {
       return;
     }
 
     this.submitted = true;
-    const user = this.auth.user;
+    const user = await this.auth.getUser();
 
     const emailBody: string =
       user.displayName + '\n' + user.uid + '\n\n' + this.feedback;

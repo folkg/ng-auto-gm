@@ -21,7 +21,7 @@ import { Schedule } from '../interfaces/schedules';
 export class FirestoreService {
   constructor(
     private readonly firestore: Firestore,
-    private readonly auth: AuthService
+    private readonly auth: AuthService,
   ) {}
 
   async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
@@ -74,7 +74,7 @@ export class FirestoreService {
     // fetch teams for the current user and now < end_date
     const teamsRef = collection(db, 'users', user.uid, 'teams');
     const teamsSnapshot = await getDocs(
-      query(teamsRef, where('end_date', '>=', Date.now()))
+      query(teamsRef, where('end_date', '>=', Date.now())),
     );
 
     return teamsSnapshot.docs.map((doc) => {

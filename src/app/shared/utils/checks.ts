@@ -24,3 +24,13 @@ export function assertTrue(
     throw new Error(errorMessage);
   }
 }
+
+export function ensure<T>(
+  val: T | undefined | null,
+  message = 'Expected value was null or undefined',
+): T {
+  if (val === undefined || val === null) {
+    throw new TypeError(message);
+  }
+  return val;
+}

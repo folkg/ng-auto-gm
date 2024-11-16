@@ -34,7 +34,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly auth: AuthService,
-    public readonly os: OnlineStatusService,
+    readonly os: OnlineStatusService,
   ) {}
   ngOnInit(): void {
     this.subs = new Subscription();

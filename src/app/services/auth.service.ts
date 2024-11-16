@@ -11,8 +11,9 @@ import {
   user,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
+import { ensure } from '../shared/utils/checks';
 import { getErrorMessage } from '../shared/utils/error';
 
 @Injectable({
@@ -28,12 +29,8 @@ export class AuthService {
     this.user$ = user(this.auth);
   }
 
-  get user(): User {
-    const user = this.auth.currentUser;
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return user;
+  getUser(): Promise<User> {
+    return firstValueFrom(this.user$).then(ensure);
   }
 
   async logout(): Promise<void> {

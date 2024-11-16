@@ -35,7 +35,7 @@ export class TeamComponent {
 
   constructor(
     readonly os: OnlineStatusService,
-    private readonly datePipe: RelativeDatePipe
+    private readonly datePipe: RelativeDatePipe,
   ) {
     this.date = spacetime.now().epoch;
   }
@@ -66,7 +66,7 @@ export class TeamComponent {
       now
         .add(1, 'day')
         .hour(FIRST_SERVER_UPDATE_HOUR)
-        .minute(SERVER_UPDATE_MINUTE).epoch
+        .minute(SERVER_UPDATE_MINUTE).epoch,
     );
 
     if (this.isToday(lineupPausedAt)) {
@@ -99,7 +99,7 @@ export class TeamComponent {
       return this.datePipe.transform(nextWeeklyUpdate.epoch);
     } else if (this.gameTimeStamps) {
       const nextGameTimestamp = this.gameTimeStamps.find(
-        (timestamp) => timestamp > now.epoch
+        (timestamp) => timestamp > now.epoch,
       );
       if (nextGameTimestamp !== undefined) {
         const nextGame: Spacetime = spacetime(nextGameTimestamp);
