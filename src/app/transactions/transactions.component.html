@@ -48,9 +48,7 @@
       >
         <app-team
           class="card-container"
-          *ngFor="
-            let team of teams | sortTeamsByTransactions : flatTransactions
-          "
+          *ngFor="let team of teams | sortTeamsByTransactions: flatTransactions"
           [team]="team"
           [allTransactions]="flatTransactions"
         ></app-team>

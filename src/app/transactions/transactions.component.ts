@@ -37,7 +37,7 @@ export class TransactionsComponent {
   constructor(
     private readonly fns: Functions,
     private readonly sts: SyncTeamsService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
   ) {
     this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
       this.teams = teams.filter((team) => team.allow_transactions);
@@ -57,14 +57,14 @@ export class TransactionsComponent {
       httpsCallableFromURL(
         this.fns,
         // 'https://transactions-gettransactions-nw73xubluq-uc.a.run.app'
-        'https://fantasyautocoach.com/api/gettransactions'
+        'https://fantasyautocoach.com/api/gettransactions',
       );
     try {
       const result = await fetchTransactions();
 
       this.transactions = result.data;
       this.formatTransactions();
-    } catch (err: unknown) {
+    } catch (err) {
       logError(err, 'Error fetching transactions from Firebase:');
     }
   }
@@ -108,7 +108,7 @@ export class TransactionsComponent {
       this.transactions;
 
     result.dropPlayerTransactions = this.filterSelectedTransactionsData(
-      dropPlayerTransactions
+      dropPlayerTransactions,
     );
 
     result.addSwapTransactions =
@@ -116,7 +116,7 @@ export class TransactionsComponent {
 
     // Keep all the lineup changes for the teams that have selected transactions, even if we don't need them all
     const teamsWithTransactions = new Set(
-      this.selectedTransactions.map((t) => t.teamKey)
+      this.selectedTransactions.map((t) => t.teamKey),
     );
     result.lineupChanges =
       lineupChanges?.filter((lc) => teamsWithTransactions.has(lc.teamKey)) ??
@@ -126,7 +126,7 @@ export class TransactionsComponent {
   }
 
   private filterSelectedTransactionsData(
-    playerTransactions: PlayerTransaction[][] | null
+    playerTransactions: PlayerTransaction[][] | null,
   ): PlayerTransaction[][] | null {
     if (!playerTransactions) {
       return null;
@@ -134,7 +134,7 @@ export class TransactionsComponent {
 
     return playerTransactions
       .map((teamTransactions) =>
-        teamTransactions.filter((transaction) => transaction.selected)
+        teamTransactions.filter((transaction) => transaction.selected),
       )
       .filter((selectedTransactions) => selectedTransactions.length > 0);
   }
@@ -148,7 +148,7 @@ export class TransactionsComponent {
   }
 
   private async postTransactions(
-    transactions: TransactionsData
+    transactions: TransactionsData,
   ): Promise<void> {
     const postTransactions: HttpsCallable<
       { transactions: TransactionsData },
@@ -156,13 +156,13 @@ export class TransactionsComponent {
     > = httpsCallableFromURL(
       this.fns,
       // 'https://transactions-posttransactions-nw73xubluq-uc.a.run.app'
-      'https://fantasyautocoach.com/api/posttransactions'
+      'https://fantasyautocoach.com/api/posttransactions',
     );
     try {
       const result = await postTransactions({ transactions });
       this.success = result.data.success;
       this.transactionResults = result.data.transactionResults;
-    } catch (err: unknown) {
+    } catch (err) {
       logError(err, 'Error posting transactions to Firebase:');
       this.success = false;
     }

@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -o",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "checks": "npx eslint && npx prettier . --check",
+    "fix": "npx eslint --fix && npx prettier . --write",
     "deploy:dev": "firebase use dev && ng build --aot && firebase deploy --only hosting",
     "deploy:prod": "firebase use prod && ng build --prod && firebase deploy --only hosting"
   },

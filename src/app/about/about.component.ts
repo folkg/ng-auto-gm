@@ -54,6 +54,7 @@ export class AboutComponent {
     allow_waiver_adds: false,
     uid: '',
     roster_positions: {},
+    lineup_paused_at: -1,
   };
 
   getLastUpdate(): number {

@@ -11,8 +11,9 @@ import {
   user,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
+import { ensure } from '../shared/utils/checks';
 import { getErrorMessage } from '../shared/utils/error';
 
 @Injectable({
@@ -21,8 +22,15 @@ import { getErrorMessage } from '../shared/utils/error';
 export class AuthService {
   readonly user$: Observable<User | null>;
 
-  constructor(private readonly auth: Auth, private readonly router: Router) {
+  constructor(
+    private readonly auth: Auth,
+    private readonly router: Router,
+  ) {
     this.user$ = user(this.auth);
+  }
+
+  getUser(): Promise<User> {
+    return firstValueFrom(this.user$).then(ensure);
   }
 
   async logout(): Promise<void> {
@@ -31,7 +39,7 @@ export class AuthService {
       await this.router.navigate(['/login']);
       localStorage.clear();
       sessionStorage.clear();
-    } catch (err: unknown) {
+    } catch (err) {
       throw new Error("Couldn't sign out: " + getErrorMessage(err));
     }
   }
@@ -41,7 +49,7 @@ export class AuthService {
       const provider = new OAuthProvider('yahoo.com');
       await signInWithPopup(this.auth, provider);
       await this.router.navigate(['/teams']);
-    } catch (err: unknown) {
+    } catch (err) {
       throw new Error("Couldn't sign in with Yahoo: " + getErrorMessage(err));
     }
   }
@@ -58,9 +66,9 @@ export class AuthService {
     try {
       await sendEmailVerification(this.auth.currentUser as User);
       //TODO: Dialog to tell user to check email
-    } catch (err: unknown) {
+    } catch (err) {
       throw new Error(
-        "Couldn't send verification email: " + getErrorMessage(err)
+        "Couldn't send verification email: " + getErrorMessage(err),
       );
     }
   }
@@ -75,7 +83,7 @@ export class AuthService {
           try {
             await this.reauthenticateYahoo();
             await this.updateUserEmail(email);
-          } catch (err: unknown) {
+          } catch (err) {
             throw new Error("Couldn't reauthenticate: " + getErrorMessage(err));
           }
         }

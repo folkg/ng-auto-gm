@@ -4,7 +4,10 @@ import spacetime, { Spacetime } from 'spacetime';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 
 import { Team } from '../../services/interfaces/team';
-import { SetLineupEvent } from '../interfaces/set-lineup-event';
+import {
+  type PauseLineupEvent,
+  SetLineupEvent,
+} from '../interfaces/outputEvents';
 import { RelativeDatePipe } from '../pipes/relative-date.pipe';
 
 // server update is in Pacific Time, this is when yahoo resets for the day
@@ -19,9 +22,10 @@ const FIRST_SERVER_UPDATE_HOUR = 1;
 export class TeamComponent {
   @Input({ required: true }) team!: Team;
   @Input({ required: true }) gameTimeStamps!: number[] | null;
-  @Output() toggleEvent = new EventEmitter<SetLineupEvent>();
-  public date: number;
-  public scoringType: { [key: string]: string } = {
+  @Output() toggleSetLineupEvent = new EventEmitter<SetLineupEvent>();
+  @Output() togglePauseLineupEvent = new EventEmitter<PauseLineupEvent>();
+  date: number;
+  scoringType: { [key: string]: string } = {
     head: 'Head to Head Scoring',
     roto: 'Rotisserie Scoring',
     point: 'Points Scoring',
@@ -30,14 +34,23 @@ export class TeamComponent {
   };
 
   constructor(
-    public os: OnlineStatusService,
-    private datePipe: RelativeDatePipe
+    readonly os: OnlineStatusService,
+    private readonly datePipe: RelativeDatePipe,
   ) {
     this.date = spacetime.now().epoch;
   }
 
-  onToggle($event: MatSlideToggleChange) {
-    this.toggleEvent.emit({ team: this.team, state: $event.checked });
+  onToggleSetLineup($event: MatSlideToggleChange) {
+    this.toggleSetLineupEvent.emit({
+      team: this.team,
+      isSettingLineups: $event.checked,
+    });
+  }
+
+  onTogglePauseLineup() {
+    this.togglePauseLineupEvent.emit({
+      team: this.team,
+    });
   }
 
   gotoExternalDomain(url: string) {
@@ -46,9 +59,21 @@ export class TeamComponent {
     }
   }
 
-  getNextLineupUpdate(): string {
-    const editKeyDate = spacetime(this.team.edit_key, 'Canada/Pacific');
+  getNextLineupUpdate(lineupPausedAt: number | undefined): string {
     const now = spacetime.now('Canada/Pacific');
+
+    const tomorrowMorning = this.datePipe.transform(
+      now
+        .add(1, 'day')
+        .hour(FIRST_SERVER_UPDATE_HOUR)
+        .minute(SERVER_UPDATE_MINUTE).epoch,
+    );
+
+    if (this.isToday(lineupPausedAt)) {
+      return tomorrowMorning;
+    }
+
+    const editKeyDate = spacetime(this.team.edit_key, 'Canada/Pacific');
     const isWeeklyLeague =
       this.team.weekly_deadline !== 'intraday' &&
       this.team.weekly_deadline !== '';
@@ -74,7 +99,7 @@ export class TeamComponent {
       return this.datePipe.transform(nextWeeklyUpdate.epoch);
     } else if (this.gameTimeStamps) {
       const nextGameTimestamp = this.gameTimeStamps.find(
-        (timestamp: number) => timestamp > now.epoch
+        (timestamp) => timestamp > now.epoch,
       );
       if (nextGameTimestamp !== undefined) {
         const nextGame: Spacetime = spacetime(nextGameTimestamp);
@@ -82,11 +107,7 @@ export class TeamComponent {
       }
     }
 
-    const tomorrowMorning = now
-      .add(1, 'day')
-      .hour(FIRST_SERVER_UPDATE_HOUR)
-      .minute(SERVER_UPDATE_MINUTE);
-    return this.datePipe.transform(tomorrowMorning.epoch);
+    return tomorrowMorning;
   }
 
   getUpdateBeforeGame(game: Spacetime): string {
@@ -95,5 +116,14 @@ export class TeamComponent {
       updateTime = updateTime.subtract(1, 'hour');
     }
     return this.datePipe.transform(updateTime.epoch);
+  }
+
+  isToday(timestamp: number | undefined): boolean {
+    if (timestamp === undefined || timestamp === -1) {
+      return false;
+    }
+    const now = spacetime.now('Canada/Pacific');
+    const date = spacetime(timestamp, 'Canada/Pacific');
+    return now.isSame(date, 'day');
   }
 }

@@ -33,7 +33,7 @@ export class SyncTeamsService {
     private readonly fns: Functions,
     private readonly auth: AuthService,
     private readonly firestoreService: FirestoreService,
-    readonly dialog: MatDialog
+    readonly dialog: MatDialog,
   ) {
     this.teams$.pipe(takeUntilDestroyed()).subscribe((teams) => {
       if (teams.length > 0) {
@@ -49,7 +49,7 @@ export class SyncTeamsService {
 
   async init(): Promise<void> {
     const sessionStorageTeams = JSON.parse(
-      sessionStorage.getItem('yahooTeams') ?? '[]'
+      sessionStorage.getItem('yahooTeams') ?? '[]',
     ) as unknown;
     assert(sessionStorageTeams, array(Team));
     this.teamsSubject.next(sessionStorageTeams);
@@ -61,7 +61,7 @@ export class SyncTeamsService {
         this.loadingSubject.next(true);
 
         const localStorageTeams = JSON.parse(
-          localStorage.getItem('yahooTeams') ?? '[]'
+          localStorage.getItem('yahooTeams') ?? '[]',
         ) as unknown;
         assert(localStorageTeams, array(Team));
         this.teamsSubject.next(localStorageTeams);
@@ -76,7 +76,7 @@ export class SyncTeamsService {
         await this.patchTeamPropertiesFromFirestore(sessionStorageTeams);
         this.teamsSubject.next(sessionStorageTeams);
       }
-    } catch (err: unknown) {
+    } catch (err) {
       this.loadingSubject.next(false);
       await this.handleFetchTeamsError(err);
     }
@@ -87,7 +87,7 @@ export class SyncTeamsService {
     const fetchTeamsFromServer: HttpsCallable<null, Team[]> =
       httpsCallableFromURL(
         this.fns,
-        'https://fantasyautocoach.com/api/fetchuserteams'
+        'https://fantasyautocoach.com/api/fetchuserteams',
       );
     try {
       const teamsData = await fetchTeamsFromServer();
@@ -95,14 +95,14 @@ export class SyncTeamsService {
 
       assert(teams, array(Team));
       return teams;
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof FirebaseError && err.code === 'functions/data-loss') {
         // if the error is data-loss, it means the user's access token has expired
         throw new Error('Refresh Token Error');
       }
 
       throw new Error(
-        'Error fetching teams from Yahoo: ' + getErrorMessage(err)
+        'Error fetching teams from Yahoo: ' + getErrorMessage(err),
       );
     }
   }
@@ -112,7 +112,7 @@ export class SyncTeamsService {
 
     teamsToPatch.forEach((teamToPatch) => {
       const firestoreTeam = firestoreTeams.find(
-        (firestoreTeam) => firestoreTeam.team_key === teamToPatch.team_key
+        (firestoreTeam) => firestoreTeam.team_key === teamToPatch.team_key,
       );
       Object.assign(teamToPatch, firestoreTeam);
     });
@@ -130,7 +130,7 @@ export class SyncTeamsService {
           'Please sign in again below to grant access for Fantasy AutoCoach to continue managing your teams.',
         'Yahoo Access Has Expired',
         'Sign in with Yahoo',
-        'Cancel'
+        'Cancel',
       );
       if (result) {
         await this.reauthenticateYahoo();
@@ -140,7 +140,7 @@ export class SyncTeamsService {
     } else {
       await this.errorDialog(
         'Please ensure you are connected to the internet and try again',
-        'ERROR Fetching Teams'
+        'ERROR Fetching Teams',
       );
     }
   }
@@ -153,7 +153,7 @@ export class SyncTeamsService {
     message: string,
     title: string = 'ERROR',
     trueButton: string = 'OK',
-    falseButton: string | null = null
+    falseButton: string | null = null,
   ): Promise<boolean> {
     const dialogData: DialogData = {
       title,

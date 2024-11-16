@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 export class RequestInterceptor implements HttpInterceptor {
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     const newRequest = request.clone({
       headers: new HttpHeaders({

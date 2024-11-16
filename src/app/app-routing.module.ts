@@ -35,7 +35,7 @@ const routes: Routes = [
     path: 'transactions',
     loadChildren: () =>
       import('./transactions/transactions.module').then(
-        (m) => m.TransactionsModule
+        (m) => m.TransactionsModule,
       ),
     canActivate: [AuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },

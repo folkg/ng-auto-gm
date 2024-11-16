@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private themingService: ThemingService,
-    private overlayContainer: OverlayContainer
+    private overlayContainer: OverlayContainer,
   ) {}
 
   ngOnInit(): void {

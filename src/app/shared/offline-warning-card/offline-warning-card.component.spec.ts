@@ -8,9 +8,8 @@ describe('OfflineWarningCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OfflineWarningCardComponent ]
-    })
-    .compileComponents();
+      declarations: [OfflineWarningCardComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OfflineWarningCardComponent);
     component = fixture.componentInstance;

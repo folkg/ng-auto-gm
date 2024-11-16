@@ -11,10 +11,9 @@
         alt="{{ team.team_name }}"
       />
       <mat-card-title>{{ team.team_name }}</mat-card-title>
-      <mat-card-subtitle
-        >{{ team.league_name }} ({{ team.game_name }},
-        {{ team.game_season }})</mat-card-subtitle
-      >
+      <mat-card-subtitle>
+        {{ team.league_name }} ({{ team.game_name }}, {{ team.game_season }})
+      </mat-card-subtitle>
     </mat-card-header>
     <div>
       <button
@@ -26,26 +25,26 @@
       </button>
     </div>
   </div>
-  <mat-divider></mat-divider>
+  <mat-divider />
   <mat-card-content>
     <div class="card-content-section">
       <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
-      <ng-container *ngIf="team.outcome_totals"
-        ><br />{{ team.outcome_totals.wins }}-{{
-          team.outcome_totals.losses
-        }}-{{ team.outcome_totals.ties }} ({{ team.outcome_totals.percentage }})
+      <ng-container *ngIf="team.outcome_totals">
+        <br />
+        {{ team.outcome_totals.wins }}-{{ team.outcome_totals.losses }}-{{
+          team.outcome_totals.ties
+        }}
+        ({{ team.outcome_totals.percentage }})
       </ng-container>
       <ng-container *ngIf="team.points_for">
         <br />
-        {{ team.points_for | number : "1.2-2" }} points
+        {{ team.points_for | number: "1.2-2" }} points
         <ng-container *ngIf="team.points_against">
-          for, {{ team.points_against | number : "1.2-2" }} points
-          against</ng-container
-        >
+          for, {{ team.points_against | number: "1.2-2" }} points against
+        </ng-container>
         <ng-container *ngIf="team.points_back">
-          ({{ team.points_back | number : "1.2-2" }} points behind
-          leader)</ng-container
-        >
+          ({{ team.points_back | number: "1.2-2" }} points behind leader)
+        </ng-container>
       </ng-container>
       <br />{{ scoringType[team.scoring_type] }}
       <ng-container
@@ -60,7 +59,7 @@
         Weekly Lineup Changes
       </ng-container>
     </div>
-    <mat-divider></mat-divider>
+    <mat-divider />
     <div
       class="flex-sb card-content-section"
       *ngIf="team.end_date > date; else seasonOver"
@@ -72,32 +71,57 @@
         }}
       </div>
       <div>
+        <!-- TODO: Have this updated again when the user refocuses the window -->
         Next update:
-        {{ team.is_setting_lineups ? getNextLineupUpdate() : "N/A" }}
+        {{
+          team.is_setting_lineups
+            ? getNextLineupUpdate(team.lineup_paused_at)
+            : "N/A"
+        }}
       </div>
     </div>
-    <ng-template #seasonOver
-      ><div class="card-content-section">The season is over.</div>
+    <ng-template #seasonOver>
+      <div class="card-content-section">The season is over.</div>
     </ng-template>
   </mat-card-content>
-  <mat-divider></mat-divider>
+  <mat-divider />
   <mat-card-actions>
     <div class="flex-sb">
+      <!-- TODO: Have this updated again when the user refocuses the window -->
       <mat-slide-toggle
         [disabled]="
-          !team.is_subscribed || team.end_date < date || !(os.online$ | async)
+          isToday(team.lineup_paused_at) ||
+          !team.is_subscribed ||
+          team.end_date < date ||
+          !(os.online$ | async)
         "
         [(ngModel)]="team.is_setting_lineups"
-        (change)="onToggle($event)"
-        >Automatically Manage Lineups
+        (change)="onToggleSetLineup($event)"
+      >
+        Automatically Manage Lineups
       </mat-slide-toggle>
-      <!-- <button
-      mat-icon-button
-      matTooltip="Advanced Settings for Lineup Management"
-      [disabled]="!team.is_setting_lineups"
-    >
-      <mat-icon>settings</mat-icon>
-    </button> -->
+      <button
+        [disabled]="
+          !team.is_setting_lineups ||
+          !team.is_subscribed ||
+          team.end_date < date ||
+          !(os.online$ | async)
+        "
+        mat-stroked-button
+        class="button"
+        [color]="isToday(team.lineup_paused_at) ? 'accent' : undefined"
+        matTooltip="{{
+          isToday(team.lineup_paused_at)
+            ? 'Resume'
+            : 'Pause for the rest of the day'
+        }}"
+        (click)="onTogglePauseLineup()"
+      >
+        <mat-icon
+          >{{ isToday(team.lineup_paused_at) ? "play_arrow" : "pause" }}
+        </mat-icon>
+        {{ isToday(team.lineup_paused_at) ? "Resume" : "Pause" }}
+      </button>
     </div>
   </mat-card-actions>
 </mat-card>

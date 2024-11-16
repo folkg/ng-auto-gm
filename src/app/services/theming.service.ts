@@ -18,12 +18,12 @@ export class ThemingService {
     localStorage.setItem('darkModeOn', JSON.stringify(this.darkModeOn));
   }
 
-  constructor(private ref: ApplicationRef) {
+  constructor(private readonly ref: ApplicationRef) {
     const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     if (localStorage.getItem('darkModeOn') !== null) {
       const storedValue = JSON.parse(
-        localStorage.getItem('darkModeOn') ?? 'false'
+        localStorage.getItem('darkModeOn') ?? 'false',
       ) as unknown;
       assert(storedValue, boolean());
 
