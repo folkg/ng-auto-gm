@@ -33,16 +33,6 @@ import { TeamsModule } from './teams/teams.module';
   imports: [
     BrowserModule,
     HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideFunctions(() => {
-      const functions = getFunctions();
-      if (environment.useEmulators) {
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-      }
-      return functions;
-    }),
     BrowserAnimationsModule,
     LayoutModule,
     MatToolbarModule,
@@ -56,7 +46,19 @@ import { TeamsModule } from './teams/teams.module';
     FeedbackModule,
     AppRoutingModule,
   ],
-  providers: [DirtyFormGuard],
+  providers: [
+    DirtyFormGuard,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    }),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
