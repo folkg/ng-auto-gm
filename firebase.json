@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/auto-gm",
+    "public": "dist/auto-gm/browser",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
