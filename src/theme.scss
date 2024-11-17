@@ -3,12 +3,12 @@
 
 @include mat.core();
 
-$angular-primary: mat.define-palette(mat.$deep-purple-palette);
-$angular-accent: mat.define-palette(mat.$amber-palette);
+$angular-primary: mat.m2-define-palette(mat.$m2-deep-purple-palette);
+$angular-accent: mat.m2-define-palette(mat.$m2-amber-palette);
 
-$angular-warn: mat.define-palette(mat.$red-palette);
+$angular-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
-$angular-light-theme: mat.define-light-theme(
+$angular-light-theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $angular-primary,
@@ -21,7 +21,7 @@ $angular-light-theme: mat.define-light-theme(
   )
 );
 
-$angular-dark-theme: mat.define-dark-theme(
+$angular-dark-theme: mat.m2-define-dark-theme(
   (
     color: (
       primary: $angular-primary,

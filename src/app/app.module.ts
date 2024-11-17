@@ -1,5 +1,8 @@
 import { LayoutModule } from '@angular/cdk/layout';
-import { HttpClientModule } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
@@ -30,19 +33,9 @@ import { TeamsModule } from './teams/teams.module';
 
 @NgModule({
   declarations: [AppComponent, AppNavComponent, NotfoundComponent],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
-    HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideFunctions(() => {
-      const functions = getFunctions();
-      if (environment.useEmulators) {
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-      }
-      return functions;
-    }),
     BrowserAnimationsModule,
     LayoutModule,
     MatToolbarModule,
@@ -56,7 +49,19 @@ import { TeamsModule } from './teams/teams.module';
     FeedbackModule,
     AppRoutingModule,
   ],
-  providers: [DirtyFormGuard],
-  bootstrap: [AppComponent],
+  providers: [
+    DirtyFormGuard,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators) {
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
+      return functions;
+    }),
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
 })
 export class AppModule {}
