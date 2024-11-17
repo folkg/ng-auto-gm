@@ -7,13 +7,25 @@ import {
   httpsCallableFromURL,
 } from '@angular/fire/functions';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
+import {
+  catchError,
+  concat,
+  defer,
+  distinctUntilChanged,
+  endWith,
+  from,
+  lastValueFrom,
+  map,
+  Observable,
+  of,
+  shareReplay,
+} from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import {
   ConfirmDialogComponent,
   DialogData,
 } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
-import { array, assert } from 'superstruct';
+import { array, assert, is } from 'superstruct';
 
 import { getErrorMessage } from '../shared/utils/error';
 import { FirestoreService } from '../teams/services/firestore.service';
@@ -23,11 +35,9 @@ import { Team, type TeamFirestore } from './interfaces/team';
   providedIn: 'root',
 })
 export class SyncTeamsService {
-  private readonly teamsSubject = new BehaviorSubject<Team[]>([]);
-  readonly teams$: Observable<Team[]> = this.teamsSubject.asObservable();
+  readonly teams$: Observable<Team[]>;
 
-  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
-  readonly loading$: Observable<boolean> = this.loadingSubject.asObservable();
+  readonly loading$: Observable<boolean>;
 
   constructor(
     private readonly fns: Functions,
@@ -35,6 +45,40 @@ export class SyncTeamsService {
     private readonly firestoreService: FirestoreService,
     readonly dialog: MatDialog,
   ) {
+    this.teams$ = defer(() => {
+      const sessionStorageTeams = this.loadSessionStorageTeams();
+      const hasValidSessionStorageTeams =
+        is(sessionStorageTeams, array(Team)) && sessionStorageTeams.length > 0;
+
+      if (hasValidSessionStorageTeams) {
+        return concat(
+          of(sessionStorageTeams),
+          from(this.patchTeamPropertiesFromFirestore(sessionStorageTeams)),
+        );
+      }
+
+      const localStorageTeams = this.loadLocalStorageTeams();
+      const hasValidLocalStorageTeams = is(localStorageTeams, array(Team));
+
+      if (hasValidLocalStorageTeams) {
+        return concat(of(localStorageTeams), from(this.getFreshTeams()));
+      }
+
+      return from(this.getFreshTeams());
+    }).pipe(
+      catchError((err) => {
+        this.handleFetchTeamsError(err);
+        return of([]);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+    this.loading$ = this.teams$.pipe(
+      map(() => true),
+      endWith(false),
+      distinctUntilChanged(),
+    );
+
     this.teams$.pipe(takeUntilDestroyed()).subscribe((teams) => {
       if (teams.length > 0) {
         // localStorage will persist the teams across sessions
@@ -43,43 +87,19 @@ export class SyncTeamsService {
         localStorage.setItem('yahooTeams', JSON.stringify(teams));
       }
     });
-
-    this.init().catch(console.error);
   }
 
-  async init(): Promise<void> {
-    const sessionStorageTeams = JSON.parse(
-      sessionStorage.getItem('yahooTeams') ?? '[]',
-    ) as unknown;
-    assert(sessionStorageTeams, array(Team));
-    this.teamsSubject.next(sessionStorageTeams);
+  private loadSessionStorageTeams(): unknown {
+    return JSON.parse(sessionStorage.getItem('yahooTeams') ?? '[]');
+  }
 
-    try {
-      if (sessionStorageTeams.length === 0) {
-        // If teams doesn't exist in sessionStorage, show old teams from
-        // localstorage and retrieve fresh from APIs
-        this.loadingSubject.next(true);
+  private loadLocalStorageTeams(): unknown {
+    return JSON.parse(localStorage.getItem('yahooTeams') ?? '[]');
+  }
 
-        const localStorageTeams = JSON.parse(
-          localStorage.getItem('yahooTeams') ?? '[]',
-        ) as unknown;
-        assert(localStorageTeams, array(Team));
-        this.teamsSubject.next(localStorageTeams);
-
-        const fetchedTeams = await this.fetchTeamsFromYahoo();
-        await this.patchTeamPropertiesFromFirestore(fetchedTeams);
-        this.teamsSubject.next(fetchedTeams);
-
-        this.loadingSubject.next(false);
-      } else {
-        // If teams exist in sessionStorage, just refresh properties from firestore
-        await this.patchTeamPropertiesFromFirestore(sessionStorageTeams);
-        this.teamsSubject.next(sessionStorageTeams);
-      }
-    } catch (err) {
-      this.loadingSubject.next(false);
-      await this.handleFetchTeamsError(err);
-    }
+  private async getFreshTeams(): Promise<Team[]> {
+    const fetchedTeams = await this.fetchTeamsFromYahoo();
+    return this.patchTeamPropertiesFromFirestore(fetchedTeams);
   }
 
   private async fetchTeamsFromYahoo(): Promise<Team[]> {
@@ -107,7 +127,9 @@ export class SyncTeamsService {
     }
   }
 
-  private async patchTeamPropertiesFromFirestore(teamsToPatch: Team[]) {
+  private async patchTeamPropertiesFromFirestore(
+    teamsToPatch: Team[],
+  ): Promise<Team[]> {
     const firestoreTeams = await this.fetchTeamsFromFirestore();
 
     teamsToPatch.forEach((teamToPatch) => {
@@ -116,32 +138,39 @@ export class SyncTeamsService {
       );
       Object.assign(teamToPatch, firestoreTeam);
     });
+
+    return teamsToPatch;
   }
 
   private fetchTeamsFromFirestore(): Promise<TeamFirestore[]> {
     return this.firestoreService.fetchTeams();
   }
 
-  private async handleFetchTeamsError(err: unknown) {
+  private handleFetchTeamsError(err: unknown): void {
     const errorMessage = getErrorMessage(err);
     if (errorMessage === 'Refresh Token Error') {
-      const result = await this.errorDialog(
+      this.errorDialog(
         'Your teams are currently not being managed!\n' +
           'Please sign in again below to grant access for Fantasy AutoCoach to continue managing your teams.',
         'Yahoo Access Has Expired',
         'Sign in with Yahoo',
         'Cancel',
-      );
-      if (result) {
-        await this.reauthenticateYahoo();
-      }
+      )
+        .then((result) => {
+          if (result) {
+            this.reauthenticateYahoo().catch(console.error);
+          }
+        })
+        .catch(console.error);
     } else if (errorMessage) {
-      await this.errorDialog(errorMessage, 'ERROR Fetching Teams');
+      this.errorDialog(errorMessage, 'ERROR Fetching Teams').catch(
+        console.error,
+      );
     } else {
-      await this.errorDialog(
+      this.errorDialog(
         'Please ensure you are connected to the internet and try again',
         'ERROR Fetching Teams',
-      );
+      ).catch(console.error);
     }
   }
 
