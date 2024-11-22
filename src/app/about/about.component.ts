@@ -1,12 +1,19 @@
 import { Component } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 import spacetime from 'spacetime';
 
 import { Team } from '../services/interfaces/team';
+import { RobotsComponent } from '../shared/robots/robots.component';
+import { RelativeDatePipe } from '../teams/pipes/relative-date.pipe';
+import { TeamComponent } from '../teams/team/team.component';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
+  standalone: true,
+  imports: [TeamComponent, RobotsComponent, MatCardModule],
+  providers: [RelativeDatePipe],
 })
 export class AboutComponent {
   sampleTimestamps: number[] = [this.getNextUpdate()];

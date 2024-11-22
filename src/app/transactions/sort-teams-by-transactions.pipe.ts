@@ -5,6 +5,7 @@ import { PlayerTransaction } from './interfaces/TransactionsData';
 
 @Pipe({
   name: 'sortTeamsByTransactions',
+  standalone: true,
 })
 export class SortTeamsByTransactionsPipe implements PipeTransform {
   transform(teams: Team[], allTransactions: PlayerTransaction[]): Team[] {

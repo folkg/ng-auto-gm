@@ -1,9 +1,17 @@
+import { NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '@angular/fire/auth';
+import {
+  MatCard,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { lastValueFrom, Subscription } from 'rxjs';
 
+import { ProfileCardComponent } from '../profile/profile-card/profile-card.component';
 import { AuthService } from '../services/auth.service';
 import { Team } from '../services/interfaces/team';
 import { OnlineStatusService } from '../services/online-status.service';
@@ -12,19 +20,35 @@ import {
   ConfirmDialogComponent,
   DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { OfflineWarningCardComponent } from '../shared/offline-warning-card/offline-warning-card.component';
 import { getErrorMessage, logError } from '../shared/utils/error';
 import {
   type PauseLineupEvent,
   SetLineupEvent,
 } from './interfaces/outputEvents';
 import { Schedule } from './interfaces/schedules';
+import { RelativeDatePipe } from './pipes/relative-date.pipe';
 import { FirestoreService } from './services/firestore.service';
+import { TeamComponent } from './team/team.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './teams.component.html',
   styleUrls: ['./teams.component.scss'],
-  providers: [FirestoreService],
+  providers: [FirestoreService, RelativeDatePipe],
+  standalone: true,
+  // changeDetection: ChangeDetectionStrategy.OnPush, // TODO: Add to all components, get rid of zone.js
+  imports: [
+    OfflineWarningCardComponent,
+    NgIf,
+    ProfileCardComponent,
+    NgFor,
+    TeamComponent,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+  ],
 })
 export class TeamsComponent implements OnInit, OnDestroy {
   teams: Team[] = [];

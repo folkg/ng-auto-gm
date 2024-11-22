@@ -18,13 +18,13 @@ describe('AppNavComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppNavComponent],
       imports: [
         MatSidenavModule,
         MatToolbarModule,
         MatListModule,
         BrowserAnimationsModule,
         RouterTestingModule,
+        AppNavComponent,
       ],
       providers: [
         { provide: AuthService, useClass: MockAuthService },

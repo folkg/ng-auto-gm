@@ -1,3 +1,4 @@
+import { AsyncPipe, NgIf } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -6,7 +7,23 @@ import {
   Output,
 } from '@angular/core';
 import { User } from '@angular/fire/auth';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardAvatar,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 import { Subscription } from 'rxjs';
 import { assertDefined } from 'src/app/shared/utils/checks';
 import { logError } from 'src/app/shared/utils/error';
@@ -18,6 +35,23 @@ import { OnlineStatusService } from '../../services/online-status.service';
   selector: 'app-profile-card',
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.scss'],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatCardTitle,
+    MatCardContent,
+    NgIf,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    MatButton,
+    MatCardActions,
+    AsyncPipe,
+  ],
 })
 export class ProfileCardComponent implements OnInit, OnDestroy {
   emailFormControl = new FormControl('', [

@@ -1,4 +1,7 @@
+import { DecimalPipe, NgClass, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 import { Player } from '../interfaces/Player';
 
@@ -6,6 +9,8 @@ import { Player } from '../interfaces/Player';
   selector: 'app-player[player]',
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss'],
+  standalone: true,
+  imports: [NgClass, MatIconButton, MatIcon, NgIf, DecimalPipe],
 })
 export class PlayerComponent {
   @Input() player!: Player;

@@ -11,6 +11,7 @@ export default [
       "**/node_modules/**/*",
       "eslint.config.mjs",
       ".angular/**/*",
+      "dist/**/*",
     ],
   },
   js.configs.recommended,

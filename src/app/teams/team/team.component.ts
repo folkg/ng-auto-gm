@@ -1,9 +1,28 @@
+import { AsyncPipe, DecimalPipe, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardAvatar,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatDivider } from '@angular/material/divider';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatSlideToggle,
+  MatSlideToggleChange,
+} from '@angular/material/slide-toggle';
+import { MatTooltip } from '@angular/material/tooltip';
 import spacetime, { Spacetime } from 'spacetime';
 import { OnlineStatusService } from 'src/app/services/online-status.service';
 
 import { Team } from '../../services/interfaces/team';
+import { NthPipe } from '../../shared/pipes/nth.pipe';
 import {
   type PauseLineupEvent,
   SetLineupEvent,
@@ -18,6 +37,29 @@ const FIRST_SERVER_UPDATE_HOUR = 1;
   selector: 'app-team[team][gameTimeStamps]',
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.scss'],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatCardTitle,
+    MatCardSubtitle,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatDivider,
+    MatCardContent,
+    NgIf,
+    MatCardActions,
+    MatSlideToggle,
+    ReactiveFormsModule,
+    FormsModule,
+    MatButton,
+    AsyncPipe,
+    DecimalPipe,
+    NthPipe,
+    RelativeDatePipe,
+  ],
 })
 export class TeamComponent {
   @Input({ required: true }) team!: Team;

@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'nth',
+  standalone: true,
 })
 export class NthPipe implements PipeTransform {
   transform(num: string | number): string {

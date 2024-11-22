@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import type { User } from '@angular/fire/auth';
+import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
@@ -8,12 +10,15 @@ import {
   ConfirmDialogComponent,
   DialogData,
 } from '../shared/confirm-dialog/confirm-dialog.component';
+import { RobotsComponent } from '../shared/robots/robots.component';
 import { getErrorMessage } from '../shared/utils/error';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [MatButton, RouterLink, RobotsComponent],
 })
 export class LoginComponent {
   user$: Observable<User | null> = this.auth.user$;

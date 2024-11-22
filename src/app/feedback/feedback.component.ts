@@ -1,18 +1,51 @@
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import {
+  AsyncPipe,
+  NgFor,
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+} from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import {
   Functions,
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatChipListbox, MatChipOption } from '@angular/material/chips';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 import { AuthService } from '../services/auth.service';
 import { OnlineStatusService } from '../services/online-status.service';
+import { OfflineWarningCardComponent } from '../shared/offline-warning-card/offline-warning-card.component';
 
 @Component({
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    OfflineWarningCardComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    MatChipListbox,
+    NgFor,
+    MatChipOption,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    CdkTextareaAutosize,
+    MatButton,
+    NgSwitch,
+    NgSwitchCase,
+    NgSwitchDefault,
+    AsyncPipe,
+  ],
 })
 export class FeedbackComponent {
   feedback: string = '';

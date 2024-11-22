@@ -2,12 +2,12 @@
   <h1>My Teams</h1>
 </div>
 <div class="content">
-  <app-offline-warning-card class="card"></app-offline-warning-card>
+  <app-offline-warning-card class="card" />
   <app-profile-card
     *ngIf="user?.emailVerified === false"
     (isDirty)="onDirtyChange($event)"
     class="card"
-  ></app-profile-card>
+  />
   <div class="instructions">
     <h3>
       Enable the <b>Automatically Manage Lineups</b> setting to get started with

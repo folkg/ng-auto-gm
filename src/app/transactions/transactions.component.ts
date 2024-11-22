@@ -1,9 +1,24 @@
+import {
+  JsonPipe,
+  NgFor,
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+} from '@angular/common';
 import { Component } from '@angular/core';
 import {
   Functions,
   HttpsCallable,
   httpsCallableFromURL,
 } from '@angular/fire/functions';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom, Subscription } from 'rxjs';
 
@@ -20,11 +35,29 @@ import {
   TransactionResults,
   TransactionsData,
 } from './interfaces/TransactionsData';
+import { SortTeamsByTransactionsPipe } from './sort-teams-by-transactions.pipe';
+import { TeamComponent } from './team/team.component';
 
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss'],
+  standalone: true,
+  imports: [
+    NgSwitch,
+    NgSwitchCase,
+    NgFor,
+    NgSwitchDefault,
+    NgIf,
+    TeamComponent,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+    MatButton,
+    JsonPipe,
+    SortTeamsByTransactionsPipe,
+  ],
 })
 export class TransactionsComponent {
   teams: Team[] = [];
