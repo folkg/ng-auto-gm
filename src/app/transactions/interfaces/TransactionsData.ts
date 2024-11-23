@@ -1,4 +1,4 @@
-import { Player } from './Player';
+import { Player } from "./Player";
 
 export type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
@@ -36,7 +36,7 @@ type TPlayer = {
   isFromWaivers?: boolean;
 };
 
-type TransactionType = 'add' | 'drop' | 'add/drop';
+type TransactionType = "add" | "drop" | "add/drop";
 
 export interface LineupChanges {
   teamKey: string;

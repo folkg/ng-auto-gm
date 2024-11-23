@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed } from "@angular/core/testing";
 
-import { DirtyFormGuard } from './dirty-form.guard';
+import { DirtyFormGuard } from "./dirty-form.guard";
 
-describe('DirtyFormGuard', () => {
+describe("DirtyFormGuard", () => {
   let guard: DirtyFormGuard;
 
   beforeEach(() => {
@@ -10,7 +10,7 @@ describe('DirtyFormGuard', () => {
     guard = TestBed.inject(DirtyFormGuard);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(guard).toBeTruthy();
   });
 });

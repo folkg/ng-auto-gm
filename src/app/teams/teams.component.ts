@@ -1,40 +1,40 @@
-import { NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NgFor, NgIf } from "@angular/common";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
   MatCard,
   MatCardContent,
   MatCardHeader,
   MatCardTitle,
-} from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { User } from '@firebase/auth';
-import { lastValueFrom, Subscription } from 'rxjs';
+} from "@angular/material/card";
+import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { User } from "@firebase/auth";
+import { lastValueFrom, Subscription } from "rxjs";
 
-import { ProfileCardComponent } from '../profile/profile-card/profile-card.component';
-import { AuthService } from '../services/auth.service';
-import { Team } from '../services/interfaces/team';
-import { OnlineStatusService } from '../services/online-status.service';
-import { SyncTeamsService } from '../services/sync-teams.service';
+import { ProfileCardComponent } from "../profile/profile-card/profile-card.component";
+import { AuthService } from "../services/auth.service";
+import { Team } from "../services/interfaces/team";
+import { OnlineStatusService } from "../services/online-status.service";
+import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
   DialogData,
-} from '../shared/confirm-dialog/confirm-dialog.component';
-import { OfflineWarningCardComponent } from '../shared/offline-warning-card/offline-warning-card.component';
-import { getErrorMessage, logError } from '../shared/utils/error';
+} from "../shared/confirm-dialog/confirm-dialog.component";
+import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offline-warning-card.component";
+import { getErrorMessage, logError } from "../shared/utils/error";
 import {
   type PauseLineupEvent,
   SetLineupEvent,
-} from './interfaces/outputEvents';
-import { Schedule } from './interfaces/schedules';
-import { RelativeDatePipe } from './pipes/relative-date.pipe';
-import { FirestoreService } from './services/firestore.service';
-import { TeamComponent } from './team/team.component';
+} from "./interfaces/outputEvents";
+import { Schedule } from "./interfaces/schedules";
+import { RelativeDatePipe } from "./pipes/relative-date.pipe";
+import { FirestoreService } from "./services/firestore.service";
+import { TeamComponent } from "./team/team.component";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './teams.component.html',
-  styleUrls: ['./teams.component.scss'],
+  selector: "app-dashboard",
+  templateUrl: "./teams.component.html",
+  styleUrls: ["./teams.component.scss"],
   providers: [FirestoreService, RelativeDatePipe],
   // changeDetection: ChangeDetectionStrategy.OnPush, // TODO: Add to all components, get rid of zone.js
   imports: [
@@ -81,7 +81,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.syncTeamsService.loading$.subscribe((loading) => {
         if (loading) {
-          this.snackBar.open('Refreshing Teams');
+          this.snackBar.open("Refreshing Teams");
         } else {
           this.snackBar.dismiss();
         }
@@ -102,8 +102,8 @@ export class TeamsComponent implements OnInit, OnDestroy {
       } catch (err) {
         await this.errorDialog(
           getErrorMessage(err) +
-            ' Please ensure you are connected to the internet and try again later.',
-          'ERROR Fetching Schedules',
+            " Please ensure you are connected to the internet and try again later.",
+          "ERROR Fetching Schedules",
         );
       }
     }
@@ -116,7 +116,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
         $event.isSettingLineups,
       );
       // TODO: Sync the state of the teams$ observable with sessionStorage, don't set manually anywhere
-      sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
+      sessionStorage.setItem("yahooTeams", JSON.stringify(this.teams));
     } catch (ignore) {
       // revert the change if the database write failed
       $event.team.is_setting_lineups = !$event.isSettingLineups;
@@ -136,7 +136,7 @@ export class TeamsComponent implements OnInit, OnDestroy {
     try {
       await this.firestoreService.setPauseLineupActions($event.team, !isPaused);
       // TODO: Sync the state of the teams$ observable with sessionStorage, don't set manually anywhere
-      sessionStorage.setItem('yahooTeams', JSON.stringify(this.teams));
+      sessionStorage.setItem("yahooTeams", JSON.stringify(this.teams));
     } catch (ignore) {
       // rollback the change if the database write failed
       team.lineup_paused_at = initialPauseState;
@@ -156,8 +156,8 @@ export class TeamsComponent implements OnInit, OnDestroy {
 
   private errorDialog(
     message: string,
-    title: string = 'ERROR',
-    trueButton: string = 'OK',
+    title: string = "ERROR",
+    trueButton: string = "OK",
     falseButton: string | null = null,
   ): Promise<boolean> {
     const dialogData: DialogData = {
@@ -170,9 +170,9 @@ export class TeamsComponent implements OnInit, OnDestroy {
     }
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      minWidth: '350px',
-      width: '90%',
-      maxWidth: '500px',
+      minWidth: "350px",
+      width: "90%",
+      maxWidth: "500px",
       data: dialogData,
     });
 

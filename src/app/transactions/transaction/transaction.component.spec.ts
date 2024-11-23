@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { TransactionComponent } from './transaction.component';
+import { TransactionComponent } from "./transaction.component";
 
-describe('TransactionComponent', () => {
+describe("TransactionComponent", () => {
   let component: TransactionComponent;
   let fixture: ComponentFixture<TransactionComponent>;
 
@@ -15,7 +15,7 @@ describe('TransactionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

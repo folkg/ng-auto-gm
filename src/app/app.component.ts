@@ -1,18 +1,18 @@
-import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, HostBinding, OnInit } from '@angular/core';
-import { pairwise, startWith } from 'rxjs';
+import { OverlayContainer } from "@angular/cdk/overlay";
+import { Component, HostBinding, OnInit } from "@angular/core";
+import { pairwise, startWith } from "rxjs";
 
-import { AppNavComponent } from './app-nav/app-nav.component';
-import { ThemingService } from './services/theming.service';
+import { AppNavComponent } from "./app-nav/app-nav.component";
+import { ThemingService } from "./services/theming.service";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"],
   imports: [AppNavComponent],
 })
 export class AppComponent implements OnInit {
-  @HostBinding('class') public cssClass!: string;
+  @HostBinding("class") public cssClass!: string;
 
   constructor(
     private readonly themingService: ThemingService,

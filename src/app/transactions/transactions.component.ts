@@ -5,44 +5,44 @@ import {
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-} from '@angular/common';
-import { Component } from '@angular/core';
-import { MatButton } from '@angular/material/button';
+} from "@angular/common";
+import { Component } from "@angular/core";
+import { MatButton } from "@angular/material/button";
 import {
   MatCard,
   MatCardContent,
   MatCardHeader,
   MatCardTitle,
-} from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
+} from "@angular/material/card";
+import { MatDialog } from "@angular/material/dialog";
 import {
   Functions,
   getFunctions,
   HttpsCallable,
   httpsCallableFromURL,
-} from '@firebase/functions';
-import { lastValueFrom, Subscription } from 'rxjs';
+} from "@firebase/functions";
+import { lastValueFrom, Subscription } from "rxjs";
 
-import { Team } from '../services/interfaces/team';
-import { SyncTeamsService } from '../services/sync-teams.service';
+import { Team } from "../services/interfaces/team";
+import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
   DialogData,
-} from '../shared/confirm-dialog/confirm-dialog.component';
-import { logError } from '../shared/utils/error';
+} from "../shared/confirm-dialog/confirm-dialog.component";
+import { logError } from "../shared/utils/error";
 import {
   PlayerTransaction,
   PostTransactionsResult,
   TransactionResults,
   TransactionsData,
-} from './interfaces/TransactionsData';
-import { SortTeamsByTransactionsPipe } from './sort-teams-by-transactions.pipe';
-import { TeamComponent } from './team/team.component';
+} from "./interfaces/TransactionsData";
+import { SortTeamsByTransactionsPipe } from "./sort-teams-by-transactions.pipe";
+import { TeamComponent } from "./team/team.component";
 
 @Component({
-  selector: 'app-transactions',
-  templateUrl: './transactions.component.html',
-  styleUrls: ['./transactions.component.scss'],
+  selector: "app-transactions",
+  templateUrl: "./transactions.component.html",
+  styleUrls: ["./transactions.component.scss"],
   imports: [
     NgSwitch,
     NgSwitchCase,
@@ -71,7 +71,7 @@ export class TransactionsComponent {
 
   constructor(
     private readonly sts: SyncTeamsService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
   ) {
     this.functions = getFunctions();
     this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
@@ -92,7 +92,7 @@ export class TransactionsComponent {
       httpsCallableFromURL(
         this.functions,
         // 'https://transactions-gettransactions-nw73xubluq-uc.a.run.app'
-        'https://fantasyautocoach.com/api/gettransactions'
+        "https://fantasyautocoach.com/api/gettransactions",
       );
     try {
       const result = await fetchTransactions();
@@ -100,7 +100,7 @@ export class TransactionsComponent {
       this.transactions = result.data;
       this.formatTransactions();
     } catch (err) {
-      logError(err, 'Error fetching transactions from Firebase:');
+      logError(err, "Error fetching transactions from Firebase:");
     }
   }
 
@@ -143,7 +143,7 @@ export class TransactionsComponent {
       this.transactions;
 
     result.dropPlayerTransactions = this.filterSelectedTransactionsData(
-      dropPlayerTransactions
+      dropPlayerTransactions,
     );
 
     result.addSwapTransactions =
@@ -151,7 +151,7 @@ export class TransactionsComponent {
 
     // Keep all the lineup changes for the teams that have selected transactions, even if we don't need them all
     const teamsWithTransactions = new Set(
-      this.selectedTransactions.map((t) => t.teamKey)
+      this.selectedTransactions.map((t) => t.teamKey),
     );
     result.lineupChanges =
       lineupChanges?.filter((lc) => teamsWithTransactions.has(lc.teamKey)) ??
@@ -161,7 +161,7 @@ export class TransactionsComponent {
   }
 
   private filterSelectedTransactionsData(
-    playerTransactions: PlayerTransaction[][] | null
+    playerTransactions: PlayerTransaction[][] | null,
   ): PlayerTransaction[][] | null {
     if (!playerTransactions) {
       return null;
@@ -169,7 +169,7 @@ export class TransactionsComponent {
 
     return playerTransactions
       .map((teamTransactions) =>
-        teamTransactions.filter((transaction) => transaction.selected)
+        teamTransactions.filter((transaction) => transaction.selected),
       )
       .filter((selectedTransactions) => selectedTransactions.length > 0);
   }
@@ -183,41 +183,41 @@ export class TransactionsComponent {
   }
 
   private async postTransactions(
-    transactions: TransactionsData
+    transactions: TransactionsData,
   ): Promise<void> {
     const postTransactions = httpsCallableFromURL<
       { transactions: TransactionsData },
       PostTransactionsResult
-    >(this.functions, 'https://fantasyautocoach.com/api/posttransactions');
+    >(this.functions, "https://fantasyautocoach.com/api/posttransactions");
 
     try {
       const result = await postTransactions({ transactions });
       this.success = result.data.success;
       this.transactionResults = result.data.transactionResults;
     } catch (err) {
-      logError(err, 'Error posting transactions to Firebase:');
+      logError(err, "Error posting transactions to Firebase:");
       this.success = false;
     }
   }
 
   confirmDialog(): Promise<boolean> {
     const numSelectedTransactions = this.numSelectedTransactions;
-    const title = 'WARNING: Permanent Action';
+    const title = "WARNING: Permanent Action";
     const message = `These transactions will be permanent. Click Proceed to officially process your ${
-      numSelectedTransactions !== 0 ? numSelectedTransactions : ''
+      numSelectedTransactions !== 0 ? numSelectedTransactions : ""
     } selected transaction${
-      numSelectedTransactions !== 1 ? 's' : ''
+      numSelectedTransactions !== 1 ? "s" : ""
     } with Yahoo, or Cancel to return to the transactions page.`;
     const dialogData: DialogData = {
       title,
       message,
-      trueButton: 'Proceed',
-      falseButton: 'Cancel',
+      trueButton: "Proceed",
+      falseButton: "Cancel",
     };
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      minWidth: '350px',
-      width: '90%',
-      maxWidth: '500px',
+      minWidth: "350px",
+      width: "90%",
+      maxWidth: "500px",
       data: dialogData,
     });
     return lastValueFrom(dialogRef.afterClosed());

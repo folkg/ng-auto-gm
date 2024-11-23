@@ -1,10 +1,10 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
-import { Team } from '../services/interfaces/team';
-import { PlayerTransaction } from './interfaces/TransactionsData';
+import { Team } from "../services/interfaces/team";
+import { PlayerTransaction } from "./interfaces/TransactionsData";
 
 @Pipe({
-  name: 'sortTeamsByTransactions',
+  name: "sortTeamsByTransactions",
   standalone: true,
 })
 export class SortTeamsByTransactionsPipe implements PipeTransform {

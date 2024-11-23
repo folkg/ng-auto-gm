@@ -1,59 +1,59 @@
-import type { Routes } from '@angular/router';
+import type { Routes } from "@angular/router";
 
-import { AboutComponent } from './app/about/about.component';
-import { authGuard } from './app/guards/auth.guard';
-import { DirtyFormGuard } from './app/guards/dirty-form.guard';
-import { loginGuard } from './app/guards/login.guard';
-import { LoginComponent } from './app/login/login.component';
-import { NotfoundComponent } from './app/notfound/notfound.component';
-import { TeamsComponent } from './app/teams/teams.component';
+import { AboutComponent } from "./app/about/about.component";
+import { authGuard } from "./app/guards/auth.guard";
+import { DirtyFormGuard } from "./app/guards/dirty-form.guard";
+import { loginGuard } from "./app/guards/login.guard";
+import { LoginComponent } from "./app/login/login.component";
+import { NotfoundComponent } from "./app/notfound/notfound.component";
+import { TeamsComponent } from "./app/teams/teams.component";
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/teams', pathMatch: 'full' },
+  { path: "", redirectTo: "/teams", pathMatch: "full" },
   {
-    path: 'about',
+    path: "about",
     component: AboutComponent,
   },
   {
-    path: 'login',
+    path: "login",
     component: LoginComponent,
     canActivate: [loginGuard],
   },
   {
-    path: 'teams',
+    path: "teams",
     component: TeamsComponent,
     canActivate: [authGuard],
     canDeactivate: [DirtyFormGuard],
   },
   {
-    path: 'feedback',
+    path: "feedback",
     loadComponent: () =>
-      import('./app/feedback/feedback.component').then(
+      import("./app/feedback/feedback.component").then(
         (m) => m.FeedbackComponent,
       ),
     canActivate: [authGuard],
     canDeactivate: [DirtyFormGuard],
   },
   {
-    path: 'profile',
+    path: "profile",
     loadComponent: () =>
-      import('./app/profile/profile.component').then((m) => m.ProfileComponent),
+      import("./app/profile/profile.component").then((m) => m.ProfileComponent),
     canActivate: [authGuard],
     canDeactivate: [DirtyFormGuard],
   },
   {
-    path: 'transactions',
+    path: "transactions",
     loadComponent: () =>
-      import('./app/transactions/transactions.component').then(
+      import("./app/transactions/transactions.component").then(
         (m) => m.TransactionsComponent,
       ),
     canActivate: [authGuard],
   },
   {
-    path: 'cart',
+    path: "cart",
     loadComponent: () =>
-      import('./app/cart/cart.component').then((m) => m.CartComponent),
+      import("./app/cart/cart.component").then((m) => m.CartComponent),
     canActivate: [authGuard],
   },
-  { path: '**', component: NotfoundComponent },
+  { path: "**", component: NotfoundComponent },
 ];

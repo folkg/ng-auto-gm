@@ -33,4 +33,4 @@ export type PlayerOwnership = {
   waiver_date?: string; // "2023-06-21"
 };
 
-type PlayerOwnershipType = 'waivers' | 'freeagents';
+type PlayerOwnershipType = "waivers" | "freeagents";

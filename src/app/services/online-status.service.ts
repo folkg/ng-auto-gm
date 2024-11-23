@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { fromEvent, map, merge, Observable, of } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { fromEvent, map, merge, Observable, of } from "rxjs";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class OnlineStatusService {
   public online$: Observable<boolean>;
@@ -10,8 +10,8 @@ export class OnlineStatusService {
   constructor() {
     this.online$ = merge(
       of(null),
-      fromEvent(window, 'online'),
-      fromEvent(window, 'offline'),
+      fromEvent(window, "online"),
+      fromEvent(window, "offline"),
     ).pipe(map(() => navigator.onLine));
   }
 }

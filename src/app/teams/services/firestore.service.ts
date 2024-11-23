@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {
   collection,
   doc,
@@ -9,15 +9,15 @@ import {
   query,
   updateDoc,
   where,
-} from '@firebase/firestore';
-import { AuthService } from 'src/app/services/auth.service';
-import { assert, is } from 'superstruct';
+} from "@firebase/firestore";
+import { AuthService } from "src/app/services/auth.service";
+import { assert, is } from "superstruct";
 
-import { Team, TeamFirestore } from '../../services/interfaces/team';
-import { Schedule } from '../interfaces/schedules';
+import { Team, TeamFirestore } from "../../services/interfaces/team";
+import { Schedule } from "../interfaces/schedules";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class FirestoreService {
   private readonly firestore: Firestore;
@@ -31,7 +31,7 @@ export class FirestoreService {
 
     const db = this.firestore;
 
-    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const teamsRef = collection(db, "users", user.uid, "teams");
     const docRef = doc(teamsRef, team.team_key);
 
     await updateDoc(docRef, { is_setting_lineups: value });
@@ -41,7 +41,7 @@ export class FirestoreService {
     const user = await this.auth.getUser();
     const db = this.firestore;
 
-    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const teamsRef = collection(db, "users", user.uid, "teams");
     const docRef = doc(teamsRef, team.team_key);
 
     await updateDoc(docRef, {
@@ -50,7 +50,7 @@ export class FirestoreService {
   }
 
   async fetchSchedules(): Promise<Schedule> {
-    const storedSchedule = sessionStorage.getItem('schedules');
+    const storedSchedule = sessionStorage.getItem("schedules");
     if (storedSchedule !== null) {
       const schedule = JSON.parse(storedSchedule) as unknown;
       if (is(schedule, Schedule)) {
@@ -60,12 +60,12 @@ export class FirestoreService {
 
     const db = this.firestore;
 
-    const schedulesRef = doc(db, 'schedule', 'today');
+    const schedulesRef = doc(db, "schedule", "today");
     const scheduleSnap = await getDoc(schedulesRef);
     const schedule = scheduleSnap.data();
     assert(schedule, Schedule);
 
-    sessionStorage.setItem('schedules', JSON.stringify(schedule));
+    sessionStorage.setItem("schedules", JSON.stringify(schedule));
     return schedule;
   }
 
@@ -74,9 +74,9 @@ export class FirestoreService {
     const db = this.firestore;
 
     // fetch teams for the current user and now < end_date
-    const teamsRef = collection(db, 'users', user.uid, 'teams');
+    const teamsRef = collection(db, "users", user.uid, "teams");
     const teamsSnapshot = await getDocs(
-      query(teamsRef, where('end_date', '>=', Date.now()))
+      query(teamsRef, where("end_date", ">=", Date.now())),
     );
 
     return teamsSnapshot.docs.map((doc) => {

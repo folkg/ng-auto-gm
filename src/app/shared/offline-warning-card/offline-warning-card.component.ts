@@ -1,18 +1,18 @@
-import { AsyncPipe, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { AsyncPipe, NgIf } from "@angular/common";
+import { Component } from "@angular/core";
 import {
   MatCard,
   MatCardContent,
   MatCardHeader,
   MatCardTitle,
-} from '@angular/material/card';
+} from "@angular/material/card";
 
-import { OnlineStatusService } from '../../services/online-status.service';
+import { OnlineStatusService } from "../../services/online-status.service";
 
 @Component({
-  selector: 'app-offline-warning-card',
-  templateUrl: './offline-warning-card.component.html',
-  styleUrls: ['./offline-warning-card.component.scss'],
+  selector: "app-offline-warning-card",
+  templateUrl: "./offline-warning-card.component.html",
+  styleUrls: ["./offline-warning-card.component.scss"],
   imports: [
     NgIf,
     MatCard,

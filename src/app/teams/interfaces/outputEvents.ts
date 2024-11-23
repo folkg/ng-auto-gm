@@ -1,4 +1,4 @@
-import { Team } from '../../services/interfaces/team';
+import { Team } from "../../services/interfaces/team";
 
 export type SetLineupEvent = {
   team: Team;
