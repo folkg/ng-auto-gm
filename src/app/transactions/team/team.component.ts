@@ -22,7 +22,6 @@ import { TransactionComponent } from '../transaction/transaction.component';
   selector: 'app-team[team][allTransactions]',
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.scss'],
-  standalone: true,
   imports: [
     MatCard,
     MatCardHeader,

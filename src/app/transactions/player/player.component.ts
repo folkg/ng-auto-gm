@@ -9,7 +9,6 @@ import { Player } from '../interfaces/Player';
   selector: 'app-player[player]',
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss'],
-  standalone: true,
   imports: [NgClass, MatIconButton, MatIcon, NgIf, DecimalPipe],
 })
 export class PlayerComponent {

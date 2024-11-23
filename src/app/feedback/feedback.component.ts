@@ -27,7 +27,6 @@ import { OfflineWarningCardComponent } from '../shared/offline-warning-card/offl
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
   styleUrls: ['./feedback.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     OfflineWarningCardComponent,

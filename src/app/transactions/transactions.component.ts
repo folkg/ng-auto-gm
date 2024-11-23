@@ -42,7 +42,6 @@ import { TeamComponent } from './team/team.component';
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
   styleUrls: ['./transactions.component.scss'],
-  standalone: true,
   imports: [
     NgSwitch,
     NgSwitchCase,

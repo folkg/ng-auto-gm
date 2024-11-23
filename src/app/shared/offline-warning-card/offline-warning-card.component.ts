@@ -13,7 +13,6 @@ import { OnlineStatusService } from '../../services/online-status.service';
   selector: 'app-offline-warning-card',
   templateUrl: './offline-warning-card.component.html',
   styleUrls: ['./offline-warning-card.component.scss'],
-  standalone: true,
   imports: [
     NgIf,
     MatCard,

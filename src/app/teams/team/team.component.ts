@@ -37,7 +37,6 @@ const FIRST_SERVER_UPDATE_HOUR = 1;
   selector: 'app-team[team][gameTimeStamps]',
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.scss'],
-  standalone: true,
   imports: [
     MatCard,
     MatCardHeader,

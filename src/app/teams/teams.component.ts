@@ -36,7 +36,6 @@ import { TeamComponent } from './team/team.component';
   templateUrl: './teams.component.html',
   styleUrls: ['./teams.component.scss'],
   providers: [FirestoreService, RelativeDatePipe],
-  standalone: true,
   // changeDetection: ChangeDetectionStrategy.OnPush, // TODO: Add to all components, get rid of zone.js
   imports: [
     OfflineWarningCardComponent,

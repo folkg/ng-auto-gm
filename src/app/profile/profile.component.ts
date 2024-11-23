@@ -10,7 +10,6 @@ import { ProfileCardComponent } from './profile-card/profile-card.component';
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
-  standalone: true,
   imports: [OfflineWarningCardComponent, ProfileCardComponent, MatButton],
 })
 export class ProfileComponent {

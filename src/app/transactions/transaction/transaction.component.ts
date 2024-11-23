@@ -11,7 +11,6 @@ import { PlayerComponent } from '../player/player.component';
   selector: 'app-transaction[transaction]',
   templateUrl: './transaction.component.html',
   styleUrls: ['./transaction.component.scss'],
-  standalone: true,
   imports: [
     NgClass,
     NgIf,

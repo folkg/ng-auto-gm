@@ -1,7 +1,8 @@
 @use "@angular/material" as mat;
-@import "./theme-color-grabber";
+@use "./theme-color-grabber" as *;
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 $angular-primary: mat.m2-define-palette(mat.$m2-deep-purple-palette);
 $angular-accent: mat.m2-define-palette(mat.$m2-amber-palette);
@@ -37,13 +38,17 @@ $angular-dark-theme: mat.m2-define-dark-theme(
 .light-theme {
   @include mat.all-component-themes($angular-light-theme);
   @include theme-color-grabber($angular-light-theme);
-  --accent-grey: #e0e0e0;
-  --text-grey: #6e6e6e;
+  & {
+    --accent-grey: #e0e0e0;
+    --text-grey: #6e6e6e;
+  }
 }
 
 .dark-theme {
   @include mat.all-component-colors($angular-dark-theme);
   @include theme-color-grabber($angular-dark-theme);
-  --accent-grey: #595959;
-  --text-grey: #c5c5c5;
+  & {
+    --accent-grey: #595959;
+    --text-grey: #c5c5c5;
+  }
 }

@@ -9,7 +9,6 @@ import { ThemingService } from './services/theming.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: true,
   imports: [AppNavComponent],
 })
 export class AppComponent implements OnInit {

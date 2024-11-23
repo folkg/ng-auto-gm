@@ -23,7 +23,6 @@ import { ThemingService } from '../services/theming.service';
   selector: 'app-app-nav',
   templateUrl: './app-nav.component.html',
   styleUrls: ['./app-nav.component.scss'],
-  standalone: true,
   imports: [
     MatSidenavContainer,
     MatSidenav,

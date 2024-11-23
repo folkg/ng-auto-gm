@@ -17,7 +17,6 @@ import { getErrorMessage } from '../shared/utils/error';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  standalone: true,
   imports: [MatButton, RouterLink, RobotsComponent],
 })
 export class LoginComponent {

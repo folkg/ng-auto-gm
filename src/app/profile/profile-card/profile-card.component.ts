@@ -35,7 +35,6 @@ import { OnlineStatusService } from '../../services/online-status.service';
   selector: 'app-profile-card',
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.scss'],
-  standalone: true,
   imports: [
     MatCard,
     MatCardHeader,

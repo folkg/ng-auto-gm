@@ -11,7 +11,6 @@ import { TeamComponent } from '../teams/team/team.component';
   selector: 'app-about',
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
-  standalone: true,
   imports: [TeamComponent, RobotsComponent, MatCardModule],
   providers: [RelativeDatePipe],
 })
