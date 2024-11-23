@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FirebaseError } from '@angular/fire/app';
+import { MatDialog } from '@angular/material/dialog';
+import { FirebaseError } from '@firebase/app';
 import {
   Functions,
-  HttpsCallable,
+  getFunctions,
   httpsCallableFromURL,
-} from '@angular/fire/functions';
-import { MatDialog } from '@angular/material/dialog';
+} from '@firebase/functions';
 import {
   catchError,
   concat,
@@ -39,12 +39,15 @@ export class SyncTeamsService {
 
   readonly loading$: Observable<boolean>;
 
+  private readonly functions: Functions;
+
   constructor(
-    private readonly fns: Functions,
     private readonly auth: AuthService,
     private readonly firestoreService: FirestoreService,
     readonly dialog: MatDialog,
   ) {
+    this.functions = getFunctions();
+
     this.teams$ = defer(() => {
       const sessionStorageTeams = this.loadSessionStorageTeams();
       const hasValidSessionStorageTeams =
@@ -104,11 +107,11 @@ export class SyncTeamsService {
 
   private async fetchTeamsFromYahoo(): Promise<Team[]> {
     // fetch teams from yahoo via firebase function
-    const fetchTeamsFromServer: HttpsCallable<null, Team[]> =
-      httpsCallableFromURL(
-        this.fns,
-        'https://fantasyautocoach.com/api/fetchuserteams',
-      );
+    const fetchTeamsFromServer = httpsCallableFromURL<null, Team[]>(
+      this.functions,
+      'https://fantasyautocoach.com/api/fetchuserteams',
+    );
+
     try {
       const teamsData = await fetchTeamsFromServer();
       const teams = teamsData.data;

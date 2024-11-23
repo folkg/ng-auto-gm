@@ -1,18 +1,12 @@
-import {
-  AuthGuard,
-  redirectLoggedInTo,
-  redirectUnauthorizedTo,
-} from '@angular/fire/auth-guard';
 import type { Routes } from '@angular/router';
 
 import { AboutComponent } from './app/about/about.component';
+import { authGuard } from './app/guards/auth.guard';
 import { DirtyFormGuard } from './app/guards/dirty-form.guard';
+import { loginGuard } from './app/guards/login.guard';
 import { LoginComponent } from './app/login/login.component';
 import { NotfoundComponent } from './app/notfound/notfound.component';
 import { TeamsComponent } from './app/teams/teams.component';
-
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/login']);
-const redirectLoggedInToTeams = () => redirectLoggedInTo(['/teams']);
 
 export const routes: Routes = [
   { path: '', redirectTo: '/teams', pathMatch: 'full' },
@@ -23,15 +17,13 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectLoggedInToTeams },
+    canActivate: [loginGuard],
   },
   {
     path: 'teams',
     component: TeamsComponent,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     canDeactivate: [DirtyFormGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: 'feedback',
@@ -39,17 +31,15 @@ export const routes: Routes = [
       import('./app/feedback/feedback.component').then(
         (m) => m.FeedbackComponent,
       ),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     canDeactivate: [DirtyFormGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: 'profile',
     loadComponent: () =>
       import('./app/profile/profile.component').then((m) => m.ProfileComponent),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     canDeactivate: [DirtyFormGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: 'transactions',
@@ -57,15 +47,13 @@ export const routes: Routes = [
       import('./app/transactions/transactions.component').then(
         (m) => m.TransactionsComponent,
       ),
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    canActivate: [authGuard],
   },
   {
     path: 'cart',
     loadComponent: () =>
       import('./app/cart/cart.component').then((m) => m.CartComponent),
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    canActivate: [authGuard],
   },
   { path: '**', component: NotfoundComponent },
 ];

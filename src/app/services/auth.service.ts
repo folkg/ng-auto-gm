@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   Auth,
+  getAuth,
   OAuthProvider,
   reauthenticateWithPopup,
   sendEmailVerification,
@@ -8,9 +10,8 @@ import {
   signOut,
   updateEmail,
   User,
-  user,
-} from '@angular/fire/auth';
-import { Router } from '@angular/router';
+} from '@firebase/auth';
+import { authState } from 'rxfire/auth';
 import { firstValueFrom, Observable } from 'rxjs';
 
 import { ensure } from '../shared/utils/checks';
@@ -20,13 +21,15 @@ import { getErrorMessage } from '../shared/utils/error';
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly auth: Auth;
   readonly user$: Observable<User | null>;
 
-  constructor(
-    private readonly auth: Auth,
-    private readonly router: Router,
-  ) {
-    this.user$ = user(this.auth);
+  constructor(private readonly router: Router) {
+    this.auth = getAuth();
+    // if (!environment.production) {
+    //   connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
+    // }
+    this.user$ = authState(this.auth);
   }
 
   getUser(): Promise<User> {

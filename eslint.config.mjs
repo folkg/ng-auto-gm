@@ -69,6 +69,14 @@ export default [
           allowNullableObject: true,
         },
       ],
+      "@typescript-eslint/no-unused-expressions": [
+        "error",
+        {
+          allowShortCircuit: false,
+          allowTernary: false,
+          allowTaggedTemplates: false,
+        },
+      ],
       "@typescript-eslint/unbound-method": [
         "error",
         {

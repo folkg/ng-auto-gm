@@ -5,10 +5,11 @@ import {
   Firestore,
   getDoc,
   getDocs,
+  getFirestore,
   query,
   updateDoc,
   where,
-} from '@angular/fire/firestore';
+} from '@firebase/firestore';
 import { AuthService } from 'src/app/services/auth.service';
 import { assert, is } from 'superstruct';
 
@@ -19,10 +20,11 @@ import { Schedule } from '../interfaces/schedules';
   providedIn: 'root',
 })
 export class FirestoreService {
-  constructor(
-    private readonly firestore: Firestore,
-    private readonly auth: AuthService,
-  ) {}
+  private readonly firestore: Firestore;
+
+  constructor(private readonly auth: AuthService) {
+    this.firestore = getFirestore();
+  }
 
   async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
     const user = await this.auth.getUser();
@@ -74,7 +76,7 @@ export class FirestoreService {
     // fetch teams for the current user and now < end_date
     const teamsRef = collection(db, 'users', user.uid, 'teams');
     const teamsSnapshot = await getDocs(
-      query(teamsRef, where('end_date', '>=', Date.now())),
+      query(teamsRef, where('end_date', '>=', Date.now()))
     );
 
     return teamsSnapshot.docs.map((doc) => {

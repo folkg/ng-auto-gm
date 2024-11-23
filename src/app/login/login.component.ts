@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import type { User } from '@angular/fire/auth';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
+import { User } from '@firebase/auth';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';

@@ -1,6 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '@angular/fire/auth';
 import {
   MatCard,
   MatCardContent,
@@ -9,6 +8,7 @@ import {
 } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { User } from '@firebase/auth';
 import { lastValueFrom, Subscription } from 'rxjs';
 
 import { ProfileCardComponent } from '../profile/profile-card/profile-card.component';

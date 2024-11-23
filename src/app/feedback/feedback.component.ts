@@ -8,16 +8,12 @@ import {
   NgSwitchDefault,
 } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import {
-  Functions,
-  HttpsCallable,
-  httpsCallableFromURL,
-} from '@angular/fire/functions';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatChipListbox, MatChipOption } from '@angular/material/chips';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { Functions, getFunctions, httpsCallable } from '@firebase/functions';
 
 import { AuthService } from '../services/auth.service';
 import { OnlineStatusService } from '../services/online-status.service';
@@ -57,11 +53,14 @@ export class FeedbackComponent {
 
   @ViewChild('feedbackForm') feedbackForm: NgForm | undefined;
 
+  private readonly functions: Functions;
+
   constructor(
     private readonly auth: AuthService,
-    private readonly fns: Functions,
     readonly os: OnlineStatusService,
-  ) {}
+  ) {
+    this.functions = getFunctions();
+  }
 
   async onSubmitCloudFunction(): Promise<void> {
     if (this.honeypot !== '') {
@@ -80,12 +79,11 @@ export class FeedbackComponent {
       message: emailBody,
     };
 
-    const sendFeedbackEmail: HttpsCallable<FeedbackData, boolean> =
-      httpsCallableFromURL(
-        this.fns,
-        // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
-        'https://fantasyautocoach.com/api/sendfeedbackemail',
-      );
+    const sendFeedbackEmail = httpsCallable<FeedbackData, boolean>(
+      this.functions,
+      'sendfeedbackemail',
+    );
+
     sendFeedbackEmail(data)
       .then((result) => {
         this.success = result.data;

@@ -6,7 +6,6 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { User } from '@angular/fire/auth';
 import {
   FormControl,
   FormGroup,
@@ -24,6 +23,7 @@ import {
 } from '@angular/material/card';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { User } from '@firebase/auth';
 import { Subscription } from 'rxjs';
 import { assertDefined } from 'src/app/shared/utils/checks';
 import { logError } from 'src/app/shared/utils/error';
