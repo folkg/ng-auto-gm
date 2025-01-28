@@ -1,13 +1,6 @@
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
-import {
-  AsyncPipe,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-} from "@angular/common";
-import { Component, ViewChild } from "@angular/core";
+import { AsyncPipe } from "@angular/common";
+import { Component, signal, ViewChild } from "@angular/core";
 import { FormsModule, NgForm, ReactiveFormsModule } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
@@ -15,8 +8,8 @@ import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { Functions, getFunctions, httpsCallable } from "@firebase/functions";
 
+import { AppStatusService } from "../services/app-status.service";
 import { AuthService } from "../services/auth.service";
-import { OnlineStatusService } from "../services/online-status.service";
 import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offline-warning-card.component";
 
 @Component({
@@ -24,21 +17,16 @@ import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offl
   templateUrl: "./feedback.component.html",
   styleUrls: ["./feedback.component.scss"],
   imports: [
-    NgIf,
     OfflineWarningCardComponent,
     ReactiveFormsModule,
     FormsModule,
     MatChipListbox,
-    NgFor,
     MatChipOption,
     MatFormField,
     MatLabel,
     MatInput,
     CdkTextareaAutosize,
     MatButton,
-    NgSwitch,
-    NgSwitchCase,
-    NgSwitchDefault,
     AsyncPipe,
   ],
 })
@@ -47,9 +35,10 @@ export class FeedbackComponent {
   title: string = "";
   honeypot: string = ""; //bots will likely fill this in
   feedbackType: string = "General";
-  feedbackTypes: string[] = ["General", "Bug Report", "Feature Request"];
-  submitted: boolean = false;
-  success: boolean | null = null;
+  readonly feedbackTypes = FEEDBACK_TYPES;
+
+  readonly submitted = signal(false);
+  readonly success = signal<boolean | undefined>(undefined);
 
   @ViewChild("feedbackForm") feedbackForm: NgForm | undefined;
 
@@ -57,21 +46,24 @@ export class FeedbackComponent {
 
   constructor(
     private readonly auth: AuthService,
-    readonly os: OnlineStatusService,
+    readonly appStatusService: AppStatusService,
   ) {
     this.functions = getFunctions();
   }
 
   async onSubmitCloudFunction(): Promise<void> {
+    this.submitted.set(true);
+
     if (this.honeypot !== "") {
+      this.success.set(false);
       return;
     }
 
-    this.submitted = true;
     const user = await this.auth.getUser();
 
-    const emailBody: string =
+    const emailBody =
       user.displayName + "\n" + user.uid + "\n\n" + this.feedback;
+
     const data: FeedbackData = {
       userEmail: user.email ?? "unknown email",
       feedbackType: this.feedbackType,
@@ -86,15 +78,15 @@ export class FeedbackComponent {
 
     sendFeedbackEmail(data)
       .then((result) => {
-        this.success = result.data;
+        this.success.set(result.data);
       })
       .catch(() => {
-        this.success = false;
+        this.success.set(false);
       });
   }
 
   public canDeactivate(): boolean {
-    return this.feedbackForm?.pristine ?? this.submitted;
+    return this.feedbackForm?.pristine ?? this.submitted();
   }
 }
 
@@ -104,3 +96,5 @@ type FeedbackData = {
   title: string;
   message: string;
 };
+
+const FEEDBACK_TYPES = ["General", "Bug Report", "Feature Request"];

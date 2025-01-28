@@ -1,5 +1,12 @@
-import { DecimalPipe, NgFor, NgIf } from "@angular/common";
-import { Component, Input, SimpleChanges } from "@angular/core";
+import { DecimalPipe } from "@angular/common";
+import {
+  Component,
+  computed,
+  EventEmitter,
+  Input,
+  input,
+  Output,
+} from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import {
   MatCard,
@@ -13,6 +20,7 @@ import { MatDivider } from "@angular/material/divider";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Team } from "src/app/services/interfaces/team";
+import { SCORING_TYPES } from "src/app/shared/utils/constants";
 
 import { NthPipe } from "../../shared/pipes/nth.pipe";
 import { PlayerTransaction } from "../interfaces/TransactionsData";
@@ -33,8 +41,6 @@ import { TransactionComponent } from "../transaction/transaction.component";
     MatIcon,
     MatDivider,
     MatCardContent,
-    NgIf,
-    NgFor,
     TransactionComponent,
     DecimalPipe,
     NthPipe,
@@ -42,25 +48,22 @@ import { TransactionComponent } from "../transaction/transaction.component";
 })
 export class TeamComponent {
   @Input({ required: true }) team!: Team;
-  @Input({ required: true }) allTransactions: PlayerTransaction[] = [];
-  public transactions: PlayerTransaction[] = [];
-  public scoringType: { [key: string]: string } = {
-    head: "Head to Head Scoring",
-    roto: "Rotisserie Scoring",
-    point: "Points Scoring",
-    headpoint: "Head to Head (Points) Scoring",
-    headone: "Head to Head (One Win) Scoring",
-  };
+  allTransactions = input.required<PlayerTransaction[]>();
+  @Output() transactionSelected = new EventEmitter<{
+    isSelected: boolean;
+    transactionId: string;
+  }>();
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes["allTransactions"].currentValue !==
-      changes["allTransactions"].previousValue
-    ) {
-      this.transactions = this.allTransactions.filter(
-        (transaction) => transaction.teamKey === this.team.team_key,
-      );
-    }
+  readonly transactions = computed(() =>
+    this.allTransactions().filter(
+      (transaction) => transaction.teamKey === this.team.team_key,
+    ),
+  );
+
+  readonly scoringType = SCORING_TYPES;
+
+  onSelectTransaction($event: { isSelected: boolean; transactionId: string }) {
+    this.transactionSelected.emit($event);
   }
 
   gotoExternalDomain(url: string) {

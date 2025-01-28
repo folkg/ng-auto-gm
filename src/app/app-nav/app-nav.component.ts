@@ -13,11 +13,12 @@ import { MatToolbar } from "@angular/material/toolbar";
 import { MatTooltip } from "@angular/material/tooltip";
 import { RouterLink, RouterOutlet } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
-import { map, shareReplay } from "rxjs/operators";
+import { map } from "rxjs/operators";
 
 import { AuthService } from "../services/auth.service";
 import { SyncTeamsService } from "../services/sync-teams.service";
 import { ThemingService } from "../services/theming.service";
+import { shareLatest } from "../shared/utils/shareLatest";
 
 @Component({
   selector: "app-app-nav",
@@ -44,22 +45,21 @@ export class AppNavComponent implements OnInit, OnDestroy {
     .observe(Breakpoints.Handset)
     .pipe(
       map((result) => result.matches),
-      shareReplay(),
+      shareLatest(),
     );
-  public isLoggedIn: boolean = false;
-  public hasTransactionsEnabled: boolean = false;
-  private subs = new Subscription();
+  isLoggedIn: boolean = false;
+  hasTransactionsEnabled: boolean = false;
 
   constructor(
-    private breakpointObserver: BreakpointObserver,
-    public themingService: ThemingService,
-    public auth: AuthService,
-    private sts: SyncTeamsService,
+    private readonly breakpointObserver: BreakpointObserver,
+    readonly themingService: ThemingService,
+    readonly auth: AuthService,
+    private readonly sts: SyncTeamsService,
   ) {}
 
-  ngOnInit(): void {
-    this.subs = new Subscription();
+  private readonly subs = new Subscription();
 
+  ngOnInit(): void {
     this.subs.add(
       this.auth.user$.subscribe((user) => {
         if (user) {

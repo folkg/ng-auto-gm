@@ -1,7 +1,9 @@
+@let team = this.team();
+
 <mat-card
   class="team-card"
-  [appearance]="team.end_date < date ? 'outlined' : 'raised'"
-  [class.mat-elevation-z4]="team.end_date > date"
+  [appearance]="team.end_date < date() ? 'outlined' : 'raised'"
+  [class.mat-elevation-z4]="team.end_date > date()"
 >
   <div class="header-actions-wrapper header-footer-bg">
     <mat-card-header>
@@ -46,11 +48,13 @@
           ({{ team.points_back | number: "1.2-2" }} points behind leader)
         </ng-container>
       </ng-container>
-      <br />{{ scoringType[team.scoring_type] }}
+      <br />
+      {{ scoringType[team.scoring_type] }}
       <ng-container
         *ngIf="team.max_games_played > 0 || team.max_innings_pitched > 0"
       >
-        <br />Max Games Played Limit
+        <br />
+        Max Games Played Limit
       </ng-container>
       <ng-container
         *ngIf="team.weekly_deadline != 'intraday' && team.weekly_deadline != ''"
@@ -62,7 +66,7 @@
     <mat-divider />
     <div
       class="flex-sb card-content-section"
-      *ngIf="team.end_date > date; else seasonOver"
+      *ngIf="team.end_date > date(); else seasonOver"
     >
       <div>
         Last update:
@@ -71,13 +75,8 @@
         }}
       </div>
       <div>
-        <!-- TODO: Have this updated again when the user refocuses the window -->
         Next update:
-        {{
-          team.is_setting_lineups
-            ? getNextLineupUpdate(team.lineup_paused_at)
-            : "N/A"
-        }}
+        {{ team.is_setting_lineups ? nextLineupUpdate() : "N/A" }}
       </div>
     </div>
     <ng-template #seasonOver>
@@ -87,15 +86,14 @@
   <mat-divider />
   <mat-card-actions>
     <div class="flex-sb">
-      <!-- TODO: Have this updated again when the user refocuses the window -->
       <mat-slide-toggle
         [disabled]="
-          isToday(team.lineup_paused_at) ||
+          isPausedToday() ||
           !team.is_subscribed ||
-          team.end_date < date ||
-          !(os.online$ | async)
+          team.end_date < date() ||
+          !(appStatusService.online$ | async)
         "
-        [(ngModel)]="team.is_setting_lineups"
+        [checked]="team.is_setting_lineups"
         (change)="onToggleSetLineup($event)"
       >
         Automatically Manage Lineups
@@ -104,23 +102,21 @@
         [disabled]="
           !team.is_setting_lineups ||
           !team.is_subscribed ||
-          team.end_date < date ||
-          !(os.online$ | async)
+          team.end_date < date() ||
+          !(appStatusService.online$ | async)
         "
         mat-stroked-button
         class="button"
-        [color]="isToday(team.lineup_paused_at) ? 'accent' : undefined"
+        [color]="isPausedToday() ? 'accent' : undefined"
         matTooltip="{{
-          isToday(team.lineup_paused_at)
-            ? 'Resume'
-            : 'Pause for the rest of the day'
+          isPausedToday() ? 'Resume' : 'Pause for the rest of the day'
         }}"
         (click)="onTogglePauseLineup()"
       >
-        <mat-icon
-          >{{ isToday(team.lineup_paused_at) ? "play_arrow" : "pause" }}
+        <mat-icon>
+          {{ isPausedToday() ? "play_arrow" : "pause" }}
         </mat-icon>
-        {{ isToday(team.lineup_paused_at) ? "Resume" : "Pause" }}
+        {{ isPausedToday() ? "Resume" : "Pause" }}
       </button>
     </div>
   </mat-card-actions>

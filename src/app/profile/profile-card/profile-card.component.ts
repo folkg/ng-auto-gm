@@ -28,8 +28,8 @@ import { Subscription } from "rxjs";
 import { assertDefined } from "src/app/shared/utils/checks";
 import { logError } from "src/app/shared/utils/error";
 
+import { AppStatusService } from "../../services/app-status.service";
 import { AuthService } from "../../services/auth.service";
-import { OnlineStatusService } from "../../services/online-status.service";
 
 @Component({
   selector: "app-profile-card",
@@ -62,16 +62,16 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   });
   user: User | null = null;
   isEditing: boolean = false;
-  private subs = new Subscription();
   @Output() isDirty = new EventEmitter<boolean>();
 
   constructor(
     private readonly auth: AuthService,
-    readonly os: OnlineStatusService,
+    readonly appStatusService: AppStatusService,
   ) {}
-  ngOnInit(): void {
-    this.subs = new Subscription();
 
+  private readonly subs = new Subscription();
+
+  ngOnInit(): void {
     this.subs.add(
       this.auth.user$.subscribe((user) => {
         this.user = user;

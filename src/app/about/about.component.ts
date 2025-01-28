@@ -1,9 +1,16 @@
-import { Component } from "@angular/core";
+import { Component, computed, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { MatCardModule } from "@angular/material/card";
-import spacetime from "spacetime";
+import { Spacetime } from "spacetime";
 
+import { AppStatusService } from "../services/app-status.service";
 import { Team } from "../services/interfaces/team";
 import { RobotsComponent } from "../shared/robots/robots.component";
+import { spacetimeNow } from "../shared/utils/now";
+import {
+  PauseLineupEvent,
+  SetLineupEvent,
+} from "../teams/interfaces/outputEvents";
 import { RelativeDatePipe } from "../teams/pipes/relative-date.pipe";
 import { TeamComponent } from "../teams/team/team.component";
 
@@ -15,8 +22,33 @@ import { TeamComponent } from "../teams/team/team.component";
   providers: [RelativeDatePipe],
 })
 export class AboutComponent {
-  sampleTimestamps: number[] = [this.getNextUpdate()];
-  sampleTeam: Team = {
+  private readonly focus = toSignal(this.appStatusService.focus$);
+  private readonly isSettingLineups = signal(true);
+  private readonly lineupPausedAt = signal(-1);
+
+  readonly sampleTimestamps = computed(() => [getNextUpdate(this.focus())]);
+  readonly sampleTeam = computed(() =>
+    getSampleTeam(this.isSettingLineups(), this.lineupPausedAt(), this.focus()),
+  );
+
+  constructor(readonly appStatusService: AppStatusService) {}
+
+  setLineupBoolean($event: SetLineupEvent) {
+    this.isSettingLineups.set($event.isSettingLineups);
+  }
+
+  togglePauseLineupActions($event: PauseLineupEvent) {
+    const currentPaused = $event.team.lineup_paused_at;
+    this.lineupPausedAt.set(currentPaused !== -1 ? -1 : Date.now());
+  }
+}
+
+function getSampleTeam(
+  isSettingLineups: boolean,
+  lineupPausedAt: number,
+  now = spacetimeNow(),
+): Team {
+  return {
     game_name: "Baseball",
     game_code: "mlb",
     game_season: new Date().getFullYear().toString(),
@@ -51,8 +83,8 @@ export class AboutComponent {
     max_innings_pitched: -1,
     edit_key: "",
     is_subscribed: true,
-    is_setting_lineups: true,
-    last_updated: this.getLastUpdate(),
+    is_setting_lineups: isSettingLineups,
+    last_updated: getLastUpdate(now),
     allow_transactions: false,
     allow_dropping: false,
     allow_adding: false,
@@ -60,26 +92,24 @@ export class AboutComponent {
     allow_waiver_adds: false,
     uid: "",
     roster_positions: {},
-    lineup_paused_at: -1,
+    lineup_paused_at: lineupPausedAt,
   };
+}
 
-  getLastUpdate(): number {
-    const now = spacetime.now("Canada/Pacific");
-    const update = now.time("15:55");
-    if (now.isAfter(update)) {
-      return update.epoch;
-    } else {
-      return now.time("01:55").epoch;
-    }
+function getLastUpdate(now: Spacetime): number {
+  const update = now.time("15:55");
+  if (now.isAfter(update)) {
+    return update.epoch;
+  } else {
+    return now.time("01:55").epoch;
   }
+}
 
-  getNextUpdate(): number {
-    const now = spacetime.now("Canada/Pacific");
-    const update = now.time("15:55");
-    if (now.isAfter(update)) {
-      return now.add(1, "day").time("01:55").epoch;
-    } else {
-      return update.epoch;
-    }
+function getNextUpdate(now = spacetimeNow()): number {
+  const update = now.time("15:55");
+  if (now.isAfter(update)) {
+    return now.add(1, "day").time("01:55").epoch;
+  } else {
+    return update.epoch;
   }
 }

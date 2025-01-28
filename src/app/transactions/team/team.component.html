@@ -1,7 +1,7 @@
 <mat-card
   class="team-card"
-  [appearance]="transactions.length ? 'raised' : 'outlined'"
-  [class.mat-elevation-z4]="transactions.length"
+  [appearance]="transactions().length ? 'raised' : 'outlined'"
+  [class.mat-elevation-z4]="transactions().length > 0"
 >
   <div class="header-actions-wrapper header-footer-bg">
     <mat-card-header>
@@ -11,10 +11,9 @@
         alt="{{ team.team_name }}"
       />
       <mat-card-title>{{ team.team_name }}</mat-card-title>
-      <mat-card-subtitle
-        >{{ team.league_name }} ({{ team.game_name }},
-        {{ team.game_season }})</mat-card-subtitle
-      >
+      <mat-card-subtitle>
+        {{ team.league_name }} ({{ team.game_name }}, {{ team.game_season }})
+      </mat-card-subtitle>
     </mat-card-header>
     <div>
       <button
@@ -29,44 +28,37 @@
   <mat-divider></mat-divider>
   <mat-card-content>
     <div class="card-content-section">
-      <!-- <span
-        >This team is set to process transactions
-        <strong>{{
-          team.automated_transaction_processing ? "automatically" : "manually"
-        }}</strong></span
-      >
-      <div class="padded-divider"><mat-divider></mat-divider></div> -->
       <b>{{ team.rank | nth }} of {{ team.num_teams }}</b>
-      <ng-container *ngIf="team.outcome_totals"
-        ><br />{{ team.outcome_totals.wins }}-{{
-          team.outcome_totals.losses
-        }}-{{ team.outcome_totals.ties }} ({{ team.outcome_totals.percentage }})
-      </ng-container>
-      <ng-container *ngIf="team.points_for">
+      @if (team.outcome_totals) {
+        <br />
+        {{ team.outcome_totals.wins }}-{{ team.outcome_totals.losses }}-{{
+          team.outcome_totals.ties
+        }}
+        ({{ team.outcome_totals.percentage }})
+      }
+      @if (team.points_for) {
         <br />
         {{ team.points_for | number: "1.2-2" }} points
-        <ng-container *ngIf="team.points_against">
-          for, {{ team.points_against | number: "1.2-2" }} points
-          against</ng-container
-        >
-        <ng-container *ngIf="team.points_back">
-          ({{ team.points_back | number: "1.2-2" }} points behind
-          leader)</ng-container
-        >
-      </ng-container>
-      <br />{{ scoringType[team.scoring_type] }}
-      <ng-container
-        *ngIf="team.max_games_played > 0 || team.max_innings_pitched > 0"
-      >
-        <br />Max Games Played Limit
-      </ng-container>
-      <ng-container
-        *ngIf="team.weekly_deadline != 'intraday' && team.weekly_deadline != ''"
-      >
+        @if (team.points_against) {
+          for, {{ team.points_against | number: "1.2-2" }} points against
+        }
+        @if (team.points_back) {
+          ({{ team.points_back | number: "1.2-2" }} points behind leader)
+        }
+      }
+      <br />
+      {{ scoringType[team.scoring_type] }}
+      @if (team.max_games_played > 0 || team.max_innings_pitched > 0) {
+        <br />
+        Max Games Played Limit
+      }
+      @if (team.weekly_deadline != "intraday" && team.weekly_deadline != "") {
         <br />
         Weekly Lineup Changes
-      </ng-container>
-      <div class="padded-divider"><mat-divider></mat-divider></div>
+      }
+      <div class="padded-divider">
+        <mat-divider />
+      </div>
       {{ team.current_season_adds }}
       {{ team.max_season_adds > 0 ? "of " + team.max_season_adds : "" }}
       transactions this season
@@ -79,16 +71,19 @@
             " transactions this week"
           : ""
       }}
-      <div class="padded-divider"><mat-divider></mat-divider></div>
-      <ng-container *ngIf="transactions.length > 0; else noTransactions">
-        <app-transaction
-          *ngFor="let transaction of transactions"
-          [transaction]="transaction"
-        ></app-transaction>
-      </ng-container>
-      <ng-template #noTransactions>
+      <div class="padded-divider">
+        <mat-divider />
+      </div>
+      @if (transactions().length > 0) {
+        @for (transaction of transactions(); track transaction) {
+          <app-transaction
+            [transaction]="transaction"
+            (isSelected)="onSelectTransaction($event)"
+          />
+        }
+      } @else {
         <p>No transactions available. Check back tomorrow.</p>
-      </ng-template>
+      }
     </div>
   </mat-card-content>
 </mat-card>

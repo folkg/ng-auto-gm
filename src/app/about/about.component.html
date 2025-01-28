@@ -43,9 +43,11 @@
     <div>
       <app-team
         class="card-container"
-        [team]="sampleTeam"
-        [gameTimeStamps]="sampleTimestamps"
-      ></app-team>
+        [team]="sampleTeam()"
+        [gameTimeStamps]="sampleTimestamps()"
+        (toggleSetLineupEvent)="setLineupBoolean($event)"
+        (togglePauseLineupEvent)="togglePauseLineupActions($event)"
+      />
       <p style="display: flex; justify-content: center">
         <i>
           This is how all of your teams will be presented to you after login

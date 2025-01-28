@@ -25,10 +25,11 @@ export interface PlayerTransaction {
   reason: string | null;
   isFaabRequired?: boolean;
   players: TPlayer[];
-  selected?: boolean; // a temporary flag to track transactions in the frontend
+  selected: boolean; // a temporary flag to track transactions in the frontend
+  id: string; // TODO: Assign on backend
 }
 
-type TPlayer = {
+export type TPlayer = {
   playerKey: string;
   transactionType: TransactionType;
   isInactiveList: boolean;

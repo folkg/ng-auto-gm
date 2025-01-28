@@ -1,12 +1,6 @@
-import {
-  JsonPipe,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-} from "@angular/common";
-import { Component } from "@angular/core";
+import { JsonPipe } from "@angular/common";
+import { Component, computed, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { MatButton } from "@angular/material/button";
 import {
   MatCard,
@@ -15,15 +9,15 @@ import {
   MatCardTitle,
 } from "@angular/material/card";
 import { MatDialog } from "@angular/material/dialog";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {
   Functions,
   getFunctions,
   HttpsCallable,
   httpsCallableFromURL,
 } from "@firebase/functions";
-import { lastValueFrom, Subscription } from "rxjs";
+import { lastValueFrom } from "rxjs";
 
-import { Team } from "../services/interfaces/team";
 import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
@@ -44,28 +38,47 @@ import { TeamComponent } from "./team/team.component";
   templateUrl: "./transactions.component.html",
   styleUrls: ["./transactions.component.scss"],
   imports: [
-    NgSwitch,
-    NgSwitchCase,
-    NgFor,
-    NgSwitchDefault,
-    NgIf,
     TeamComponent,
     MatCard,
     MatCardHeader,
     MatCardTitle,
     MatCardContent,
     MatButton,
+    MatProgressSpinner,
     JsonPipe,
     SortTeamsByTransactionsPipe,
   ],
 })
 export class TransactionsComponent {
-  teams: Team[] = [];
-  private transactions: TransactionsData | undefined;
-  flatTransactions: PlayerTransaction[] | undefined;
-  private readonly teamsSubscription: Subscription;
-  success: boolean | null = null;
-  transactionResults?: TransactionResults;
+  readonly allTeams = toSignal(this.sts.teams$, { initialValue: [] });
+  readonly teams = computed(() =>
+    this.allTeams().filter((team) => team.allow_transactions),
+  );
+
+  private readonly transactions = signal<TransactionsData | undefined>(
+    undefined,
+  );
+  readonly flatTransactions = computed<PlayerTransaction[] | undefined>(() =>
+    this.computeFlatTransactions(this.transactions()),
+  );
+  readonly selectedTransactions = computed(
+    () => this.flatTransactions()?.filter((t) => t.selected) ?? [],
+  );
+  readonly numSelectedTransactions = computed(
+    () => this.selectedTransactions().length,
+  );
+
+  readonly isProcessing = signal(false);
+  readonly success = signal<boolean | undefined>(undefined);
+  private readonly transactionResults = signal<TransactionResults | undefined>(
+    undefined,
+  );
+  readonly successTransactions = computed(
+    () => this.transactionResults()?.postedTransactions ?? [],
+  );
+  readonly failedReasons = computed(
+    () => this.transactionResults()?.failedReasons ?? [],
+  );
 
   private readonly functions: Functions;
 
@@ -74,84 +87,87 @@ export class TransactionsComponent {
     private readonly dialog: MatDialog,
   ) {
     this.functions = getFunctions();
-    this.teamsSubscription = this.sts.teams$.subscribe((teams) => {
-      this.teams = teams.filter((team) => team.allow_transactions);
-    });
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.fetchTransactions();
+  ngOnInit(): void {
+    this.fetchTransactions()
+      .then((transactions) => this.transactions.set(transactions))
+      .catch((err) =>
+        logError(err, "Error fetching transactions from Firebase:"),
+      );
   }
 
-  ngOnDestroy(): void {
-    this.teamsSubscription.unsubscribe();
-  }
-
-  private async fetchTransactions(): Promise<void> {
+  private async fetchTransactions(): Promise<TransactionsData> {
     const fetchTransactions: HttpsCallable<null, TransactionsData> =
       httpsCallableFromURL(
         this.functions,
-        // 'https://transactions-gettransactions-nw73xubluq-uc.a.run.app'
         "https://fantasyautocoach.com/api/gettransactions",
       );
-    try {
-      const result = await fetchTransactions();
 
-      this.transactions = result.data;
-      this.formatTransactions();
-    } catch (err) {
-      logError(err, "Error fetching transactions from Firebase:");
-    }
+    const result = await fetchTransactions();
+    return mapPlayerTransactions(result.data, (t) => ({
+      ...t,
+      selected: false,
+      // TOOD: ID should be assigned on the server
+      id: `${t.teamKey}-${t.players.map((p) => p.playerKey).join("-")}`,
+    }));
   }
 
-  private formatTransactions() {
-    if (!this.transactions) {
+  onSelectTransaction($event: { isSelected: boolean; transactionId: string }) {
+    if (!this.transactions()) {
       return;
     }
 
-    const { dropPlayerTransactions, addSwapTransactions } = this.transactions;
+    this.transactions.update((transactions) =>
+      transactions
+        ? mapPlayerTransactions(transactions, (t) =>
+            t.id === $event.transactionId
+              ? { ...t, selected: $event.isSelected }
+              : t,
+          )
+        : undefined,
+    );
+  }
 
-    this.flatTransactions = (dropPlayerTransactions ?? [])
+  private computeFlatTransactions(
+    transactions: TransactionsData | undefined,
+  ): PlayerTransaction[] | undefined {
+    if (!transactions) {
+      return undefined;
+    }
+
+    const { dropPlayerTransactions, addSwapTransactions } = transactions;
+
+    return (dropPlayerTransactions ?? [])
       .concat(addSwapTransactions ?? [])
       .flat();
-
-    this.flatTransactions.forEach((t) => {
-      t.selected = false;
-    });
   }
 
-  get selectedTransactions(): PlayerTransaction[] {
-    return this.flatTransactions?.filter((t) => t.selected) ?? [];
-  }
-
-  get numSelectedTransactions(): number {
-    return this.selectedTransactions.length;
-  }
-
-  private selectedTransactionsData(): TransactionsData {
+  private getSelectedTransactionsData(): TransactionsData {
     const result: TransactionsData = {
       dropPlayerTransactions: null,
       lineupChanges: null,
       addSwapTransactions: null,
     };
 
-    if (!this.transactions) {
+    const transactions = this.transactions();
+    if (!transactions) {
       return result;
     }
 
     const { dropPlayerTransactions, lineupChanges, addSwapTransactions } =
-      this.transactions;
+      transactions;
 
-    result.dropPlayerTransactions = this.filterSelectedTransactionsData(
+    result.dropPlayerTransactions = filterSelectedTransactionsData(
       dropPlayerTransactions,
     );
 
     result.addSwapTransactions =
-      this.filterSelectedTransactionsData(addSwapTransactions);
+      filterSelectedTransactionsData(addSwapTransactions);
 
     // Keep all the lineup changes for the teams that have selected transactions, even if we don't need them all
     const teamsWithTransactions = new Set(
-      this.selectedTransactions.map((t) => t.teamKey),
+      this.selectedTransactions().map((t) => t.teamKey),
     );
     result.lineupChanges =
       lineupChanges?.filter((lc) => teamsWithTransactions.has(lc.teamKey)) ??
@@ -160,25 +176,16 @@ export class TransactionsComponent {
     return result;
   }
 
-  private filterSelectedTransactionsData(
-    playerTransactions: PlayerTransaction[][] | null,
-  ): PlayerTransaction[][] | null {
-    if (!playerTransactions) {
-      return null;
-    }
-
-    return playerTransactions
-      .map((teamTransactions) =>
-        teamTransactions.filter((transaction) => transaction.selected),
-      )
-      .filter((selectedTransactions) => selectedTransactions.length > 0);
-  }
-
   async submitTransactions(): Promise<void> {
     const userSelectionConfirmed = await this.confirmDialog();
     if (userSelectionConfirmed) {
-      const transactions = this.selectedTransactionsData();
-      await this.postTransactions(transactions);
+      this.isProcessing.set(true);
+      try {
+        const transactions = this.getSelectedTransactionsData();
+        await this.postTransactions(transactions);
+      } finally {
+        this.isProcessing.set(false);
+      }
     }
   }
 
@@ -192,16 +199,17 @@ export class TransactionsComponent {
 
     try {
       const result = await postTransactions({ transactions });
-      this.success = result.data.success;
-      this.transactionResults = result.data.transactionResults;
+      this.success.set(result.data.success);
+      this.transactionResults.set(result.data.transactionResults);
     } catch (err) {
       logError(err, "Error posting transactions to Firebase:");
-      this.success = false;
+      this.success.set(false);
     }
   }
 
   confirmDialog(): Promise<boolean> {
-    const numSelectedTransactions = this.numSelectedTransactions;
+    const numSelectedTransactions = this.numSelectedTransactions();
+
     const title = "WARNING: Permanent Action";
     const message = `These transactions will be permanent. Click Proceed to officially process your ${
       numSelectedTransactions !== 0 ? numSelectedTransactions : ""
@@ -222,4 +230,34 @@ export class TransactionsComponent {
     });
     return lastValueFrom(dialogRef.afterClosed());
   }
+}
+
+function mapPlayerTransactions(
+  transactionsData: TransactionsData,
+  mapFn: (t: PlayerTransaction) => PlayerTransaction,
+): TransactionsData {
+  const { dropPlayerTransactions, addSwapTransactions, lineupChanges } =
+    transactionsData;
+
+  return {
+    dropPlayerTransactions:
+      dropPlayerTransactions?.map((tA) => tA.map((t) => mapFn(t))) ?? null,
+    addSwapTransactions:
+      addSwapTransactions?.map((tA) => tA.map((t) => mapFn(t))) ?? null,
+    lineupChanges,
+  };
+}
+
+function filterSelectedTransactionsData(
+  playerTransactions: PlayerTransaction[][] | null,
+): PlayerTransaction[][] | null {
+  if (!playerTransactions) {
+    return null;
+  }
+
+  return playerTransactions
+    .map((teamTransactions) =>
+      teamTransactions.filter((transaction) => transaction.selected),
+    )
+    .filter((selectedTransactions) => selectedTransactions.length > 0);
 }

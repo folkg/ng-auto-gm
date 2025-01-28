@@ -13,7 +13,7 @@ import {
 import { AuthService } from "src/app/services/auth.service";
 import { assert, is } from "superstruct";
 
-import { Team, TeamFirestore } from "../../services/interfaces/team";
+import { TeamFirestore } from "../../services/interfaces/team";
 import { Schedule } from "../interfaces/schedules";
 
 @Injectable({
@@ -26,23 +26,23 @@ export class FirestoreService {
     this.firestore = getFirestore();
   }
 
-  async setLineupsBoolean(team: Team, value: boolean): Promise<void> {
+  async setLineupsBoolean(teamKey: string, value: boolean): Promise<void> {
     const user = await this.auth.getUser();
 
     const db = this.firestore;
 
     const teamsRef = collection(db, "users", user.uid, "teams");
-    const docRef = doc(teamsRef, team.team_key);
+    const docRef = doc(teamsRef, teamKey);
 
     await updateDoc(docRef, { is_setting_lineups: value });
   }
 
-  async setPauseLineupActions(team: Team, value: boolean): Promise<void> {
+  async setPauseLineupActions(teamKey: string, value: boolean): Promise<void> {
     const user = await this.auth.getUser();
     const db = this.firestore;
 
     const teamsRef = collection(db, "users", user.uid, "teams");
-    const docRef = doc(teamsRef, team.team_key);
+    const docRef = doc(teamsRef, teamKey);
 
     await updateDoc(docRef, {
       lineup_paused_at: value === true ? Date.now() : -1,

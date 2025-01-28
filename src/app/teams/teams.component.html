@@ -1,10 +1,11 @@
 <div class="header primaryColorBG">
   <h1>My Teams</h1>
 </div>
+
 <div class="content">
   <app-offline-warning-card class="card" />
   <app-profile-card
-    *ngIf="user?.emailVerified === false"
+    *ngIf="user()?.emailVerified === false"
     (isDirty)="onDirtyChange($event)"
     class="card"
   />
@@ -15,19 +16,8 @@
     </h3>
     <h3>Sit back, relax, and let Fantasy AutoCoach do the work for you!</h3>
   </div>
-  <ng-container *ngIf="teams.length !== 0; else showLoading">
-    <app-team
-      class="card-container"
-      *ngFor="let team of teams"
-      [team]="team"
-      [gameTimeStamps]="
-        schedule && team.game_code ? schedule.games[team.game_code] : null
-      "
-      (toggleSetLineupEvent)="setLineupBoolean($event)"
-      (togglePauseLineupEvent)="setPauseLineupActions($event)"
-    />
-  </ng-container>
-  <ng-template #showLoading>
+
+  @if (loading() && teams().length === 0) {
     <mat-card class="card">
       <mat-card-header>
         <mat-card-title>Loading Teams...</mat-card-title>
@@ -36,5 +26,19 @@
         <p>Please wait</p>
       </mat-card-content>
     </mat-card>
-  </ng-template>
+  } @else {
+    @for (team of teams(); track team.team_key) {
+      <app-team
+        class="card-container"
+        [team]="team"
+        [gameTimeStamps]="
+          schedule() && team.game_code
+            ? schedule()!.games[team.game_code]
+            : null
+        "
+        (toggleSetLineupEvent)="setLineupBoolean($event)"
+        (togglePauseLineupEvent)="setPauseLineupActions($event)"
+      />
+    }
+  }
 </div>

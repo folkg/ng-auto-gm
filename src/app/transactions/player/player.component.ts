@@ -1,5 +1,5 @@
-import { DecimalPipe, NgClass, NgIf } from "@angular/common";
-import { Component, Input } from "@angular/core";
+import { DecimalPipe, NgClass } from "@angular/common";
+import { Component, Input, signal } from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 
@@ -9,12 +9,16 @@ import { Player } from "../interfaces/Player";
   selector: "app-player[player]",
   templateUrl: "./player.component.html",
   styleUrls: ["./player.component.scss"],
-  imports: [NgClass, MatIconButton, MatIcon, NgIf, DecimalPipe],
+  imports: [NgClass, MatIconButton, MatIcon, DecimalPipe],
 })
 export class PlayerComponent {
   @Input() player!: Player;
   @Input() isAdding = false;
-  public expanded = false;
+  public readonly expanded = signal(false);
+
+  toggleExpanded() {
+    this.expanded.update((value) => !value);
+  }
 
   get playerPositions(): string {
     return this.player.eligible_positions.filter((p) => p !== "BN").join(", ");

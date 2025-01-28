@@ -7,7 +7,7 @@ import {
   MatCardTitle,
 } from "@angular/material/card";
 
-import { OnlineStatusService } from "../../services/online-status.service";
+import { AppStatusService } from "../../services/app-status.service";
 
 @Component({
   selector: "app-offline-warning-card",
@@ -23,5 +23,5 @@ import { OnlineStatusService } from "../../services/online-status.service";
   ],
 })
 export class OfflineWarningCardComponent {
-  constructor(public os: OnlineStatusService) {}
+  constructor(public appStatusService: AppStatusService) {}
 }

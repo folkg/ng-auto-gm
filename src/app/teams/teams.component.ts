@@ -1,5 +1,6 @@
-import { NgFor, NgIf } from "@angular/common";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { NgIf } from "@angular/common";
+import { Component, OnInit, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import {
   MatCard,
   MatCardContent,
@@ -7,14 +8,11 @@ import {
   MatCardTitle,
 } from "@angular/material/card";
 import { MatDialog } from "@angular/material/dialog";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { User } from "@firebase/auth";
-import { lastValueFrom, Subscription } from "rxjs";
+import { lastValueFrom } from "rxjs";
 
 import { ProfileCardComponent } from "../profile/profile-card/profile-card.component";
+import { AppStatusService } from "../services/app-status.service";
 import { AuthService } from "../services/auth.service";
-import { Team } from "../services/interfaces/team";
-import { OnlineStatusService } from "../services/online-status.service";
 import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
@@ -32,16 +30,14 @@ import { FirestoreService } from "./services/firestore.service";
 import { TeamComponent } from "./team/team.component";
 
 @Component({
-  selector: "app-dashboard",
+  selector: "app-teams",
   templateUrl: "./teams.component.html",
   styleUrls: ["./teams.component.scss"],
   providers: [FirestoreService, RelativeDatePipe],
-  // changeDetection: ChangeDetectionStrategy.OnPush, // TODO: Add to all components, get rid of zone.js
   imports: [
     OfflineWarningCardComponent,
     NgIf,
     ProfileCardComponent,
-    NgFor,
     TeamComponent,
     MatCard,
     MatCardHeader,
@@ -49,56 +45,31 @@ import { TeamComponent } from "./team/team.component";
     MatCardContent,
   ],
 })
-export class TeamsComponent implements OnInit, OnDestroy {
-  teams: Team[] = [];
-  schedule: Schedule | null = null;
-  user: User | null = null;
-  private isDirty: boolean = false;
-  private readonly subs = new Subscription();
+export class TeamsComponent implements OnInit {
+  readonly user = toSignal(this.auth.user$);
+  readonly teams = toSignal(this.syncTeamsService.teams$, { initialValue: [] });
+  readonly loading = toSignal(this.syncTeamsService.loading$, {
+    initialValue: false,
+  });
+  readonly schedule = signal<Schedule | null>(null);
+  private readonly isDirty = signal(false);
 
   constructor(
     private readonly auth: AuthService,
     private readonly firestoreService: FirestoreService,
-    private readonly syncTeamsService: SyncTeamsService,
+    readonly syncTeamsService: SyncTeamsService,
     readonly dialog: MatDialog,
-    readonly os: OnlineStatusService,
-    private readonly snackBar: MatSnackBar,
+    readonly appStatusService: AppStatusService,
   ) {}
 
   ngOnInit(): void {
-    this.subs.add(
-      this.auth.user$.subscribe((user) => {
-        this.user = user;
-      }),
-    );
-
-    this.subs.add(
-      this.syncTeamsService.teams$.subscribe((teams) => {
-        this.teams = teams;
-      }),
-    );
-
-    this.subs.add(
-      this.syncTeamsService.loading$.subscribe((loading) => {
-        if (loading) {
-          this.snackBar.open("Refreshing Teams");
-        } else {
-          this.snackBar.dismiss();
-        }
-      }),
-    );
-
     this.fetchLeagueSchedules().catch(logError);
   }
 
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
-  }
-
   private async fetchLeagueSchedules() {
-    if (!this.schedule) {
+    if (!this.schedule()) {
       try {
-        this.schedule = await this.firestoreService.fetchSchedules();
+        this.schedule.set(await this.firestoreService.fetchSchedules());
       } catch (err) {
         await this.errorDialog(
           getErrorMessage(err) +
@@ -110,48 +81,64 @@ export class TeamsComponent implements OnInit, OnDestroy {
   }
 
   async setLineupBoolean($event: SetLineupEvent): Promise<void> {
+    const teamKey = $event.team.team_key;
+    const changeTo = $event.isSettingLineups;
+
     try {
-      await this.firestoreService.setLineupsBoolean(
-        $event.team,
-        $event.isSettingLineups,
+      await this.firestoreService.setLineupsBoolean(teamKey, changeTo);
+      this.syncTeamsService.optimisticallyUpdateTeam(
+        teamKey,
+        "is_setting_lineups",
+        changeTo,
       );
-      // TODO: Sync the state of the teams$ observable with sessionStorage, don't set manually anywhere
-      sessionStorage.setItem("yahooTeams", JSON.stringify(this.teams));
     } catch (ignore) {
-      // revert the change if the database write failed
-      $event.team.is_setting_lineups = !$event.isSettingLineups;
+      this.syncTeamsService.optimisticallyUpdateTeam(
+        teamKey,
+        "is_setting_lineups",
+        !changeTo,
+      );
       await this.errorDialog(
         "Could not update team's status on the server. Please check your internet connection and try again later.",
       );
+    } finally {
+      this.syncTeamsService.refreshTeams();
     }
   }
 
   async setPauseLineupActions($event: PauseLineupEvent): Promise<void> {
-    const team = $event.team;
-    const initialPauseState = team.lineup_paused_at;
+    const teamKey = $event.team.team_key;
+
+    const initialPauseState = $event.team.lineup_paused_at;
     const isPaused =
       initialPauseState !== undefined && initialPauseState !== -1;
 
-    team.lineup_paused_at = isPaused ? -1 : Date.now();
     try {
-      await this.firestoreService.setPauseLineupActions($event.team, !isPaused);
-      // TODO: Sync the state of the teams$ observable with sessionStorage, don't set manually anywhere
-      sessionStorage.setItem("yahooTeams", JSON.stringify(this.teams));
+      this.syncTeamsService.optimisticallyUpdateTeam(
+        teamKey,
+        "lineup_paused_at",
+        isPaused ? -1 : Date.now(),
+      );
+      await this.firestoreService.setPauseLineupActions(teamKey, !isPaused);
     } catch (ignore) {
-      // rollback the change if the database write failed
-      team.lineup_paused_at = initialPauseState;
+      this.syncTeamsService.optimisticallyUpdateTeam(
+        teamKey,
+        "lineup_paused_at",
+        initialPauseState,
+      );
       await this.errorDialog(
         "Could not update team's status on the server. Please check your internet connection and try again later.",
       );
+    } finally {
+      this.syncTeamsService.refreshTeams();
     }
   }
 
   onDirtyChange(dirty: boolean): void {
-    this.isDirty = dirty;
+    this.isDirty.set(dirty);
   }
 
   canDeactivate(): boolean {
-    return !this.isDirty;
+    return !this.isDirty();
   }
 
   private errorDialog(

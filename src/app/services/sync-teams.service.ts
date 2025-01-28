@@ -8,17 +8,17 @@ import {
   httpsCallableFromURL,
 } from "@firebase/functions";
 import {
+  BehaviorSubject,
   catchError,
   concat,
-  defer,
-  distinctUntilChanged,
-  endWith,
   from,
   lastValueFrom,
   map,
   Observable,
   of,
-  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
 } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import {
@@ -28,6 +28,7 @@ import {
 import { array, assert, is } from "superstruct";
 
 import { getErrorMessage } from "../shared/utils/error";
+import { shareLatest } from "../shared/utils/shareLatest";
 import { FirestoreService } from "../teams/services/firestore.service";
 import { Team, type TeamFirestore } from "./interfaces/team";
 
@@ -35,8 +36,10 @@ import { Team, type TeamFirestore } from "./interfaces/team";
   providedIn: "root",
 })
 export class SyncTeamsService {
-  readonly teams$: Observable<Team[]>;
+  private readonly refetch$ = new Subject<void>();
+  private readonly teamsSubject = new BehaviorSubject<Team[]>([]);
 
+  readonly teams$ = this.teamsSubject.asObservable();
   readonly loading$: Observable<boolean>;
 
   private readonly functions: Functions;
@@ -48,39 +51,60 @@ export class SyncTeamsService {
   ) {
     this.functions = getFunctions();
 
-    this.teams$ = defer(() => {
-      const sessionStorageTeams = this.loadSessionStorageTeams();
-      const hasValidSessionStorageTeams =
-        is(sessionStorageTeams, array(Team)) && sessionStorageTeams.length > 0;
+    const teamsStream$ = this.refetch$.pipe(
+      startWith(undefined),
+      switchMap(() => {
+        const sessionStorageTeams = this.loadSessionStorageTeams();
+        const hasValidSessionStorageTeams =
+          is(sessionStorageTeams, array(Team)) &&
+          sessionStorageTeams.length > 0;
 
-      if (hasValidSessionStorageTeams) {
+        if (hasValidSessionStorageTeams) {
+          return concat(
+            of({ loading: true, teams: sessionStorageTeams }),
+            from(
+              this.patchTeamPropertiesFromFirestore(sessionStorageTeams),
+            ).pipe(map((teams) => ({ loading: false, teams }))),
+          );
+        }
+
+        const localStorageTeams = this.loadLocalStorageTeams();
+        const hasValidLocalStorageTeams = is(localStorageTeams, array(Team));
+
+        if (hasValidLocalStorageTeams) {
+          return concat(
+            of({ loading: true, teams: localStorageTeams }),
+            from(this.getFreshTeams()).pipe(
+              map((teams) => ({ loading: false, teams })),
+            ),
+          );
+        }
+
         return concat(
-          of(sessionStorageTeams),
-          from(this.patchTeamPropertiesFromFirestore(sessionStorageTeams)),
+          of({ loading: true, teams: [] }),
+          from(this.getFreshTeams()).pipe(
+            map((teams) => ({ loading: false, teams })),
+          ),
         );
-      }
-
-      const localStorageTeams = this.loadLocalStorageTeams();
-      const hasValidLocalStorageTeams = is(localStorageTeams, array(Team));
-
-      if (hasValidLocalStorageTeams) {
-        return concat(of(localStorageTeams), from(this.getFreshTeams()));
-      }
-
-      return from(this.getFreshTeams());
-    }).pipe(
+      }),
       catchError((err) => {
         this.handleFetchTeamsError(err);
-        return of([]);
+        return of({ loading: false, teams: [] });
       }),
-      shareReplay({ bufferSize: 1, refCount: true }),
+      shareLatest(),
     );
 
-    this.loading$ = this.teams$.pipe(
-      map(() => true),
-      endWith(false),
-      distinctUntilChanged(),
+    this.loading$ = teamsStream$.pipe(
+      map((state) => state.loading),
+      shareLatest(),
     );
+
+    teamsStream$
+      .pipe(
+        takeUntilDestroyed(),
+        map((state) => state.teams),
+      )
+      .subscribe(this.teamsSubject);
 
     this.teams$.pipe(takeUntilDestroyed()).subscribe((teams) => {
       if (teams.length > 0) {
@@ -90,6 +114,28 @@ export class SyncTeamsService {
         localStorage.setItem("yahooTeams", JSON.stringify(teams));
       }
     });
+  }
+
+  optimisticallyUpdateTeam<K extends keyof Team>(
+    teamKey: string,
+    property: K,
+    value: Team[K],
+  ): void {
+    const currentTeams = this.teamsSubject.value;
+    const updatedTeams = currentTeams.map((team) =>
+      team.team_key === teamKey
+        ? {
+            ...team,
+            [property]: value,
+          }
+        : team,
+    );
+
+    this.teamsSubject.next(updatedTeams);
+  }
+
+  refreshTeams(): void {
+    this.refetch$.next();
   }
 
   private loadSessionStorageTeams(): unknown {
