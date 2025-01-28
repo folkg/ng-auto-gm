@@ -1,39 +1,74 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
-import { Team } from 'src/app/services/interfaces/team';
+import { DecimalPipe } from "@angular/common";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  computed,
+  input,
+} from "@angular/core";
+import { MatIconButton } from "@angular/material/button";
+import {
+  MatCard,
+  MatCardAvatar,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from "@angular/material/card";
+import { MatDivider } from "@angular/material/divider";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { Team } from "src/app/services/interfaces/team";
+import { SCORING_TYPES } from "src/app/shared/utils/constants";
 
-import { PlayerTransaction } from '../interfaces/TransactionsData';
+import { NthPipe } from "../../shared/pipes/nth.pipe";
+import { PlayerTransaction } from "../interfaces/TransactionsData";
+import { TransactionComponent } from "../transaction/transaction.component";
 
 @Component({
-  selector: 'app-team[team][allTransactions]',
-  templateUrl: './team.component.html',
-  styleUrls: ['./team.component.scss'],
+  selector: "app-team[team][allTransactions]",
+  templateUrl: "./team.component.html",
+  styleUrls: ["./team.component.scss"],
+  imports: [
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatCardTitle,
+    MatCardSubtitle,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatDivider,
+    MatCardContent,
+    TransactionComponent,
+    DecimalPipe,
+    NthPipe,
+  ],
 })
 export class TeamComponent {
   @Input({ required: true }) team!: Team;
-  @Input({ required: true }) allTransactions: PlayerTransaction[] = [];
-  public transactions: PlayerTransaction[] = [];
-  public scoringType: { [key: string]: string } = {
-    head: 'Head to Head Scoring',
-    roto: 'Rotisserie Scoring',
-    point: 'Points Scoring',
-    headpoint: 'Head to Head (Points) Scoring',
-    headone: 'Head to Head (One Win) Scoring',
-  };
+  allTransactions = input.required<PlayerTransaction[]>();
+  @Output() transactionSelected = new EventEmitter<{
+    isSelected: boolean;
+    transactionId: string;
+  }>();
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes['allTransactions'].currentValue !==
-      changes['allTransactions'].previousValue
-    ) {
-      this.transactions = this.allTransactions.filter(
-        (transaction) => transaction.teamKey === this.team.team_key,
-      );
-    }
+  readonly transactions = computed(() =>
+    this.allTransactions().filter(
+      (transaction) => transaction.teamKey === this.team.team_key,
+    ),
+  );
+
+  readonly scoringType = SCORING_TYPES;
+
+  onSelectTransaction($event: { isSelected: boolean; transactionId: string }) {
+    this.transactionSelected.emit($event);
   }
 
   gotoExternalDomain(url: string) {
     if (url) {
-      window.open(url, '_blank');
+      window.open(url, "_blank");
     }
   }
 }

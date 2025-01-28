@@ -57,7 +57,7 @@
       disabled="{{
         profileForm.pristine ||
           emailFormControl.invalid ||
-          !(os.online$ | async)
+          !(appStatusService.online$ | async)
       }}"
       (click)="saveChanges()"
     >

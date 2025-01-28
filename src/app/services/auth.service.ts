@@ -1,32 +1,38 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 import {
   Auth,
   OAuthProvider,
+  User,
+  getAuth,
+  onAuthStateChanged,
   reauthenticateWithPopup,
   sendEmailVerification,
   signInWithPopup,
   signOut,
   updateEmail,
-  User,
-  user,
-} from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { firstValueFrom, Observable } from 'rxjs';
+} from "@firebase/auth";
+import { Observable, firstValueFrom } from "rxjs";
 
-import { ensure } from '../shared/utils/checks';
-import { getErrorMessage } from '../shared/utils/error';
+import { ensure } from "../shared/utils/checks";
+import { getErrorMessage } from "../shared/utils/error";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class AuthService {
+  private readonly auth: Auth;
   readonly user$: Observable<User | null>;
 
-  constructor(
-    private readonly auth: Auth,
-    private readonly router: Router,
-  ) {
-    this.user$ = user(this.auth);
+  constructor(private readonly router: Router) {
+    this.auth = getAuth();
+    // if (!environment.production) {
+    //   connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
+    // }
+    this.user$ = new Observable((subscriber) => {
+      const unsubscribe = onAuthStateChanged(this.auth, subscriber);
+      return { unsubscribe };
+    });
   }
 
   getUser(): Promise<User> {
@@ -36,7 +42,7 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await signOut(this.auth);
-      await this.router.navigate(['/login']);
+      await this.router.navigate(["/login"]);
       localStorage.clear();
       sessionStorage.clear();
     } catch (err) {
@@ -46,18 +52,18 @@ export class AuthService {
 
   async loginYahoo(): Promise<void> {
     try {
-      const provider = new OAuthProvider('yahoo.com');
+      const provider = new OAuthProvider("yahoo.com");
       await signInWithPopup(this.auth, provider);
-      await this.router.navigate(['/teams']);
+      await this.router.navigate(["/teams"]);
     } catch (err) {
       throw new Error("Couldn't sign in with Yahoo: " + getErrorMessage(err));
     }
   }
 
   async reauthenticateYahoo(): Promise<void> {
-    const provider = new OAuthProvider('yahoo.com');
+    const provider = new OAuthProvider("yahoo.com");
     if (!this.auth.currentUser) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
     await reauthenticateWithPopup(this.auth.currentUser, provider);
   }
@@ -79,7 +85,7 @@ export class AuthService {
       await this.sendVerificationEmail();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message === 'Firebase: Error (auth/requires-recent-login).') {
+        if (err.message === "Firebase: Error (auth/requires-recent-login).") {
           try {
             await this.reauthenticateYahoo();
             await this.updateUserEmail(email);

@@ -1,4 +1,4 @@
-import { Player } from './Player';
+import { Player } from "./Player";
 
 export type TransactionsData = {
   dropPlayerTransactions: PlayerTransaction[][] | null;
@@ -25,10 +25,11 @@ export interface PlayerTransaction {
   reason: string | null;
   isFaabRequired?: boolean;
   players: TPlayer[];
-  selected?: boolean; // a temporary flag to track transactions in the frontend
+  selected: boolean; // a temporary flag to track transactions in the frontend
+  id: string; // TODO: Assign on backend
 }
 
-type TPlayer = {
+export type TPlayer = {
   playerKey: string;
   transactionType: TransactionType;
   isInactiveList: boolean;
@@ -36,7 +37,7 @@ type TPlayer = {
   isFromWaivers?: boolean;
 };
 
-type TransactionType = 'add' | 'drop' | 'add/drop';
+type TransactionType = "add" | "drop" | "add/drop";
 
 export interface LineupChanges {
   teamKey: string;

@@ -1,70 +1,92 @@
-import { Component, ViewChild } from '@angular/core';
-import {
-  Functions,
-  HttpsCallable,
-  httpsCallableFromURL,
-} from '@angular/fire/functions';
-import { NgForm } from '@angular/forms';
+import { CdkTextareaAutosize } from "@angular/cdk/text-field";
+import { AsyncPipe } from "@angular/common";
+import { Component, ViewChild, signal } from "@angular/core";
+import { FormsModule, NgForm, ReactiveFormsModule } from "@angular/forms";
+import { MatButton } from "@angular/material/button";
+import { MatChipListbox, MatChipOption } from "@angular/material/chips";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { Functions, getFunctions, httpsCallable } from "@firebase/functions";
 
-import { AuthService } from '../services/auth.service';
-import { OnlineStatusService } from '../services/online-status.service';
+import { AppStatusService } from "../services/app-status.service";
+import { AuthService } from "../services/auth.service";
+import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offline-warning-card.component";
 
 @Component({
-  selector: 'app-feedback',
-  templateUrl: './feedback.component.html',
-  styleUrls: ['./feedback.component.scss'],
+  selector: "app-feedback",
+  templateUrl: "./feedback.component.html",
+  styleUrls: ["./feedback.component.scss"],
+  imports: [
+    OfflineWarningCardComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    MatChipListbox,
+    MatChipOption,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    CdkTextareaAutosize,
+    MatButton,
+    AsyncPipe,
+  ],
 })
 export class FeedbackComponent {
-  feedback: string = '';
-  title: string = '';
-  honeypot: string = ''; //bots will likely fill this in
-  feedbackType: string = 'General';
-  feedbackTypes: string[] = ['General', 'Bug Report', 'Feature Request'];
-  submitted: boolean = false;
-  success: boolean | null = null;
+  feedback: string = "";
+  title: string = "";
+  honeypot: string = ""; //bots will likely fill this in
+  feedbackType: string = "General";
+  readonly feedbackTypes = FEEDBACK_TYPES;
 
-  @ViewChild('feedbackForm') feedbackForm: NgForm | undefined;
+  readonly submitted = signal(false);
+  readonly success = signal<boolean | undefined>(undefined);
+
+  @ViewChild("feedbackForm") feedbackForm: NgForm | undefined;
+
+  private readonly functions: Functions;
 
   constructor(
     private readonly auth: AuthService,
-    private readonly fns: Functions,
-    readonly os: OnlineStatusService,
-  ) {}
+    readonly appStatusService: AppStatusService,
+  ) {
+    this.functions = getFunctions();
+  }
 
   async onSubmitCloudFunction(): Promise<void> {
-    if (this.honeypot !== '') {
+    this.submitted.set(true);
+
+    if (this.honeypot !== "") {
+      this.success.set(false);
       return;
     }
 
-    this.submitted = true;
     const user = await this.auth.getUser();
 
-    const emailBody: string =
-      user.displayName + '\n' + user.uid + '\n\n' + this.feedback;
+    const emailBody =
+      user.displayName + "\n" + user.uid + "\n\n" + this.feedback;
+
     const data: FeedbackData = {
-      userEmail: user.email ?? 'unknown email',
+      userEmail: user.email ?? "unknown email",
       feedbackType: this.feedbackType,
       title: this.title,
       message: emailBody,
     };
 
-    const sendFeedbackEmail: HttpsCallable<FeedbackData, boolean> =
-      httpsCallableFromURL(
-        this.fns,
-        // 'https://email-sendfeedbackemail-nw73xubluq-uc.a.run.app'
-        'https://fantasyautocoach.com/api/sendfeedbackemail',
-      );
+    const sendFeedbackEmail = httpsCallable<FeedbackData, boolean>(
+      this.functions,
+      "sendfeedbackemail",
+    );
+
     sendFeedbackEmail(data)
       .then((result) => {
-        this.success = result.data;
+        this.success.set(result.data);
       })
       .catch(() => {
-        this.success = false;
+        this.success.set(false);
       });
   }
 
   public canDeactivate(): boolean {
-    return this.feedbackForm?.pristine ?? this.submitted;
+    return this.feedbackForm?.pristine ?? this.submitted();
   }
 }
 
@@ -74,3 +96,5 @@ type FeedbackData = {
   title: string;
   message: string;
 };
+
+const FEEDBACK_TYPES = ["General", "Bug Report", "Feature Request"];

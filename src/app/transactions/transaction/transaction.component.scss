@@ -5,6 +5,20 @@
   margin-bottom: 0.5rem;
 }
 
+/* TODO: Better way to make this happen? */
+:host ::ng-deep .mat-mdc-checkbox {
+  width: 100%; // Make checkbox take full width
+  display: block; // Change display to block
+
+  .mdc-form-field {
+    width: 100%; // Make form field take full width
+  }
+
+  .mdc-label {
+    width: 100%; // Make the label take full width
+  }
+}
+
 .selected {
   background-color: rgba($color: #000000, $alpha: 0.05);
 }
@@ -26,11 +40,25 @@
   margin-right: 0.5rem;
 }
 
+.waiver-icon {
+  color: goldenrod;
+  margin-right: 0.5rem;
+}
+
 .remove-icon {
   color: red;
   margin-right: 0.5rem;
 }
 
 .player-card {
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0; // This ensures proper flex shrinking
+  width: 100%;
+  display: block; // Ensure it takes full width
+}
+
+.reason-text {
+  flex: 1;
+  min-width: 0; // Prevents text from pushing icon
+  word-wrap: break-word; // Allows text to wrap
 }

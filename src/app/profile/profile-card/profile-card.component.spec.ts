@@ -1,14 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ProfileCardComponent } from './profile-card.component';
+import { ProfileCardComponent } from "./profile-card.component";
 
-describe('ProfileCardComponent', () => {
+describe("ProfileCardComponent", () => {
   let component: ProfileCardComponent;
   let fixture: ComponentFixture<ProfileCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProfileCardComponent],
+      imports: [ProfileCardComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfileCardComponent);
@@ -16,7 +16,7 @@ describe('ProfileCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

@@ -1,7 +1,7 @@
-import { Leagues } from 'src/app/shared/interfaces/Leagues';
+import { Leagues } from "src/app/shared/interfaces/Leagues";
 import {
-  boolean,
   Infer,
+  boolean,
   nullable,
   number,
   object,
@@ -9,7 +9,7 @@ import {
   record,
   string,
   union,
-} from 'superstruct';
+} from "superstruct";
 
 export const TeamFirestore = object({
   uid: string(),

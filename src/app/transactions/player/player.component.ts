@@ -1,27 +1,35 @@
-import { Component, Input } from '@angular/core';
+import { DecimalPipe, NgClass } from "@angular/common";
+import { Component, Input, signal } from "@angular/core";
+import { MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 
-import { Player } from '../interfaces/Player';
+import { Player } from "../interfaces/Player";
 
 @Component({
-  selector: 'app-player[player]',
-  templateUrl: './player.component.html',
-  styleUrls: ['./player.component.scss'],
+  selector: "app-player[player]",
+  templateUrl: "./player.component.html",
+  styleUrls: ["./player.component.scss"],
+  imports: [NgClass, MatIconButton, MatIcon, DecimalPipe],
 })
 export class PlayerComponent {
   @Input() player!: Player;
   @Input() isAdding = false;
-  public expanded = false;
+  public readonly expanded = signal(false);
+
+  toggleExpanded() {
+    this.expanded.update((value) => !value);
+  }
 
   get playerPositions(): string {
-    return this.player.eligible_positions.filter((p) => p !== 'BN').join(', ');
+    return this.player.eligible_positions.filter((p) => p !== "BN").join(", ");
   }
 
   get playerOwnership(): string {
-    if (this.player.ownership?.ownership_type === 'waivers') {
+    if (this.player.ownership?.ownership_type === "waivers") {
       return `Waivers until ${this.player.ownership.waiver_date}`;
-    } else if (this.player.ownership?.ownership_type === 'freeagents') {
-      return 'Free Agent';
+    } else if (this.player.ownership?.ownership_type === "freeagents") {
+      return "Free Agent";
     }
-    return '';
+    return "";
   }
 }

@@ -1,5 +1,13 @@
 <div class="card">
-  <div [ngClass]="{ 'green-header': isAdding, 'red-header': !isAdding }"></div>
+  <div
+    [ngClass]="{
+      'add-trx-header':
+        isAdding && player.ownership?.ownership_type !== 'waivers',
+      'waiver-trx-header':
+        isAdding && player.ownership?.ownership_type === 'waivers',
+      'remove-trx-header': !isAdding,
+    }"
+  ></div>
   <p class="ownership">
     {{ playerOwnership }}
   </p>
@@ -8,47 +16,62 @@
       {{ player.player_name }} [{{ player.ownership_score | number: "1.2-2" }}]
       ({{ playerPositions }})
     </p>
-    <button mat-icon-button (click)="expanded = !expanded">
-      <mat-icon>{{
-        expanded ? "keyboard_arrow_up" : "keyboard_arrow_down"
-      }}</mat-icon>
+    <button mat-icon-button (click)="toggleExpanded()">
+      <mat-icon>
+        {{ expanded() ? "keyboard_arrow_up" : "keyboard_arrow_down" }}
+      </mat-icon>
     </button>
   </div>
-  <div *ngIf="expanded" class="card-content player-stats">
-    <table>
-      <tr>
-        <td>Percent Owned</td>
-        <td>{{ player.percent_owned }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.last30Days !== -1">
-        <td>Last 30 Days Rank</td>
-        <td>{{ player.ranks.last30Days }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.last14Days !== -1">
-        <td>Last 14 Days Rank</td>
-        <td>{{ player.ranks.last14Days }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.next7Days !== -1">
-        <td>Next 7 Days Rank</td>
-        <td>{{ player.ranks.next7Days }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.last4Weeks !== -1">
-        <td>Last 4 Weeks Rank</td>
-        <td>{{ player.ranks.last4Weeks }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.projectedWeek !== -1">
-        <td>Projected Week Rank</td>
-        <td>{{ player.ranks.projectedWeek }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.next4Weeks !== -1">
-        <td>Next 4 Weeks Rank</td>
-        <td>{{ player.ranks.next4Weeks }}</td>
-      </tr>
-      <tr *ngIf="player.ranks.restOfSeason !== -1">
-        <td>Rest of Season Rank</td>
-        <td>{{ player.ranks.restOfSeason }}</td>
-      </tr>
-      <!-- {{Open in Yahoo Button}} -->
-    </table>
-  </div>
+  @if (expanded()) {
+    <div class="card-content player-stats">
+      <table>
+        <tr>
+          <td>Percent Owned</td>
+          <td>{{ player.percent_owned }}</td>
+        </tr>
+        @if (player.ranks.last30Days !== -1) {
+          <tr>
+            <td>Last 30 Days Rank</td>
+            <td>{{ player.ranks.last30Days }}</td>
+          </tr>
+        }
+        @if (player.ranks.last14Days !== -1) {
+          <tr>
+            <td>Last 14 Days Rank</td>
+            <td>{{ player.ranks.last14Days }}</td>
+          </tr>
+        }
+        @if (player.ranks.next7Days !== -1) {
+          <tr>
+            <td>Next 7 Days Rank</td>
+            <td>{{ player.ranks.next7Days }}</td>
+          </tr>
+        }
+        @if (player.ranks.last4Weeks !== -1) {
+          <tr>
+            <td>Last 4 Weeks Rank</td>
+            <td>{{ player.ranks.last4Weeks }}</td>
+          </tr>
+        }
+        @if (player.ranks.projectedWeek !== -1) {
+          <tr>
+            <td>Projected Week Rank</td>
+            <td>{{ player.ranks.projectedWeek }}</td>
+          </tr>
+        }
+        @if (player.ranks.next4Weeks !== -1) {
+          <tr>
+            <td>Next 4 Weeks Rank</td>
+            <td>{{ player.ranks.next4Weeks }}</td>
+          </tr>
+        }
+        @if (player.ranks.restOfSeason !== -1) {
+          <tr>
+            <td>Rest of Season Rank</td>
+            <td>{{ player.ranks.restOfSeason }}</td>
+          </tr>
+        }
+      </table>
+    </div>
+  }
 </div>
