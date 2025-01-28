@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import {
+  Firestore,
   collection,
   doc,
-  Firestore,
   getDoc,
   getDocs,
   getFirestore,

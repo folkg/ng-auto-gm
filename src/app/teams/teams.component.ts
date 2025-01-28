@@ -91,7 +91,7 @@ export class TeamsComponent implements OnInit {
         "is_setting_lineups",
         changeTo,
       );
-    } catch (ignore) {
+    } catch (_ignore) {
       this.syncTeamsService.optimisticallyUpdateTeam(
         teamKey,
         "is_setting_lineups",
@@ -119,7 +119,7 @@ export class TeamsComponent implements OnInit {
         isPaused ? -1 : Date.now(),
       );
       await this.firestoreService.setPauseLineupActions(teamKey, !isPaused);
-    } catch (ignore) {
+    } catch (_ignore) {
       this.syncTeamsService.optimisticallyUpdateTeam(
         teamKey,
         "lineup_paused_at",

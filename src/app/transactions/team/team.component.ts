@@ -1,11 +1,11 @@
 import { DecimalPipe } from "@angular/common";
 import {
   Component,
-  computed,
   EventEmitter,
   Input,
-  input,
   Output,
+  computed,
+  input,
 } from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import {

@@ -1,6 +1,6 @@
 import { CdkScrollable } from "@angular/cdk/scrolling";
 import { NgIf } from "@angular/common";
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit, inject } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import {
   MAT_DIALOG_DATA,
@@ -33,8 +33,8 @@ export class ConfirmDialogComponent implements OnInit, OnDestroy {
   private clickSubscription: Subscription | undefined;
 
   constructor(
-    public dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    readonly dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>,
+    @Inject(MAT_DIALOG_DATA) readonly data: DialogData,
   ) {
     this.title = data.title;
     this.message = data.message;

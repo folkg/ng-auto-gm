@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { fromEvent, map, merge, Observable, of, startWith } from "rxjs";
+import { Observable, fromEvent, map, merge, of, startWith } from "rxjs";
 import { Spacetime } from "spacetime";
 
 import { spacetimeNow } from "../shared/utils/now";

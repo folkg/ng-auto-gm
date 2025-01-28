@@ -9,15 +9,15 @@ import {
 } from "@firebase/functions";
 import {
   BehaviorSubject,
+  Observable,
+  Subject,
   catchError,
   concat,
   from,
   lastValueFrom,
   map,
-  Observable,
   of,
   startWith,
-  Subject,
   switchMap,
 } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
@@ -25,7 +25,7 @@ import {
   ConfirmDialogComponent,
   DialogData,
 } from "src/app/shared/confirm-dialog/confirm-dialog.component";
-import { array, assert, is } from "superstruct";
+import { assert, array, is } from "superstruct";
 
 import { getErrorMessage } from "../shared/utils/error";
 import { shareLatest } from "../shared/utils/shareLatest";

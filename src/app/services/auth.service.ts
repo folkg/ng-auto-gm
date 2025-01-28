@@ -2,17 +2,17 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import {
   Auth,
-  getAuth,
   OAuthProvider,
+  User,
+  getAuth,
   reauthenticateWithPopup,
   sendEmailVerification,
   signInWithPopup,
   signOut,
   updateEmail,
-  User,
 } from "@firebase/auth";
 import { authState } from "rxfire/auth";
-import { firstValueFrom, Observable } from "rxjs";
+import { Observable, firstValueFrom } from "rxjs";
 
 import { ensure } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";

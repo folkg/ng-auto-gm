@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { UrlTree } from "@angular/router";
-import { lastValueFrom, Observable } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 
 import {
   ConfirmDialogComponent,

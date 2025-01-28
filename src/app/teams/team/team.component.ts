@@ -1,10 +1,10 @@
 import { AsyncPipe, DecimalPipe, NgIf } from "@angular/common";
 import {
   Component,
-  computed,
   EventEmitter,
-  input,
   Output,
+  computed,
+  input,
   signal,
 } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";

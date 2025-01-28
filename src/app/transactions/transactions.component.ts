@@ -12,8 +12,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {
   Functions,
-  getFunctions,
   HttpsCallable,
+  getFunctions,
   httpsCallableFromURL,
 } from "@firebase/functions";
 import { lastValueFrom } from "rxjs";

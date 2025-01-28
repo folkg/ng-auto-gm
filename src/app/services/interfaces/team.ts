@@ -1,7 +1,7 @@
 import { Leagues } from "src/app/shared/interfaces/Leagues";
 import {
-  boolean,
   Infer,
+  boolean,
   nullable,
   number,
   object,
