@@ -5,13 +5,13 @@ import {
   OAuthProvider,
   User,
   getAuth,
+  onAuthStateChanged,
   reauthenticateWithPopup,
   sendEmailVerification,
   signInWithPopup,
   signOut,
   updateEmail,
 } from "@firebase/auth";
-import { authState } from "rxfire/auth";
 import { Observable, firstValueFrom } from "rxjs";
 
 import { ensure } from "../shared/utils/checks";
@@ -29,7 +29,10 @@ export class AuthService {
     // if (!environment.production) {
     //   connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
     // }
-    this.user$ = authState(this.auth);
+    this.user$ = new Observable((subscriber) => {
+      const unsubscribe = onAuthStateChanged(this.auth, subscriber);
+      return { unsubscribe };
+    });
   }
 
   getUser(): Promise<User> {
