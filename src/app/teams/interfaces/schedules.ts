@@ -1,9 +1,8 @@
-import { Leagues } from "src/app/shared/interfaces/Leagues";
-import { Infer, array, number, object, record, string } from "superstruct";
+import { type } from "arktype";
 
-export const Schedule = object({
-  date: string(),
-  games: record(Leagues, array(number())),
+export const Schedule = type({
+  date: "string",
+  games: type({ "['mlb'|'nba'|'nfl'|'nhl']": "number[]" }), // TODO: How to re-use Leagues here?
 });
 
-export type Schedule = Infer<typeof Schedule>;
+export type Schedule = typeof Schedule.infer;

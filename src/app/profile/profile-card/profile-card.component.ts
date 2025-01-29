@@ -100,7 +100,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
 
   cancelChanges() {
     this.isEditing = !this.isEditing;
-    this.profileForm.reset({ email: this.user?.email });
+    this.profileForm.reset({ email: this.user?.email ?? null });
   }
 
   async saveChanges() {

@@ -1,10 +1,5 @@
-import { type Infer, literal, union } from "superstruct";
+import { type } from "arktype";
 
-export const Leagues = union([
-  literal("mlb"),
-  literal("nba"),
-  literal("nfl"),
-  literal("nhl"),
-]);
+export const Leagues = type("'mlb'|'nba'|'nfl'|'nhl'");
 
-export type Leagues = Infer<typeof Leagues>;
+export type Leagues = typeof Leagues.infer;

@@ -25,8 +25,8 @@ import {
   ConfirmDialogComponent,
   DialogData,
 } from "src/app/shared/confirm-dialog/confirm-dialog.component";
-import { assert, array, is } from "superstruct";
 
+import { assertType, isType } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";
 import { shareLatest } from "../shared/utils/shareLatest";
 import { FirestoreService } from "../teams/services/firestore.service";
@@ -56,7 +56,7 @@ export class SyncTeamsService {
       switchMap(() => {
         const sessionStorageTeams = this.loadSessionStorageTeams();
         const hasValidSessionStorageTeams =
-          is(sessionStorageTeams, array(Team)) &&
+          isType(sessionStorageTeams, Team.array()) &&
           sessionStorageTeams.length > 0;
 
         if (hasValidSessionStorageTeams) {
@@ -69,7 +69,10 @@ export class SyncTeamsService {
         }
 
         const localStorageTeams = this.loadLocalStorageTeams();
-        const hasValidLocalStorageTeams = is(localStorageTeams, array(Team));
+        const hasValidLocalStorageTeams = isType(
+          localStorageTeams,
+          Team.array(),
+        );
 
         if (hasValidLocalStorageTeams) {
           return concat(
@@ -162,7 +165,7 @@ export class SyncTeamsService {
       const teamsData = await fetchTeamsFromServer();
       const teams = teamsData.data;
 
-      assert(teams, array(Team));
+      assertType(teams, Team.array());
       return teams;
     } catch (err) {
       if (err instanceof FirebaseError && err.code === "functions/data-loss") {

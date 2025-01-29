@@ -11,8 +11,8 @@ import {
   where,
 } from "@firebase/firestore";
 import { AuthService } from "src/app/services/auth.service";
-import { assert, is } from "superstruct";
 
+import { assertType, isType } from "src/app/shared/utils/checks";
 import { TeamFirestore } from "../../services/interfaces/team";
 import { Schedule } from "../interfaces/schedules";
 
@@ -52,8 +52,8 @@ export class FirestoreService {
   async fetchSchedules(): Promise<Schedule> {
     const storedSchedule = sessionStorage.getItem("schedules");
     if (storedSchedule !== null) {
-      const schedule = JSON.parse(storedSchedule) as unknown;
-      if (is(schedule, Schedule)) {
+      const schedule = JSON.parse(storedSchedule);
+      if (isType(schedule, Schedule)) {
         return schedule;
       }
     }
@@ -63,7 +63,7 @@ export class FirestoreService {
     const schedulesRef = doc(db, "schedule", "today");
     const scheduleSnap = await getDoc(schedulesRef);
     const schedule = scheduleSnap.data();
-    assert(schedule, Schedule);
+    assertType(schedule, Schedule);
 
     sessionStorage.setItem("schedules", JSON.stringify(schedule));
     return schedule;
@@ -81,7 +81,7 @@ export class FirestoreService {
 
     return teamsSnapshot.docs.map((doc) => {
       const team = doc.data();
-      assert(team, TeamFirestore);
+      assertType(team, TeamFirestore);
       return team;
     });
   }

@@ -1,6 +1,6 @@
 import { ApplicationRef, Injectable } from "@angular/core";
+import { type } from "arktype";
 import { BehaviorSubject } from "rxjs";
-import { assert, boolean } from "superstruct";
 
 @Injectable({
   providedIn: "root",
@@ -24,10 +24,9 @@ export class ThemingService {
     if (localStorage.getItem("darkModeOn") !== null) {
       const storedValue = JSON.parse(
         localStorage.getItem("darkModeOn") ?? "false",
-      ) as unknown;
-      assert(storedValue, boolean());
-
-      this._darkModeOn = storedValue;
+      );
+      const darkMode = type("boolean").assert(storedValue);
+      this._darkModeOn = darkMode;
     } else {
       this._darkModeOn = darkMediaQuery.matches;
     }
