@@ -1,3 +1,11 @@
+import { Ark, ArkError, ArkErrors, Type, type } from "arktype";
+import {
+  InstanceOfTypeParser,
+  SchemaParser,
+  TypeParser,
+  UnitTypeParser,
+} from "arktype/out/type";
+
 export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== undefined && value !== null;
 }
@@ -33,4 +41,25 @@ export function ensure<T>(
     throw new TypeError(message);
   }
   return val;
+}
+
+export function isType<T>(
+  data: unknown,
+  schema: (data: unknown) => T | ArkErrors,
+): data is T {
+  const out = schema(data);
+  if (out instanceof type.errors) {
+    return false;
+  }
+  return true;
+}
+
+export function assertType<T>(
+  data: unknown,
+  schema: (data: unknown) => T | ArkErrors,
+): asserts data is T {
+  const out = schema(data);
+  if (out instanceof type.errors) {
+    throw new Error(out.summary);
+  }
 }
