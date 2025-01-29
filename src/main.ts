@@ -21,8 +21,6 @@ const firebaseConfig = {
   appId: import.meta.env.NG_APP_FIREBASE_APP_ID,
 };
 
-console.log("firebaseConfig", firebaseConfig);
-
 initializeApp(firebaseConfig);
 
 bootstrapApplication(AppComponent, {
