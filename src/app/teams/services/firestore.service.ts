@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import {
-  Firestore,
+  type Firestore,
   collection,
   doc,
   getDoc,
@@ -10,6 +10,7 @@ import {
   updateDoc,
   where,
 } from "@firebase/firestore";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AuthService } from "src/app/services/auth.service";
 
 import { assertType, isType } from "src/app/shared/utils/checks";

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
@@ -31,9 +31,7 @@ describe("AppNavComponent", () => {
         { provide: SyncTeamsService, useClass: MockSyncTeamsService },
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(AppNavComponent);
     component = fixture.componentInstance;
     nativeElement = fixture.nativeElement as HTMLElement;

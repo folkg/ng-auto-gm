@@ -1,13 +1,14 @@
 import { Component, computed, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatCardModule } from "@angular/material/card";
-import { Spacetime } from "spacetime";
+import type { Spacetime } from "spacetime";
 
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AppStatusService } from "../services/app-status.service";
-import { Team } from "../services/interfaces/team";
+import type { Team } from "../services/interfaces/team";
 import { RobotsComponent } from "../shared/robots/robots.component";
 import { spacetimeNow } from "../shared/utils/now";
-import {
+import type {
   PauseLineupEvent,
   SetLineupEvent,
 } from "../teams/interfaces/outputEvents";
@@ -100,16 +101,14 @@ function getLastUpdate(now: Spacetime): number {
   const update = now.time("15:55");
   if (now.isAfter(update)) {
     return update.epoch;
-  } else {
-    return now.time("01:55").epoch;
   }
+  return now.time("01:55").epoch;
 }
 
 function getNextUpdate(now = spacetimeNow()): number {
   const update = now.time("15:55");
   if (now.isAfter(update)) {
     return now.add(1, "day").time("01:55").epoch;
-  } else {
-    return update.epoch;
   }
+  return update.epoch;
 }

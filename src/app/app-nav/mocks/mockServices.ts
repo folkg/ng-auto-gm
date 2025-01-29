@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { User } from "@firebase/auth";
-import { Observable, of } from "rxjs";
+import type { User } from "@firebase/auth";
+import { type Observable, of } from "rxjs";
 import type { Team } from "src/app/services/interfaces/team";
 
 @Injectable({

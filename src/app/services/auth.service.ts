@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { Router } from "@angular/router";
 import {
-  Auth,
+  type Auth,
   OAuthProvider,
-  User,
+  type User,
   getAuth,
   onAuthStateChanged,
   reauthenticateWithPopup,
@@ -46,7 +47,7 @@ export class AuthService {
       localStorage.clear();
       sessionStorage.clear();
     } catch (err) {
-      throw new Error("Couldn't sign out: " + getErrorMessage(err));
+      throw new Error(`Couldn't sign out: ${getErrorMessage(err)}`);
     }
   }
 
@@ -56,7 +57,7 @@ export class AuthService {
       await signInWithPopup(this.auth, provider);
       await this.router.navigate(["/teams"]);
     } catch (err) {
-      throw new Error("Couldn't sign in with Yahoo: " + getErrorMessage(err));
+      throw new Error(`Couldn't sign in with Yahoo: ${getErrorMessage(err)}`);
     }
   }
 
@@ -74,7 +75,7 @@ export class AuthService {
       //TODO: Dialog to tell user to check email
     } catch (err) {
       throw new Error(
-        "Couldn't send verification email: " + getErrorMessage(err),
+        `Couldn't send verification email: ${getErrorMessage(err)}`,
       );
     }
   }
@@ -90,7 +91,7 @@ export class AuthService {
             await this.reauthenticateYahoo();
             await this.updateUserEmail(email);
           } catch (err) {
-            throw new Error("Couldn't reauthenticate: " + getErrorMessage(err));
+            throw new Error(`Couldn't reauthenticate: ${getErrorMessage(err)}`);
           }
         }
       }

@@ -1,4 +1,4 @@
-import { TransactionsData } from "../interfaces/TransactionsData";
+import type { TransactionsData } from "../interfaces/TransactionsData";
 
 export const transactionsData: TransactionsData = {
   dropPlayerTransactions: [

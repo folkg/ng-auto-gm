@@ -1,3 +1,4 @@
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { Component, computed } from "@angular/core";
@@ -12,13 +13,17 @@ import {
 import { MatToolbar } from "@angular/material/toolbar";
 import { MatTooltip } from "@angular/material/tooltip";
 import { RouterLink, RouterOutlet } from "@angular/router";
-import { Observable } from "rxjs";
+import type { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
 import { toSignal } from "@angular/core/rxjs-interop";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AuthService } from "../services/auth.service";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { ThemingService } from "../services/theming.service";
+import { isDefined } from "../shared/utils/checks";
 import { shareLatest } from "../shared/utils/shareLatest";
 
 @Component({
@@ -49,7 +54,7 @@ export class AppNavComponent {
       shareLatest(),
     );
   private readonly user = toSignal(this.auth.user$);
-  readonly isLoggedIn = computed(() => (this.user() ? true : false));
+  readonly isLoggedIn = computed(() => isDefined(this.user()));
 
   private readonly teams = toSignal(this.sts.teams$, { initialValue: [] });
   readonly hasTransactionsEnabled = computed(() =>

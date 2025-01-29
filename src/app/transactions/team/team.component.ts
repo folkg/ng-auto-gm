@@ -19,11 +19,11 @@ import {
 import { MatDivider } from "@angular/material/divider";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
-import { Team } from "src/app/services/interfaces/team";
+import type { Team } from "src/app/services/interfaces/team";
 import { SCORING_TYPES } from "src/app/shared/utils/constants";
 
 import { NthPipe } from "../../shared/pipes/nth.pipe";
-import { PlayerTransaction } from "../interfaces/TransactionsData";
+import type { PlayerTransaction } from "../interfaces/TransactionsData";
 import { TransactionComponent } from "../transaction/transaction.component";
 
 @Component({

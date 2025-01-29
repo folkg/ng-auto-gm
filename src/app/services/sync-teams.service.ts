@@ -1,15 +1,16 @@
 import { Injectable } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { FirebaseError } from "@firebase/app";
 import {
-  Functions,
+  type Functions,
   getFunctions,
   httpsCallableFromURL,
 } from "@firebase/functions";
 import {
   BehaviorSubject,
-  Observable,
+  type Observable,
   Subject,
   catchError,
   concat,
@@ -20,15 +21,17 @@ import {
   startWith,
   switchMap,
 } from "rxjs";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AuthService } from "src/app/services/auth.service";
 import {
   ConfirmDialogComponent,
-  DialogData,
+  type DialogData,
 } from "src/app/shared/confirm-dialog/confirm-dialog.component";
 
 import { assertType, isType } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";
 import { shareLatest } from "../shared/utils/shareLatest";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { FirestoreService } from "../teams/services/firestore.service";
 import { Team, type TeamFirestore } from "./interfaces/team";
 
@@ -174,7 +177,7 @@ export class SyncTeamsService {
       }
 
       throw new Error(
-        "Error fetching teams from Yahoo: " + getErrorMessage(err),
+        `Error fetching teams from Yahoo: ${getErrorMessage(err)}`,
       );
     }
   }
@@ -184,12 +187,12 @@ export class SyncTeamsService {
   ): Promise<Team[]> {
     const firestoreTeams = await this.fetchTeamsFromFirestore();
 
-    teamsToPatch.forEach((teamToPatch) => {
+    for (const teamToPatch of teamsToPatch) {
       const firestoreTeam = firestoreTeams.find(
         (firestoreTeam) => firestoreTeam.team_key === teamToPatch.team_key,
       );
       Object.assign(teamToPatch, firestoreTeam);
-    });
+    }
 
     return teamsToPatch;
   }
@@ -232,8 +235,8 @@ export class SyncTeamsService {
 
   private errorDialog(
     message: string,
-    title: string = "ERROR",
-    trueButton: string = "OK",
+    title = "ERROR",
+    trueButton = "OK",
     falseButton: string | null = null,
   ): Promise<boolean> {
     const dialogData: DialogData = {

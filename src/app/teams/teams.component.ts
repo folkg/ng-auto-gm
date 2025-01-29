@@ -1,5 +1,5 @@
 import { NgIf } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, type OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import {
   MatCard,
@@ -7,24 +7,28 @@ import {
   MatCardHeader,
   MatCardTitle,
 } from "@angular/material/card";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { lastValueFrom } from "rxjs";
 
 import { ProfileCardComponent } from "../profile/profile-card/profile-card.component";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AppStatusService } from "../services/app-status.service";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AuthService } from "../services/auth.service";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
-  DialogData,
+  type DialogData,
 } from "../shared/confirm-dialog/confirm-dialog.component";
 import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offline-warning-card.component";
 import { getErrorMessage, logError } from "../shared/utils/error";
-import {
-  type PauseLineupEvent,
+import type {
+  PauseLineupEvent,
   SetLineupEvent,
 } from "./interfaces/outputEvents";
-import { Schedule } from "./interfaces/schedules";
+import type { Schedule } from "./interfaces/schedules";
 import { RelativeDatePipe } from "./pipes/relative-date.pipe";
 import { FirestoreService } from "./services/firestore.service";
 import { TeamComponent } from "./team/team.component";
@@ -72,8 +76,7 @@ export class TeamsComponent implements OnInit {
         this.schedule.set(await this.firestoreService.fetchSchedules());
       } catch (err) {
         await this.errorDialog(
-          getErrorMessage(err) +
-            " Please ensure you are connected to the internet and try again later.",
+          `${getErrorMessage(err)} Please ensure you are connected to the internet and try again later.`,
           "ERROR Fetching Schedules",
         );
       }
@@ -143,8 +146,8 @@ export class TeamsComponent implements OnInit {
 
   private errorDialog(
     message: string,
-    title: string = "ERROR",
-    trueButton: string = "OK",
+    title = "ERROR",
+    trueButton = "OK",
     falseButton: string | null = null,
   ): Promise<boolean> {
     const dialogData: DialogData = {

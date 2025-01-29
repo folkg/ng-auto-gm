@@ -1,4 +1,4 @@
-export function logError(err: unknown, message: string = "Error:"): void {
+export function logError(err: unknown, message = "Error:"): void {
   if (err instanceof Error) {
     console.error(message, err.message);
   } else {

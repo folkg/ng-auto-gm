@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, type PipeTransform } from "@angular/core";
 
 @Pipe({
   name: "relativeDate",
@@ -19,7 +19,9 @@ export class RelativeDatePipe implements PipeTransform {
           hour: "numeric",
           minute: "2-digit",
         });
-      } else if (
+      }
+
+      if (
         date.getFullYear() === now.getFullYear() &&
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate() - 1
@@ -29,7 +31,9 @@ export class RelativeDatePipe implements PipeTransform {
           hour: "numeric",
           minute: "2-digit",
         })}`;
-      } else if (
+      }
+
+      if (
         date.getFullYear() === now.getFullYear() &&
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate() + 1
@@ -39,16 +43,16 @@ export class RelativeDatePipe implements PipeTransform {
           hour: "numeric",
           minute: "2-digit",
         })}`;
-      } else {
-        // if the timestamp is older than yesterday or after tomorrow, return 'MMM DD' HH:MM
-        return `${date.toLocaleDateString(undefined, {
-          day: "numeric",
-          month: "short",
-        })}, ${date.toLocaleTimeString(undefined, {
-          hour: "numeric",
-          minute: "2-digit",
-        })}`;
       }
+
+      // if the timestamp is older than yesterday or after tomorrow, return 'MMM DD' HH:MM
+      return `${date.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short",
+      })}, ${date.toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`;
     }
     return "";
   }

@@ -1,7 +1,7 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, type PipeTransform } from "@angular/core";
 
-import { Team } from "../services/interfaces/team";
-import { PlayerTransaction } from "./interfaces/TransactionsData";
+import type { Team } from "../services/interfaces/team";
+import type { PlayerTransaction } from "./interfaces/TransactionsData";
 
 @Pipe({
   name: "sortTeamsByTransactions",
@@ -16,11 +16,11 @@ export class SortTeamsByTransactionsPipe implements PipeTransform {
         allTransactions.filter((t) => t.teamKey === b.team_key).length > 0;
       if (aHasTransactions && !bHasTransactions) {
         return -1;
-      } else if (!aHasTransactions && bHasTransactions) {
-        return 1;
-      } else {
-        return 0;
       }
+      if (!aHasTransactions && bHasTransactions) {
+        return 1;
+      }
+      return 0;
     });
   }
 }

@@ -8,23 +8,25 @@ import {
   MatCardHeader,
   MatCardTitle,
 } from "@angular/material/card";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {
-  Functions,
-  HttpsCallable,
+  type Functions,
+  type HttpsCallable,
   getFunctions,
   httpsCallableFromURL,
 } from "@firebase/functions";
 import { lastValueFrom } from "rxjs";
 
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
-  DialogData,
+  type DialogData,
 } from "../shared/confirm-dialog/confirm-dialog.component";
 import { logError } from "../shared/utils/error";
-import {
+import type {
   PlayerTransaction,
   PostTransactionsResult,
   TransactionResults,

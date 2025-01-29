@@ -2,8 +2,8 @@ import { AsyncPipe, NgIf } from "@angular/common";
 import {
   Component,
   EventEmitter,
-  OnDestroy,
-  OnInit,
+  type OnDestroy,
+  type OnInit,
   Output,
 } from "@angular/core";
 import {
@@ -23,12 +23,14 @@ import {
 } from "@angular/material/card";
 import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
-import { User } from "@firebase/auth";
+import type { User } from "@firebase/auth";
 import { Subscription } from "rxjs";
 import { assertDefined } from "src/app/shared/utils/checks";
 import { logError } from "src/app/shared/utils/error";
 
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AppStatusService } from "../../services/app-status.service";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AuthService } from "../../services/auth.service";
 
 @Component({
@@ -61,7 +63,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
     email: this.emailFormControl,
   });
   user: User | null = null;
-  isEditing: boolean = false;
+  isEditing = false;
   @Output() isDirty = new EventEmitter<boolean>();
 
   constructor(

@@ -1,16 +1,24 @@
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { AsyncPipe } from "@angular/common";
 import { Component, ViewChild, signal } from "@angular/core";
-import { FormsModule, NgForm, ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, type NgForm, ReactiveFormsModule } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
-import { Functions, getFunctions, httpsCallable } from "@firebase/functions";
+import {
+  type Functions,
+  getFunctions,
+  httpsCallable,
+} from "@firebase/functions";
 
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AppStatusService } from "../services/app-status.service";
+// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
 import { AuthService } from "../services/auth.service";
 import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offline-warning-card.component";
+
+const FEEDBACK_TYPES = ["General", "Bug Report", "Feature Request"];
 
 @Component({
   selector: "app-feedback",
@@ -31,10 +39,10 @@ import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offl
   ],
 })
 export class FeedbackComponent {
-  feedback: string = "";
-  title: string = "";
-  honeypot: string = ""; //bots will likely fill this in
-  feedbackType: string = "General";
+  feedback = "";
+  title = "";
+  honeypot = ""; //bots will likely fill this in
+  feedbackType = "General";
   readonly feedbackTypes = FEEDBACK_TYPES;
 
   readonly submitted = signal(false);
@@ -61,8 +69,7 @@ export class FeedbackComponent {
 
     const user = await this.auth.getUser();
 
-    const emailBody =
-      user.displayName + "\n" + user.uid + "\n\n" + this.feedback;
+    const emailBody = `${user.displayName}\n${user.uid}\n\n${this.feedback}`;
 
     const data: FeedbackData = {
       userEmail: user.email ?? "unknown email",
@@ -96,5 +103,3 @@ type FeedbackData = {
   title: string;
   message: string;
 };
-
-const FEEDBACK_TYPES = ["General", "Bug Report", "Feature Request"];
