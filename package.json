@@ -24,7 +24,7 @@
     "@angular/platform-browser": "19.1.4",
     "@angular/platform-browser-dynamic": "19.1.4",
     "@angular/router": "19.1.4",
-    "arktype": "2.0.3",
+    "arktype": "2.0.4",
     "firebase": "11.0.2",
     "rxjs": "7.8.1",
     "spacetime": "7.7.0",
