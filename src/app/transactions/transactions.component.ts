@@ -8,18 +8,14 @@ import {
   MatCardHeader,
   MatCardTitle,
 } from "@angular/material/card";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import {
-  type Functions,
-  type HttpsCallable,
-  getFunctions,
-  httpsCallableFromURL,
-} from "@firebase/functions";
 import { lastValueFrom } from "rxjs";
 
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
+import { APIService } from "../services/api.service";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
@@ -27,10 +23,10 @@ import {
 } from "../shared/confirm-dialog/confirm-dialog.component";
 import { logError } from "../shared/utils/error";
 import type {
-  PlayerTransaction,
-  PostTransactionsResult,
+  PlayerTransactionClient,
   TransactionResults,
   TransactionsData,
+  TransactionsDataClient,
 } from "./interfaces/TransactionsData";
 import { SortTeamsByTransactionsPipe } from "./sort-teams-by-transactions.pipe";
 import { TeamComponent } from "./team/team.component";
@@ -57,11 +53,11 @@ export class TransactionsComponent {
     this.allTeams().filter((team) => team.allow_transactions),
   );
 
-  private readonly transactions = signal<TransactionsData | undefined>(
+  private readonly transactions = signal<TransactionsDataClient | undefined>(
     undefined,
   );
-  readonly flatTransactions = computed<PlayerTransaction[] | undefined>(() =>
-    this.computeFlatTransactions(this.transactions()),
+  readonly flatTransactions = computed<PlayerTransactionClient[] | undefined>(
+    () => this.computeFlatTransactions(this.transactions()),
   );
   readonly selectedTransactions = computed(
     () => this.flatTransactions()?.filter((t) => t.selected) ?? [],
@@ -82,14 +78,11 @@ export class TransactionsComponent {
     () => this.transactionResults()?.failedReasons ?? [],
   );
 
-  private readonly functions: Functions;
-
   constructor(
+    private readonly api: APIService,
     private readonly sts: SyncTeamsService,
     private readonly dialog: MatDialog,
-  ) {
-    this.functions = getFunctions();
-  }
+  ) {}
 
   ngOnInit(): void {
     this.fetchTransactions()
@@ -99,20 +92,17 @@ export class TransactionsComponent {
       );
   }
 
-  private async fetchTransactions(): Promise<TransactionsData> {
-    const fetchTransactions: HttpsCallable<null, TransactionsData> =
-      httpsCallableFromURL(
-        this.functions,
-        "https://fantasyautocoach.com/api/gettransactions",
-      );
-
-    const result = await fetchTransactions();
-    return mapPlayerTransactions(result.data, (t) => ({
-      ...t,
-      selected: false,
-      // TOOD: ID should be assigned on the server
-      id: `${t.teamKey}-${t.players.map((p) => p.playerKey).join("-")}`,
-    }));
+  private async fetchTransactions(): Promise<TransactionsDataClient> {
+    const transactions = await this.api.fetchTransactions();
+    return mapPlayerTransactions(
+      transactions as TransactionsDataClient,
+      (t) => ({
+        ...t,
+        selected: false,
+        // TOOD: ID should be assigned on the server
+        id: `${t.teamKey}-${t.players.map((p) => p.playerKey).join("-")}`,
+      }),
+    );
   }
 
   onSelectTransaction($event: { isSelected: boolean; transactionId: string }) {
@@ -132,8 +122,8 @@ export class TransactionsComponent {
   }
 
   private computeFlatTransactions(
-    transactions: TransactionsData | undefined,
-  ): PlayerTransaction[] | undefined {
+    transactions: TransactionsDataClient | undefined,
+  ): PlayerTransactionClient[] | undefined {
     if (!transactions) {
       return undefined;
     }
@@ -145,8 +135,8 @@ export class TransactionsComponent {
       .flat();
   }
 
-  private getSelectedTransactionsData(): TransactionsData {
-    const result: TransactionsData = {
+  private getSelectedTransactionsData(): TransactionsDataClient {
+    const result: TransactionsDataClient = {
       dropPlayerTransactions: null,
       lineupChanges: null,
       addSwapTransactions: null,
@@ -194,15 +184,10 @@ export class TransactionsComponent {
   private async postTransactions(
     transactions: TransactionsData,
   ): Promise<void> {
-    const postTransactions = httpsCallableFromURL<
-      { transactions: TransactionsData },
-      PostTransactionsResult
-    >(this.functions, "https://fantasyautocoach.com/api/posttransactions");
-
     try {
-      const result = await postTransactions({ transactions });
-      this.success.set(result.data.success);
-      this.transactionResults.set(result.data.transactionResults);
+      const result = await this.api.postTransactions(transactions);
+      this.success.set(result.success);
+      this.transactionResults.set(result.transactionResults);
     } catch (err) {
       logError(err, "Error posting transactions to Firebase:");
       this.success.set(false);
@@ -235,9 +220,9 @@ export class TransactionsComponent {
 }
 
 function mapPlayerTransactions(
-  transactionsData: TransactionsData,
-  mapFn: (t: PlayerTransaction) => PlayerTransaction,
-): TransactionsData {
+  transactionsData: TransactionsDataClient,
+  mapFn: (t: PlayerTransactionClient) => PlayerTransactionClient,
+): TransactionsDataClient {
   const { dropPlayerTransactions, addSwapTransactions, lineupChanges } =
     transactionsData;
 
@@ -251,8 +236,8 @@ function mapPlayerTransactions(
 }
 
 function filterSelectedTransactionsData(
-  playerTransactions: PlayerTransaction[][] | null,
-): PlayerTransaction[][] | null {
+  playerTransactions: PlayerTransactionClient[][] | null,
+): PlayerTransactionClient[][] | null {
   if (!playerTransactions) {
     return null;
   }

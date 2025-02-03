@@ -8,7 +8,7 @@ import {
 import { MatIcon } from "@angular/material/icon";
 
 import type {
-  PlayerTransaction,
+  PlayerTransactionClient,
   TPlayer,
 } from "../interfaces/TransactionsData";
 import { PlayerComponent } from "../player/player.component";
@@ -27,7 +27,7 @@ import { PlayerComponent } from "../player/player.component";
   ],
 })
 export class TransactionComponent {
-  @Input({ required: true }) transaction!: PlayerTransaction;
+  @Input({ required: true }) transaction!: PlayerTransactionClient;
   @Output() isSelected = new EventEmitter<{
     isSelected: boolean;
     transactionId: string;
