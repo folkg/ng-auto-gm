@@ -49,11 +49,5 @@ export const routes: Routes = [
       ),
     canActivate: [authGuard],
   },
-  {
-    path: "cart",
-    loadComponent: () =>
-      import("./app/cart/cart.component").then((m) => m.CartComponent),
-    canActivate: [authGuard],
-  },
   { path: "**", component: NotfoundComponent },
 ];
