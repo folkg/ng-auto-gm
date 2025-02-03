@@ -3,7 +3,7 @@ import { Component, Input, signal } from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 
-import { Player } from "../interfaces/Player";
+import type { Player } from "../interfaces/Player";
 
 @Component({
   selector: "app-player[player]",
@@ -27,7 +27,8 @@ export class PlayerComponent {
   get playerOwnership(): string {
     if (this.player.ownership?.ownership_type === "waivers") {
       return `Waivers until ${this.player.ownership.waiver_date}`;
-    } else if (this.player.ownership?.ownership_type === "freeagents") {
+    }
+    if (this.player.ownership?.ownership_type === "freeagents") {
       return "Free Agent";
     }
     return "";

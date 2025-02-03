@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-
+import { describe, it } from "vitest";
 import { SyncTeamsService } from "./sync-teams.service";
 
 describe("FetchTeamsService", () => {
@@ -10,7 +10,9 @@ describe("FetchTeamsService", () => {
     service = TestBed.inject(SyncTeamsService);
   });
 
-  it("should be created", () => {
+  it("is created", () => {
     expect(service).toBeTruthy();
   });
+
+  it.todo("more tests");
 });

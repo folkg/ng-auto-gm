@@ -77,19 +77,7 @@
           }
         },
         "test": {
-          "builder": "@ngx-env/builder:karma",
-          "options": {
-            "polyfills": [],
-            "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "@angular/material/prebuilt-themes/deeppurple-amber.css",
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "builderMode": "browser"
-          }
+          "builder": "@analogjs/vitest-angular:test"
         }
       }
     }

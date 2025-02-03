@@ -35,6 +35,7 @@
                 aria-label="Toggle sidenav"
                 mat-icon-button
                 (click)="drawer.toggle()"
+                data-testid="toggle-sidenav-button"
                 *ngIf="isHandset$ | async"
             >
                 <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
@@ -55,6 +56,7 @@
                     this.themingService.darkModeOn ? 'Light' : 'Dark'
                 }} Theme"
                 (click)="toggleDarkMode()"
+                data-testid="toggle-theme-button"
             >
                 <mat-icon class="mr-8 dark-toggle">{{
                     this.themingService.darkModeOn

@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { Router } from "@angular/router";
 import {
-  Auth,
+  type Auth,
   OAuthProvider,
-  User,
-  getAuth,
+  type User,
   onAuthStateChanged,
   reauthenticateWithPopup,
   sendEmailVerification,
@@ -14,6 +14,7 @@ import {
 } from "@firebase/auth";
 import { Observable, firstValueFrom } from "rxjs";
 
+import { AUTH } from "../shared/firebase-tokens";
 import { ensure } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";
 
@@ -21,11 +22,12 @@ import { getErrorMessage } from "../shared/utils/error";
   providedIn: "root",
 })
 export class AuthService {
-  private readonly auth: Auth;
   readonly user$: Observable<User | null>;
 
-  constructor(private readonly router: Router) {
-    this.auth = getAuth();
+  constructor(
+    private readonly router: Router,
+    @Inject(AUTH) private readonly auth: Auth,
+  ) {
     // if (!environment.production) {
     //   connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
     // }
@@ -35,8 +37,9 @@ export class AuthService {
     });
   }
 
-  getUser(): Promise<User> {
-    return firstValueFrom(this.user$).then(ensure);
+  async getUser(): Promise<User> {
+    const val = await firstValueFrom(this.user$);
+    return ensure(val);
   }
 
   async logout(): Promise<void> {
@@ -46,7 +49,7 @@ export class AuthService {
       localStorage.clear();
       sessionStorage.clear();
     } catch (err) {
-      throw new Error("Couldn't sign out: " + getErrorMessage(err));
+      throw new Error(`Couldn't sign out: ${getErrorMessage(err)}`);
     }
   }
 
@@ -56,7 +59,7 @@ export class AuthService {
       await signInWithPopup(this.auth, provider);
       await this.router.navigate(["/teams"]);
     } catch (err) {
-      throw new Error("Couldn't sign in with Yahoo: " + getErrorMessage(err));
+      throw new Error(`Couldn't sign in with Yahoo: ${getErrorMessage(err)}`);
     }
   }
 
@@ -74,7 +77,7 @@ export class AuthService {
       //TODO: Dialog to tell user to check email
     } catch (err) {
       throw new Error(
-        "Couldn't send verification email: " + getErrorMessage(err),
+        `Couldn't send verification email: ${getErrorMessage(err)}`,
       );
     }
   }
@@ -90,7 +93,7 @@ export class AuthService {
             await this.reauthenticateYahoo();
             await this.updateUserEmail(email);
           } catch (err) {
-            throw new Error("Couldn't reauthenticate: " + getErrorMessage(err));
+            throw new Error(`Couldn't reauthenticate: ${getErrorMessage(err)}`);
           }
         }
       }

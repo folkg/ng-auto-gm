@@ -1,3 +1,4 @@
+import { describe, it } from "vitest";
 import { RelativeDatePipe } from "./relative-date.pipe";
 
 describe("RelativeDatePipe", () => {
@@ -5,4 +6,6 @@ describe("RelativeDatePipe", () => {
     const pipe = new RelativeDatePipe();
     expect(pipe).toBeTruthy();
   });
+
+  it.todo("more tests");
 });

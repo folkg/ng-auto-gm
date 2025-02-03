@@ -1,8 +1,10 @@
+// biome-ignore lint/style/useImportType: This is an injection token
 import { OverlayContainer } from "@angular/cdk/overlay";
-import { Component, HostBinding, OnInit } from "@angular/core";
+import { Component, HostBinding, type OnInit } from "@angular/core";
 import { pairwise, startWith } from "rxjs";
 
 import { AppNavComponent } from "./app-nav/app-nav.component";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { ThemingService } from "./services/theming.service";
 
 @Component({
@@ -20,7 +22,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.themingService.theme
+    this.themingService.theme$
       .pipe(startWith(undefined), pairwise())
       .subscribe(([oldTheme, newTheme]) => {
         if (newTheme !== undefined) {

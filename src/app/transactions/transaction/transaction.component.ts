@@ -1,10 +1,16 @@
 import { NgClass } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
+import {
+  MatCheckbox,
+  type MatCheckboxChange,
+} from "@angular/material/checkbox";
 import { MatIcon } from "@angular/material/icon";
 
-import { PlayerTransaction, TPlayer } from "../interfaces/TransactionsData";
+import type {
+  PlayerTransactionClient,
+  TPlayer,
+} from "../interfaces/TransactionsData";
 import { PlayerComponent } from "../player/player.component";
 
 @Component({
@@ -21,7 +27,7 @@ import { PlayerComponent } from "../player/player.component";
   ],
 })
 export class TransactionComponent {
-  @Input({ required: true }) transaction!: PlayerTransaction;
+  @Input({ required: true }) transaction!: PlayerTransactionClient;
   @Output() isSelected = new EventEmitter<{
     isSelected: boolean;
     transactionId: string;

@@ -1,3 +1,4 @@
+import { describe, it } from "vitest";
 import { SortTeamsByTransactionsPipe } from "./sort-teams-by-transactions.pipe";
 
 describe("SortTeamsByTransactionsPipe", () => {
@@ -5,4 +6,6 @@ describe("SortTeamsByTransactionsPipe", () => {
     const pipe = new SortTeamsByTransactionsPipe();
     expect(pipe).toBeTruthy();
   });
+
+  it.todo("more tests");
 });

@@ -1,4 +1,9 @@
-import { MonoTypeOperatorFunction, ReplaySubject, share, timer } from "rxjs";
+import {
+  type MonoTypeOperatorFunction,
+  ReplaySubject,
+  share,
+  timer,
+} from "rxjs";
 
 /**
  * Share the last emitted value from the source observable. useful for sharing between re-renders, but cleaning up once unused.

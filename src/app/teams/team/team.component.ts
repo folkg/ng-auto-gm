@@ -23,19 +23,20 @@ import { MatDivider } from "@angular/material/divider";
 import { MatIcon } from "@angular/material/icon";
 import {
   MatSlideToggle,
-  MatSlideToggleChange,
+  type MatSlideToggleChange,
 } from "@angular/material/slide-toggle";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Subscription } from "rxjs";
-import spacetime, { Spacetime } from "spacetime";
-import { AppStatusService } from "src/app/services/app-status.service";
-import { SCORING_TYPES } from "src/app/shared/utils/constants";
-import { spacetimeNow } from "src/app/shared/utils/now";
+import spacetime, { type Spacetime } from "spacetime";
+// biome-ignore lint/style/useImportType: This is an injection token
+import { AppStatusService } from "../../services/app-status.service";
+import { SCORING_TYPES } from "../../shared/utils/constants";
+import { spacetimeNow } from "../../shared/utils/now";
 
-import { Team } from "../../services/interfaces/team";
+import type { Team } from "../../services/interfaces/team";
 import { NthPipe } from "../../shared/pipes/nth.pipe";
-import {
-  type PauseLineupEvent,
+import type {
+  PauseLineupEvent,
   SetLineupEvent,
 } from "../interfaces/outputEvents";
 import { RelativeDatePipe } from "../pipes/relative-date.pipe";
@@ -163,7 +164,8 @@ export class TeamComponent {
       }
 
       return this.datePipe.transform(nextWeeklyUpdate.epoch);
-    } else if (gameTimeStamps) {
+    }
+    if (gameTimeStamps) {
       const nextGameTimestamp = gameTimeStamps.find(
         (timestamp) => timestamp > now.epoch,
       );

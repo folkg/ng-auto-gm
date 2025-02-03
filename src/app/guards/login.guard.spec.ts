@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
-import { CanActivateFn } from "@angular/router";
-
+import type { CanActivateFn } from "@angular/router";
+import { describe, it } from "vitest";
 import { loginGuard } from "./login.guard";
 
 describe("loginGuard", () => {
@@ -11,7 +11,9 @@ describe("loginGuard", () => {
     TestBed.configureTestingModule({});
   });
 
-  it("should be created", () => {
+  it("is created", () => {
     expect(executeGuard).toBeTruthy();
   });
+
+  it.todo("more tests");
 });

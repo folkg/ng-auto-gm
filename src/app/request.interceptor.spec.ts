@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-
+import { describe, it } from "vitest";
 import { RequestInterceptor } from "./request.interceptor";
 
 describe("RequestInterceptor", () => {
@@ -9,8 +9,10 @@ describe("RequestInterceptor", () => {
     }),
   );
 
-  it("should be created", () => {
+  it("is created", () => {
     const interceptor: RequestInterceptor = TestBed.inject(RequestInterceptor);
     expect(interceptor).toBeTruthy();
   });
+
+  it.todo("more tests");
 });
