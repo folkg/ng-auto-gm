@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import type { UrlTree } from "@angular/router";
 import { type Observable, lastValueFrom } from "rxjs";

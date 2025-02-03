@@ -13,7 +13,6 @@
   },
   "formatter": {
     "enabled": true,
-    "useEditorconfig": true,
     "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
@@ -26,8 +25,46 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
-    }
+      "recommended": true,
+      "style": {
+        "noRestrictedGlobals": {
+          "level": "error",
+          "options": {
+            "deniedGlobals": [
+              "event",
+              "length",
+              "stop",
+              "toString",
+              "alert",
+              "origin"
+            ]
+          }
+        },
+        "useBlockStatements": "error",
+        "useCollapsedElseIf": "error",
+        "useForOf": "error"
+      },
+      "complexity": {
+        "useSimplifiedLogicExpression": "error"
+      },
+      "correctness": {
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error",
+        "noUnusedFunctionParameters": "error",
+        "noConstantMathMinMaxClamp": "error"
+      },
+      "suspicious": {
+        "noSkippedTests": "error",
+        "useAwait": "error",
+        "noEmptyBlockStatements": "error"
+      }
+    },
+    "ignore": [
+      "node_modules/**/*",
+      "**/node_modules/**/*",
+      "**/vitest.config.js"
+    ]
   },
   "javascript": {
     "formatter": {
@@ -41,45 +78,7 @@
       "attributePosition": "auto",
       "bracketSpacing": true
     },
-    "parser": {
-      "unsafeParameterDecoratorsEnabled": true
-    },
+    "parser": { "unsafeParameterDecoratorsEnabled": true },
     "globals": []
-  },
-  "overrides": [
-    {
-      "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noConstAssign": "off",
-            "noGlobalObjectCalls": "off",
-            "noInvalidBuiltinInstantiation": "off",
-            "noInvalidConstructorSuper": "off",
-            "noNewSymbol": "off",
-            "noSetterReturn": "off",
-            "noUndeclaredVariables": "off",
-            "noUnreachable": "off",
-            "noUnreachableSuper": "off"
-          },
-          "style": {
-            "noArguments": "error",
-            "noVar": "error",
-            "useConst": "error"
-          },
-          "suspicious": {
-            "noClassAssign": "off",
-            "noDuplicateClassMembers": "off",
-            "noDuplicateObjectKeys": "off",
-            "noDuplicateParameters": "off",
-            "noFunctionAssign": "off",
-            "noImportAssign": "off",
-            "noRedeclare": "off",
-            "noUnsafeNegation": "off",
-            "useGetterReturn": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

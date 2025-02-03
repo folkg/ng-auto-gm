@@ -1,4 +1,4 @@
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { AsyncPipe, NgIf } from "@angular/common";
 import { Component, computed } from "@angular/core";
@@ -17,11 +17,11 @@ import type { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
 import { toSignal } from "@angular/core/rxjs-interop";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../services/auth.service";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { ThemingService } from "../services/theming.service";
 import { isDefined } from "../shared/utils/checks";
 import { shareLatest } from "../shared/utils/shareLatest";

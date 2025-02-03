@@ -1,4 +1,4 @@
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { ApplicationRef, Injectable } from "@angular/core";
 import { type } from "arktype";
 import { BehaviorSubject } from "rxjs";

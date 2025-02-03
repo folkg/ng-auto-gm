@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../services/auth.service";
 import { OfflineWarningCardComponent } from "../shared/offline-warning-card/offline-warning-card.component";
 import { logError } from "../shared/utils/error";

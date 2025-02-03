@@ -1,18 +1,12 @@
 import { CdkScrollable } from "@angular/cdk/scrolling";
 import { NgIf } from "@angular/common";
-import {
-  Component,
-  Inject,
-  type OnDestroy,
-  type OnInit,
-  inject,
-} from "@angular/core";
+import { Component, Inject, type OnDestroy, type OnInit } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogContent,
-  // biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+  // biome-ignore lint/style/useImportType: This is an injection token
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";

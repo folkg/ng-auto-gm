@@ -7,7 +7,7 @@ import {
   MatCardTitle,
 } from "@angular/material/card";
 
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AppStatusService } from "../../services/app-status.service";
 
 @Component({

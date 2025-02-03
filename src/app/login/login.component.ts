@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
 import { MatButton } from "@angular/material/button";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { RouterLink } from "@angular/router";
 import type { User } from "@firebase/auth";
 import type { Observable } from "rxjs";
 
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../services/auth.service";
 import {
   ConfirmDialogComponent,
