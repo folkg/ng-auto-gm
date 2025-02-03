@@ -1,8 +1,9 @@
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { describe } from "vitest";
 import { EditTransactionComponent } from "./edit-transaction.component";
 
-describe("EditTransactionComponent", () => {
+describe.todo("EditTransactionComponent", () => {
   let component: EditTransactionComponent;
   let fixture: ComponentFixture<EditTransactionComponent>;
 

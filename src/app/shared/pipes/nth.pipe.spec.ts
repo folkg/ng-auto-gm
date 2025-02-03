@@ -1,8 +1,11 @@
+import { describe, it } from "vitest";
 import { NthPipe } from "./nth.pipe";
 
 describe("NthPipe", () => {
-  it("create an instance", () => {
+  it("creates an instance", () => {
     const pipe = new NthPipe();
     expect(pipe).toBeTruthy();
   });
+
+  it.todo("more tests");
 });

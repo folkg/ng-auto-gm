@@ -1,22 +1,213 @@
-import { type ComponentFixture, TestBed } from "@angular/core/testing";
-
+import type { User } from "@firebase/auth";
+import { render, screen } from "@testing-library/angular";
+import userEvent from "@testing-library/user-event";
+import { BehaviorSubject } from "rxjs";
+import { describe, expect, it, vi } from "vitest";
+import { createMock } from "../../../__mocks__/utils/createMock";
+import { AppStatusService } from "../../services/app-status.service";
+import { AuthService } from "../../services/auth.service";
 import { ProfileCardComponent } from "./profile-card.component";
 
 describe("ProfileCardComponent", () => {
-  let component: ProfileCardComponent;
-  let fixture: ComponentFixture<ProfileCardComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ProfileCardComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(ProfileCardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  const mockUser = createMock<User>({
+    displayName: "Test User",
+    uid: "test-uid",
+    email: "test@example.com",
+    emailVerified: false,
+    photoURL: "https://example.com/photo.jpg",
   });
 
-  it("should create", () => {
-    expect(component).toBeTruthy();
+  const user$ = new BehaviorSubject<User | null>(mockUser);
+  const mockAuthService = {
+    user$,
+    updateUserEmail: vi.fn().mockResolvedValue(true),
+    sendVerificationEmail: vi.fn().mockResolvedValue(true),
+  };
+
+  const online$ = new BehaviorSubject(true);
+  const mockAppStatusService = {
+    online$,
+  };
+
+  const defaultProviders = [
+    { provide: AuthService, useValue: mockAuthService },
+    { provide: AppStatusService, useValue: mockAppStatusService },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    user$.next(mockUser);
+    online$.next(true);
+  });
+
+  it("creates the component", async () => {
+    await render(ProfileCardComponent, { providers: defaultProviders });
+    expect(screen.getByText("Test User")).toBeInTheDocument();
+  });
+
+  it("displays user email and photo", async () => {
+    await render(ProfileCardComponent, { providers: defaultProviders });
+    expect(screen.getByText("test@example.com")).toBeInTheDocument();
+    expect(screen.getByAltText("User Photo")).toHaveAttribute(
+      "src",
+      "https://example.com/photo.jpg",
+    );
+  });
+
+  it("displays email verification warning if email is not verified", async () => {
+    await render(ProfileCardComponent, { providers: defaultProviders });
+    expect(
+      screen.getByText(
+        /Your email address has not been verified, please check your inbox for the link./i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("enables edit mode when clicking edit button", async () => {
+    const user = userEvent.setup();
+    await render(ProfileCardComponent, { providers: defaultProviders });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+  });
+
+  it("disables save button when form is invalid", async () => {
+    const user = userEvent.setup();
+    const { fixture } = await render(ProfileCardComponent, {
+      providers: defaultProviders,
+    });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "invalid-email");
+
+    const form = fixture.componentInstance.emailFormControl;
+    expect(form.valid).toBe(false);
+
+    const saveButton = screen.getByTestId("save-button");
+    expect(saveButton).toBeDisabled();
+  });
+
+  it("enables save button when form is valid and online", async () => {
+    const user = userEvent.setup();
+    const { fixture } = await render(ProfileCardComponent, {
+      providers: defaultProviders,
+    });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "new@example.com");
+
+    const form = fixture.componentInstance.emailFormControl;
+    expect(form.valid).toBe(true);
+
+    const saveButton = screen.getByText("Save Changes");
+    expect(saveButton).not.toBeDisabled();
+  });
+
+  it("disables save button when offline", async () => {
+    const user = userEvent.setup();
+    mockAppStatusService.online$.next(false);
+
+    const { fixture } = await render(ProfileCardComponent, {
+      providers: defaultProviders,
+    });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "new@example.com");
+
+    const form = fixture.componentInstance.emailFormControl;
+    expect(form.valid).toBe(true);
+
+    const saveButton = screen.getByTestId("save-button");
+    expect(saveButton).toBeDisabled();
+  });
+
+  it("emits isDirty event when form changes", async () => {
+    const user = userEvent.setup();
+    const isDirty = vi.fn();
+
+    await render(ProfileCardComponent, {
+      providers: defaultProviders,
+      on: {
+        isDirty,
+      },
+    });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "new@example.com");
+
+    expect(isDirty).toHaveBeenCalledTimes(1);
+    expect(isDirty).toHaveBeenCalledWith(true);
+
+    isDirty.mockClear();
+
+    const cancelButton = screen.getByText("Cancel");
+    await user.click(cancelButton);
+
+    expect(isDirty).toHaveBeenCalledTimes(1);
+    expect(isDirty).toHaveBeenCalledWith(false);
+  });
+
+  it("calls updateUserEmail when saving changes", async () => {
+    const user = userEvent.setup();
+    await render(ProfileCardComponent, { providers: defaultProviders });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "new@example.com");
+
+    const saveButton = screen.getByText("Save Changes");
+    await user.click(saveButton);
+
+    expect(mockAuthService.updateUserEmail).toHaveBeenCalledWith(
+      "new@example.com",
+    );
+  });
+
+  it("calls sendVerificationEmail when clicking resend verification email button", async () => {
+    const user = userEvent.setup();
+    await render(ProfileCardComponent, { providers: defaultProviders });
+
+    const resendButton = screen.getByText("Re-send Verification Email");
+    await user.click(resendButton);
+
+    expect(mockAuthService.sendVerificationEmail).toHaveBeenCalled();
+  });
+
+  it("cancels changes when clicking cancel button", async () => {
+    const user = userEvent.setup();
+    await render(ProfileCardComponent, { providers: defaultProviders });
+
+    const editButton = screen.getByText("Edit");
+    await user.click(editButton);
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "new@example.com");
+
+    const cancelButton = screen.getByText("Cancel");
+    await user.click(cancelButton);
+
+    expect(screen.getByText("test@example.com")).toBeInTheDocument();
   });
 });

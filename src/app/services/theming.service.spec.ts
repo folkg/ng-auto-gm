@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-
+import { describe, it } from "vitest";
 import { ThemingService } from "./theming.service";
 
 describe("ThemingService", () => {
@@ -13,4 +13,6 @@ describe("ThemingService", () => {
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
+
+  it.todo("more tests");
 });

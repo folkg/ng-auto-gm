@@ -1,22 +1,108 @@
-import { type ComponentFixture, TestBed } from "@angular/core/testing";
-
+import { MatDialog } from "@angular/material/dialog";
+import type { User } from "@firebase/auth";
+import { render, screen } from "@testing-library/angular";
+import userEvent from "@testing-library/user-event";
+import { BehaviorSubject } from "rxjs";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AuthService } from "../services/auth.service";
 import { LoginComponent } from "./login.component";
 
 describe("LoginComponent", () => {
-  let component: LoginComponent;
-  let fixture: ComponentFixture<LoginComponent>;
+  const user$ = new BehaviorSubject<User | null>(null);
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [LoginComponent],
-    }).compileComponents();
+  const mockAuthService = {
+    user$,
+    loginYahoo: vi.fn().mockResolvedValue(undefined),
+    logout: vi.fn().mockResolvedValue(undefined),
+  };
 
-    fixture = TestBed.createComponent(LoginComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  const mockDialog = {
+    open: vi.fn(),
+  };
+
+  const defaultProviders = [
+    { provide: AuthService, useValue: mockAuthService },
+    { provide: MatDialog, useValue: mockDialog },
+  ];
+
+  beforeEach(() => {
+    user$.next(null);
+    vi.clearAllMocks();
   });
 
-  it("should create", () => {
-    expect(component).toBeTruthy();
+  it("renders the component", async () => {
+    await render(LoginComponent, {
+      providers: defaultProviders,
+    });
+
+    expect(
+      screen.getByText("Automatically Optimize your Lineups"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Sign in with Yahoo")).toBeInTheDocument();
+    expect(screen.getByText("Learn More")).toBeInTheDocument();
+  });
+
+  describe("Button Actions", () => {
+    it("calls login when clicking Sign in with Yahoo button", async () => {
+      const user = userEvent.setup();
+
+      await render(LoginComponent, {
+        providers: defaultProviders,
+      });
+
+      const loginButton = screen.getByText("Sign in with Yahoo");
+      await user.click(loginButton);
+
+      expect(mockAuthService.loginYahoo).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows error dialog when login fails", async () => {
+      const user = userEvent.setup();
+      const errorMessage = "Login failed";
+      mockAuthService.loginYahoo.mockRejectedValueOnce(new Error(errorMessage));
+
+      await render(LoginComponent, {
+        providers: defaultProviders,
+      });
+
+      const loginButton = screen.getByText("Sign in with Yahoo");
+      await user.click(loginButton);
+
+      expect(mockDialog.open).toHaveBeenCalledTimes(1);
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: "ERROR",
+            message: errorMessage,
+            trueButton: "OK",
+          }),
+        }),
+      );
+    });
+  });
+
+  describe("Error Dialog", () => {
+    it("opens error dialog with custom title", async () => {
+      const component = await render(LoginComponent, {
+        providers: defaultProviders,
+      });
+
+      component.fixture.componentInstance.errorDialog(
+        "Test message",
+        "Custom Title",
+      );
+
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: "Custom Title",
+            message: "Test message",
+            trueButton: "OK",
+          }),
+        }),
+      );
+    });
   });
 });

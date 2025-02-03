@@ -1,11 +1,10 @@
-import { Injectable } from "@angular/core";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+import { Inject, Injectable } from "@angular/core";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { Router } from "@angular/router";
 import {
   type Auth,
   OAuthProvider,
   type User,
-  getAuth,
   onAuthStateChanged,
   reauthenticateWithPopup,
   sendEmailVerification,
@@ -15,6 +14,7 @@ import {
 } from "@firebase/auth";
 import { Observable, firstValueFrom } from "rxjs";
 
+import { AUTH } from "../shared/firebase-tokens";
 import { ensure } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";
 
@@ -22,11 +22,12 @@ import { getErrorMessage } from "../shared/utils/error";
   providedIn: "root",
 })
 export class AuthService {
-  private readonly auth: Auth;
   readonly user$: Observable<User | null>;
 
-  constructor(private readonly router: Router) {
-    this.auth = getAuth();
+  constructor(
+    private readonly router: Router,
+    @Inject(AUTH) private readonly auth: Auth,
+  ) {
     // if (!environment.production) {
     //   connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
     // }
@@ -36,8 +37,9 @@ export class AuthService {
     });
   }
 
-  getUser(): Promise<User> {
-    return firstValueFrom(this.user$).then(ensure);
+  async getUser(): Promise<User> {
+    const val = await firstValueFrom(this.user$);
+    return ensure(val);
   }
 
   async logout(): Promise<void> {

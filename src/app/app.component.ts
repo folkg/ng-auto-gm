@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.themingService.theme
+    this.themingService.theme$
       .pipe(startWith(undefined), pairwise())
       .subscribe(([oldTheme, newTheme]) => {
         if (newTheme !== undefined) {

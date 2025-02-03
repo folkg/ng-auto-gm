@@ -28,10 +28,10 @@ import {
 import { MatTooltip } from "@angular/material/tooltip";
 import { Subscription } from "rxjs";
 import spacetime, { type Spacetime } from "spacetime";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
-import { AppStatusService } from "src/app/services/app-status.service";
-import { SCORING_TYPES } from "src/app/shared/utils/constants";
-import { spacetimeNow } from "src/app/shared/utils/now";
+// biome-ignore lint/style/useImportType: This is an injection token
+import { AppStatusService } from "../../services/app-status.service";
+import { SCORING_TYPES } from "../../shared/utils/constants";
+import { spacetimeNow } from "../../shared/utils/now";
 
 import type { Team } from "../../services/interfaces/team";
 import { NthPipe } from "../../shared/pipes/nth.pipe";

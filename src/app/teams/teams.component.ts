@@ -7,16 +7,18 @@ import {
   MatCardHeader,
   MatCardTitle,
 } from "@angular/material/card";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { lastValueFrom } from "rxjs";
 
 import { ProfileCardComponent } from "../profile/profile-card/profile-card.component";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
+import { APIService } from "../services/api.service";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AppStatusService } from "../services/app-status.service";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../services/auth.service";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
 import {
   ConfirmDialogComponent,
@@ -30,14 +32,13 @@ import type {
 } from "./interfaces/outputEvents";
 import type { Schedule } from "./interfaces/schedules";
 import { RelativeDatePipe } from "./pipes/relative-date.pipe";
-import { FirestoreService } from "./services/firestore.service";
 import { TeamComponent } from "./team/team.component";
 
 @Component({
   selector: "app-teams",
   templateUrl: "./teams.component.html",
   styleUrls: ["./teams.component.scss"],
-  providers: [FirestoreService, RelativeDatePipe],
+  providers: [RelativeDatePipe],
   imports: [
     OfflineWarningCardComponent,
     NgIf,
@@ -60,7 +61,7 @@ export class TeamsComponent implements OnInit {
 
   constructor(
     private readonly auth: AuthService,
-    private readonly firestoreService: FirestoreService,
+    private readonly api: APIService,
     readonly syncTeamsService: SyncTeamsService,
     readonly dialog: MatDialog,
     readonly appStatusService: AppStatusService,
@@ -73,7 +74,7 @@ export class TeamsComponent implements OnInit {
   private async fetchLeagueSchedules() {
     if (!this.schedule()) {
       try {
-        this.schedule.set(await this.firestoreService.fetchSchedules());
+        this.schedule.set(await this.api.fetchSchedules());
       } catch (err) {
         await this.errorDialog(
           `${getErrorMessage(err)} Please ensure you are connected to the internet and try again later.`,
@@ -88,7 +89,7 @@ export class TeamsComponent implements OnInit {
     const changeTo = $event.isSettingLineups;
 
     try {
-      await this.firestoreService.setLineupsBoolean(teamKey, changeTo);
+      await this.api.setLineupsBoolean(teamKey, changeTo);
       this.syncTeamsService.optimisticallyUpdateTeam(
         teamKey,
         "is_setting_lineups",
@@ -121,7 +122,7 @@ export class TeamsComponent implements OnInit {
         "lineup_paused_at",
         isPaused ? -1 : Date.now(),
       );
-      await this.firestoreService.setPauseLineupActions(teamKey, !isPaused);
+      await this.api.setPauseLineupActions(teamKey, !isPaused);
     } catch (_ignore) {
       this.syncTeamsService.optimisticallyUpdateTeam(
         teamKey,

@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { MatCardModule } from "@angular/material/card";
 import type { Spacetime } from "spacetime";
 
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AppStatusService } from "../services/app-status.service";
 import type { Team } from "../services/interfaces/team";
 import { RobotsComponent } from "../shared/robots/robots.component";
@@ -27,7 +27,9 @@ export class AboutComponent {
   private readonly isSettingLineups = signal(true);
   private readonly lineupPausedAt = signal(-1);
 
-  readonly sampleTimestamps = computed(() => [getNextUpdate(this.focus())]);
+  readonly sampleTimestamps = computed(() => [
+    getNextUpdate(this.focus() ?? spacetimeNow()),
+  ]);
   readonly sampleTeam = computed(() =>
     getSampleTeam(this.isSettingLineups(), this.lineupPausedAt(), this.focus()),
   );
@@ -105,7 +107,7 @@ function getLastUpdate(now: Spacetime): number {
   return now.time("01:55").epoch;
 }
 
-function getNextUpdate(now = spacetimeNow()): number {
+function getNextUpdate(now: Spacetime): number {
   const update = now.time("15:55");
   if (now.isAfter(update)) {
     return now.add(1, "day").time("01:55").epoch;

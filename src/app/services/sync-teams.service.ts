@@ -1,13 +1,8 @@
 import { Injectable } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { FirebaseError } from "@firebase/app";
-import {
-  type Functions,
-  getFunctions,
-  httpsCallableFromURL,
-} from "@firebase/functions";
 import {
   BehaviorSubject,
   type Observable,
@@ -21,19 +16,19 @@ import {
   startWith,
   switchMap,
 } from "rxjs";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
-import { AuthService } from "src/app/services/auth.service";
+// biome-ignore lint/style/useImportType: This is an injection token
+import { AuthService } from "../services/auth.service";
 import {
   ConfirmDialogComponent,
   type DialogData,
-} from "src/app/shared/confirm-dialog/confirm-dialog.component";
+} from "../shared/confirm-dialog/confirm-dialog.component";
 
-import { assertType, isType } from "../shared/utils/checks";
+import { isType } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";
 import { shareLatest } from "../shared/utils/shareLatest";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
-import { FirestoreService } from "../teams/services/firestore.service";
-import { Team, type TeamFirestore } from "./interfaces/team";
+// biome-ignore lint/style/useImportType: This is an injection token
+import { APIService } from "./api.service";
+import { Team } from "./interfaces/team";
 
 @Injectable({
   providedIn: "root",
@@ -45,15 +40,11 @@ export class SyncTeamsService {
   readonly teams$ = this.teamsSubject.asObservable();
   readonly loading$: Observable<boolean>;
 
-  private readonly functions: Functions;
-
   constructor(
+    private readonly api: APIService,
     private readonly auth: AuthService,
-    private readonly firestoreService: FirestoreService,
     readonly dialog: MatDialog,
   ) {
-    this.functions = getFunctions();
-
     const teamsStream$ = this.refetch$.pipe(
       startWith(undefined),
       switchMap(() => {
@@ -157,19 +148,9 @@ export class SyncTeamsService {
     return this.patchTeamPropertiesFromFirestore(fetchedTeams);
   }
 
-  private async fetchTeamsFromYahoo(): Promise<Team[]> {
-    // fetch teams from yahoo via firebase function
-    const fetchTeamsFromServer = httpsCallableFromURL<null, Team[]>(
-      this.functions,
-      "https://fantasyautocoach.com/api/fetchuserteams",
-    );
-
+  private fetchTeamsFromYahoo(): Promise<Team[]> {
     try {
-      const teamsData = await fetchTeamsFromServer();
-      const teams = teamsData.data;
-
-      assertType(teams, Team.array());
-      return teams;
+      return this.api.fetchTeamsYahoo();
     } catch (err) {
       if (err instanceof FirebaseError && err.code === "functions/data-loss") {
         // if the error is data-loss, it means the user's access token has expired
@@ -185,7 +166,7 @@ export class SyncTeamsService {
   private async patchTeamPropertiesFromFirestore(
     teamsToPatch: Team[],
   ): Promise<Team[]> {
-    const firestoreTeams = await this.fetchTeamsFromFirestore();
+    const firestoreTeams = await this.api.fetchTeamsFirestore();
 
     for (const teamToPatch of teamsToPatch) {
       const firestoreTeam = firestoreTeams.find(
@@ -195,10 +176,6 @@ export class SyncTeamsService {
     }
 
     return teamsToPatch;
-  }
-
-  private fetchTeamsFromFirestore(): Promise<TeamFirestore[]> {
-    return this.firestoreService.fetchTeams();
   }
 
   private handleFetchTeamsError(err: unknown): void {

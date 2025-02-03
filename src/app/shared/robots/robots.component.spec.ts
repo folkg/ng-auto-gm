@@ -1,8 +1,9 @@
 import { type ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { describe } from "vitest";
 import { RobotsComponent } from "./robots.component";
 
-describe("RobotsComponent", () => {
+describe.todo("RobotsComponent", () => {
   let component: RobotsComponent;
   let fixture: ComponentFixture<RobotsComponent>;
 

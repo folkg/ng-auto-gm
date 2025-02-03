@@ -1,5 +1,5 @@
 import { type } from "arktype";
-import { Leagues } from "src/app/shared/interfaces/Leagues";
+import { Leagues } from "../../shared/interfaces/Leagues";
 
 export const TeamFirestore = type({
   uid: "string",
