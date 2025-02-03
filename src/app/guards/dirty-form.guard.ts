@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
-import { UrlTree } from "@angular/router";
-import { Observable, lastValueFrom } from "rxjs";
+import type { UrlTree } from "@angular/router";
+import { type Observable, lastValueFrom } from "rxjs";
 
 import {
   ConfirmDialogComponent,
-  DialogData,
+  type DialogData,
 } from "../shared/confirm-dialog/confirm-dialog.component";
 
 export interface ComponentCanDeactivate {

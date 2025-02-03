@@ -1,14 +1,16 @@
 import { Component } from "@angular/core";
 import { MatButton } from "@angular/material/button";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { RouterLink } from "@angular/router";
-import { User } from "@firebase/auth";
-import { Observable } from "rxjs";
+import type { User } from "@firebase/auth";
+import type { Observable } from "rxjs";
 
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../services/auth.service";
 import {
   ConfirmDialogComponent,
-  DialogData,
+  type DialogData,
 } from "../shared/confirm-dialog/confirm-dialog.component";
 import { RobotsComponent } from "../shared/robots/robots.component";
 import { getErrorMessage } from "../shared/utils/error";
@@ -37,7 +39,7 @@ export class LoginComponent {
     this.auth.logout().catch((err) => this.errorDialog(getErrorMessage(err)));
   }
 
-  errorDialog(message: string, title: string = "ERROR"): void {
+  errorDialog(message: string, title = "ERROR"): void {
     const dialogData: DialogData = {
       title,
       message,

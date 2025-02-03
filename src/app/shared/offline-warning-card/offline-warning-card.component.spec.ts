@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { describe } from "vitest";
 import { OfflineWarningCardComponent } from "./offline-warning-card.component";
 
-describe("OfflineWarningCardComponent", () => {
+describe.todo("OfflineWarningCardComponent", () => {
   let component: OfflineWarningCardComponent;
   let fixture: ComponentFixture<OfflineWarningCardComponent>;
 

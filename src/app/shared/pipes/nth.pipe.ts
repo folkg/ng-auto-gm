@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, type PipeTransform } from "@angular/core";
 
 @Pipe({
   name: "nth",
@@ -7,8 +7,8 @@ import { Pipe, PipeTransform } from "@angular/core";
 export class NthPipe implements PipeTransform {
   transform(num: string | number): string {
     // generate the suffix for the number
-    if (isNaN(Number(num))) {
-      return num + "";
+    if (Number.isNaN(Number(num))) {
+      return `${num}`;
     }
     const n = Number(num);
     const s = ["th", "st", "nd", "rd"];

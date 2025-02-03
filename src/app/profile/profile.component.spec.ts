@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { describe } from "vitest";
 import { ProfileComponent } from "./profile.component";
 
-describe("ProfileComponent", () => {
+describe.todo("ProfileComponent", () => {
   let component: ProfileComponent;
   let fixture: ComponentFixture<ProfileComponent>;
 

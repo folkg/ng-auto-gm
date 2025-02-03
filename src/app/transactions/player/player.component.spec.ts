@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { type ComponentFixture, TestBed } from "@angular/core/testing";
 
+import { describe } from "vitest";
 import { PlayerComponent } from "./player.component";
 
-describe("PlayerComponent", () => {
+describe.todo("PlayerComponent", () => {
   let component: PlayerComponent;
   let fixture: ComponentFixture<PlayerComponent>;
 

@@ -19,11 +19,11 @@ import {
 import { MatDivider } from "@angular/material/divider";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
-import { Team } from "src/app/services/interfaces/team";
-import { SCORING_TYPES } from "src/app/shared/utils/constants";
+import type { Team } from "../../services/interfaces/team";
+import { SCORING_TYPES } from "../../shared/utils/constants";
 
 import { NthPipe } from "../../shared/pipes/nth.pipe";
-import { PlayerTransaction } from "../interfaces/TransactionsData";
+import type { PlayerTransactionClient } from "../interfaces/TransactionsData";
 import { TransactionComponent } from "../transaction/transaction.component";
 
 @Component({
@@ -48,7 +48,7 @@ import { TransactionComponent } from "../transaction/transaction.component";
 })
 export class TeamComponent {
   @Input({ required: true }) team!: Team;
-  allTransactions = input.required<PlayerTransaction[]>();
+  allTransactions = input.required<PlayerTransactionClient[]>();
   @Output() transactionSelected = new EventEmitter<{
     isSelected: boolean;
     transactionId: string;

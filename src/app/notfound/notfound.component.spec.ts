@@ -1,22 +1,21 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-
+import { render, screen } from "@testing-library/angular";
+import { describe, expect, it } from "vitest";
 import { NotfoundComponent } from "./notfound.component";
 
 describe("NotfoundComponent", () => {
-  let component: NotfoundComponent;
-  let fixture: ComponentFixture<NotfoundComponent>;
+  it("renders the component", async () => {
+    await render(NotfoundComponent);
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NotfoundComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(NotfoundComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    expect(
+      screen.getByText("The page you are looking for does not exist."),
+    ).toBeInTheDocument();
   });
 
-  it("should create", () => {
-    expect(component).toBeTruthy();
+  it("displays the correct message", async () => {
+    await render(NotfoundComponent);
+
+    expect(
+      screen.getByText("The page you are looking for does not exist."),
+    ).toBeInTheDocument();
   });
 });
