@@ -5,6 +5,7 @@ import {
   type OnDestroy,
   type OnInit,
   Output,
+  signal,
 } from "@angular/core";
 import {
   FormControl,
@@ -24,13 +25,13 @@ import {
 import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import type { User } from "@firebase/auth";
-import { Subscription } from "rxjs";
-import { assertDefined } from "src/app/shared/utils/checks";
-import { logError } from "src/app/shared/utils/error";
+import { Subscription, distinctUntilChanged, map } from "rxjs";
+import { assertDefined } from "../../shared/utils/checks";
+import { logError } from "../../shared/utils/error";
 
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AppStatusService } from "../../services/app-status.service";
-// biome-ignore lint/style/useImportType: This is a bug with the plugin, this is an injection token
+// biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../../services/auth.service";
 
 @Component({
@@ -62,8 +63,8 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   profileForm = new FormGroup({
     email: this.emailFormControl,
   });
-  user: User | null = null;
-  isEditing = false;
+  readonly user = signal<User | null>(null);
+  readonly isEditing = signal(false);
   @Output() isDirty = new EventEmitter<boolean>();
 
   constructor(
@@ -76,7 +77,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs.add(
       this.auth.user$.subscribe((user) => {
-        this.user = user;
+        this.user.set(user);
         if (user) {
           this.profileForm.patchValue({
             email: user.email,
@@ -86,13 +87,14 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
     );
 
     this.subs.add(
-      this.profileForm.valueChanges.subscribe(() => {
-        if (this.profileForm.pristine) {
-          this.isDirty.emit(false);
-        } else {
-          this.isDirty.emit(true);
-        }
-      }),
+      this.profileForm.statusChanges
+        .pipe(
+          map(() => this.profileForm.dirty),
+          distinctUntilChanged(),
+        )
+        .subscribe((isDirty) => {
+          this.isDirty.emit(isDirty);
+        }),
     );
   }
 
@@ -100,9 +102,13 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
 
+  toggleEdit() {
+    this.isEditing.update((isEditing) => !isEditing);
+  }
+
   cancelChanges() {
-    this.isEditing = !this.isEditing;
-    this.profileForm.reset({ email: this.user?.email ?? null });
+    this.isEditing.set(false);
+    this.profileForm.reset({ email: this.user()?.email ?? null });
   }
 
   async saveChanges() {
@@ -110,7 +116,7 @@ export class ProfileCardComponent implements OnInit, OnDestroy {
       const emailAddress = this.profileForm.value.email;
       assertDefined(emailAddress, "Email address is required");
       await this.auth.updateUserEmail(emailAddress);
-      this.isEditing = !this.isEditing;
+      this.isEditing.set(false);
       this.profileForm.markAsPristine();
     } catch (err) {
       logError(err, "Error updating email:");
