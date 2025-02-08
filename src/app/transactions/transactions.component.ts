@@ -13,6 +13,9 @@ import { MatDialog } from "@angular/material/dialog";
 import { lastValueFrom } from "rxjs";
 
 // biome-ignore lint/style/useImportType: This is an injection token
+import { ActivatedRoute, Router } from "@angular/router";
+import { LoadingComponent } from "../loading/loading.component";
+// biome-ignore lint/style/useImportType: This is an injection token
 import { APIService } from "../services/api.service";
 // biome-ignore lint/style/useImportType: This is an injection token
 import { SyncTeamsService } from "../services/sync-teams.service";
@@ -29,7 +32,6 @@ import type {
 } from "./interfaces/TransactionsData";
 import { SortTeamsByTransactionsPipe } from "./sort-teams-by-transactions.pipe";
 import { TeamComponent } from "./team/team.component";
-import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
   selector: "app-transactions",
@@ -82,6 +84,8 @@ export class TransactionsComponent {
     private readonly api: APIService,
     private readonly sts: SyncTeamsService,
     private readonly dialog: MatDialog,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -216,6 +220,12 @@ export class TransactionsComponent {
       data: dialogData,
     });
     return lastValueFrom(dialogRef.afterClosed());
+  }
+
+  reloadComponent(): void {
+    this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+      this.router.navigate([this.route.snapshot.routeConfig?.path ?? ""]);
+    });
   }
 }
 
