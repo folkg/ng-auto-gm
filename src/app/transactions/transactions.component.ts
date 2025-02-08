@@ -10,7 +10,6 @@ import {
 } from "@angular/material/card";
 // biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { lastValueFrom } from "rxjs";
 
 // biome-ignore lint/style/useImportType: This is an injection token
@@ -30,6 +29,7 @@ import type {
 } from "./interfaces/TransactionsData";
 import { SortTeamsByTransactionsPipe } from "./sort-teams-by-transactions.pipe";
 import { TeamComponent } from "./team/team.component";
+import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
   selector: "app-transactions",
@@ -42,9 +42,9 @@ import { TeamComponent } from "./team/team.component";
     MatCardTitle,
     MatCardContent,
     MatButton,
-    MatProgressSpinner,
     JsonPipe,
     SortTeamsByTransactionsPipe,
+    LoadingComponent,
   ],
 })
 export class TransactionsComponent {

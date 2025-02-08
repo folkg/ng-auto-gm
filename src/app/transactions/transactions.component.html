@@ -92,13 +92,6 @@
                 </mat-card>
             }
 
-            @if (isProcessing()) {
-                <div class="loading-overlay">
-                    <mat-spinner diameter="50"></mat-spinner>
-                    <p class="loading-text">Processing Transactions...</p>
-                </div>
-            }
-
             <button
                 mat-raised-button
                 color="accent"
@@ -114,3 +107,5 @@
         }
     }
 </div>
+
+<app-loading [loading]="isProcessing()"></app-loading>
