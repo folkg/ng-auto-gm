@@ -12,7 +12,7 @@ import {
   signOut,
   updateEmail,
 } from "@firebase/auth";
-import { Observable, firstValueFrom } from "rxjs";
+import { BehaviorSubject, Observable, firstValueFrom } from "rxjs";
 
 import { AUTH } from "../shared/firebase-tokens";
 import { ensure } from "../shared/utils/checks";
@@ -23,6 +23,7 @@ import { getErrorMessage } from "../shared/utils/error";
 })
 export class AuthService {
   readonly user$: Observable<User | null>;
+  readonly loading$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly router: Router,
@@ -54,12 +55,15 @@ export class AuthService {
   }
 
   async loginYahoo(): Promise<void> {
+    this.loading$.next(true);
     try {
       const provider = new OAuthProvider("yahoo.com");
       await signInWithPopup(this.auth, provider);
       await this.router.navigate(["/teams"]);
     } catch (err) {
       throw new Error(`Couldn't sign in with Yahoo: ${getErrorMessage(err)}`);
+    } finally {
+      this.loading$.next(false);
     }
   }
 

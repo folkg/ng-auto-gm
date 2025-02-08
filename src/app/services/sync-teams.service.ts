@@ -8,7 +8,9 @@ import {
   type Observable,
   Subject,
   catchError,
+  combineLatest,
   concat,
+  filter,
   from,
   lastValueFrom,
   map,
@@ -23,7 +25,7 @@ import {
   type DialogData,
 } from "../shared/confirm-dialog/confirm-dialog.component";
 
-import { isType } from "../shared/utils/checks";
+import { isDefined, isType } from "../shared/utils/checks";
 import { getErrorMessage } from "../shared/utils/error";
 import { shareLatest } from "../shared/utils/shareLatest";
 // biome-ignore lint/style/useImportType: This is an injection token
@@ -45,8 +47,10 @@ export class SyncTeamsService {
     private readonly auth: AuthService,
     readonly dialog: MatDialog,
   ) {
-    const teamsStream$ = this.refetch$.pipe(
-      startWith(undefined),
+    const teamsStream$ = combineLatest([
+      this.refetch$.pipe(startWith(undefined)),
+      this.auth.user$.pipe(filter(isDefined)),
+    ]).pipe(
       switchMap(() => {
         const sessionStorageTeams = this.loadSessionStorageTeams();
         const hasValidSessionStorageTeams =

@@ -3,9 +3,9 @@ import { MatButton } from "@angular/material/button";
 // biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
 import { RouterLink } from "@angular/router";
-import type { User } from "@firebase/auth";
-import type { Observable } from "rxjs";
 
+import { toSignal } from "@angular/core/rxjs-interop";
+import { LoadingComponent } from "../loading/loading.component";
 // biome-ignore lint/style/useImportType: This is an injection token
 import { AuthService } from "../services/auth.service";
 import {
@@ -19,10 +19,10 @@ import { getErrorMessage } from "../shared/utils/error";
   selector: "app-login",
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.scss"],
-  imports: [MatButton, RouterLink, RobotsComponent],
+  imports: [MatButton, RouterLink, RobotsComponent, LoadingComponent],
 })
 export class LoginComponent {
-  user$: Observable<User | null> = this.auth.user$;
+  loading = toSignal(this.auth.loading$, { initialValue: false });
 
   constructor(
     private readonly auth: AuthService,
