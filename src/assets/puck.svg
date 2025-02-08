@@ -1,0 +1,8 @@
+<svg width="1600" height="1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Draw the top oval shape for the hockey puck -->
+  <ellipse cx="800" cy="400" rx="640" ry="240" fill="black" />
+  <!-- Draw the side rectangle for the height of the hockey puck -->
+  <rect x="160" y="400" width="1280" height="320" fill="black" />
+  <!-- Draw the bottom oval shape for the hockey puck -->
+  <ellipse cx="800" cy="720" rx="640" ry="240" fill="black" />
+</svg>
