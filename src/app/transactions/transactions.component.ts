@@ -10,9 +10,11 @@ import {
 } from "@angular/material/card";
 // biome-ignore lint/style/useImportType: This is an injection token
 import { MatDialog } from "@angular/material/dialog";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { lastValueFrom } from "rxjs";
 
+// biome-ignore lint/style/useImportType: This is an injection token
+import { ActivatedRoute, Router } from "@angular/router";
+import { LoadingComponent } from "../loading/loading.component";
 // biome-ignore lint/style/useImportType: This is an injection token
 import { APIService } from "../services/api.service";
 // biome-ignore lint/style/useImportType: This is an injection token
@@ -42,9 +44,9 @@ import { TeamComponent } from "./team/team.component";
     MatCardTitle,
     MatCardContent,
     MatButton,
-    MatProgressSpinner,
     JsonPipe,
     SortTeamsByTransactionsPipe,
+    LoadingComponent,
   ],
 })
 export class TransactionsComponent {
@@ -82,6 +84,8 @@ export class TransactionsComponent {
     private readonly api: APIService,
     private readonly sts: SyncTeamsService,
     private readonly dialog: MatDialog,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -216,6 +220,12 @@ export class TransactionsComponent {
       data: dialogData,
     });
     return lastValueFrom(dialogRef.afterClosed());
+  }
+
+  reloadComponent(): void {
+    this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+      this.router.navigate([this.route.snapshot.routeConfig?.path ?? ""]);
+    });
   }
 }
 

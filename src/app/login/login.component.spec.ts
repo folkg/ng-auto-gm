@@ -1,5 +1,4 @@
 import { MatDialog } from "@angular/material/dialog";
-import type { User } from "@firebase/auth";
 import { render, screen } from "@testing-library/angular";
 import userEvent from "@testing-library/user-event";
 import { BehaviorSubject } from "rxjs";
@@ -8,10 +7,9 @@ import { AuthService } from "../services/auth.service";
 import { LoginComponent } from "./login.component";
 
 describe("LoginComponent", () => {
-  const user$ = new BehaviorSubject<User | null>(null);
-
+  const loading$ = new BehaviorSubject<boolean>(false);
   const mockAuthService = {
-    user$,
+    loading$,
     loginYahoo: vi.fn().mockResolvedValue(undefined),
     logout: vi.fn().mockResolvedValue(undefined),
   };
@@ -26,7 +24,7 @@ describe("LoginComponent", () => {
   ];
 
   beforeEach(() => {
-    user$.next(null);
+    loading$.next(false);
     vi.clearAllMocks();
   });
 
