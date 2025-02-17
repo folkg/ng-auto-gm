@@ -48,9 +48,10 @@ export class SyncTeamsService {
     readonly dialog: MatDialog,
   ) {
     const teamsStream$ = combineLatest([
+      this.auth.user$,
       this.refetch$.pipe(startWith(undefined)),
-      this.auth.user$.pipe(filter(isDefined)),
     ]).pipe(
+      filter(([user]) => isDefined(user)),
       switchMap(() => {
         const sessionStorageTeams = this.loadSessionStorageTeams();
         const hasValidSessionStorageTeams =
