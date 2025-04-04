@@ -44,7 +44,7 @@
     "@biomejs/biome": "1.9.4",
     "@ngx-env/builder": "19.0.4",
     "@nx/vite": "20.6.4",
-    "@testing-library/angular": "17.3.6",
+    "@testing-library/angular": "17.3.7",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.6.1",
     "@types/jasmine": "5.1.7",
