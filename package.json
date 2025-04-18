@@ -43,7 +43,7 @@
     "@angular/compiler-cli": "19.1.4",
     "@biomejs/biome": "1.9.4",
     "@ngx-env/builder": "19.0.4",
-    "@nx/vite": "20.7.2",
+    "@nx/vite": "20.8.0",
     "@testing-library/angular": "17.3.7",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.6.1",
