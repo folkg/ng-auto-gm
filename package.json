@@ -47,7 +47,7 @@
     "@testing-library/angular": "17.3.7",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.6.1",
-    "@types/jasmine": "5.1.7",
+    "@types/jasmine": "5.1.8",
     "@vitest/browser": "3.1.2",
     "@vitest/coverage-v8": "3.1.2",
     "jasmine-core": "5.7.1",
